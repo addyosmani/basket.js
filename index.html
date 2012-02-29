@@ -1,0 +1,16 @@
+<html>
+	<head>
+		<title>Test</title>
+	</head>
+	<body>
+	  <script src="basket.js"></script>
+	  <script>
+	     basket
+	       .add("jquery-1.7.1.min.js").wait()
+	       .add("underscore-min.js")
+      	       .add("backbone-min.js").wait(function() {
+          	   alert("woot! \o/");
+     	      });
+	  </script>
+	</body>
+</html>
