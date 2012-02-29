@@ -4,12 +4,28 @@
 	</head>
 	<body>
 	  <script src="basket.js"></script>
+	  <div id="message"></div>
 	  <script>
+	     var message;
+
 	     basket
-	       .add("jquery-1.7.1.min.js").wait()
+	       .add("jquery-1.7.1.min.js").wait(function(){
+	       		message = $('#message');
+	       		message.append('<p>jQuery loaded successfully.</p>');
+
+	       })
 	       .add("underscore-min.js")
       	       .add("backbone-min.js").wait(function() {
-          	   alert("woot! \o/");
+
+          	   	message.append('<p>Backbone.js loaded successfully.</p>');
+
+				var Meal = Backbone.Model.extend({
+				  idAttribute: "_id"
+				});
+
+				var cake = new Meal({ _id: 4, name: "Cake" });
+				message.append("Model: Cake id is " + cake.id);
+
      	      });
 	  </script>
 	</body>

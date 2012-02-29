@@ -54,6 +54,7 @@
                     head = d.head || d.getElementsByTagName("head")[0];
                 script.appendChild(d.createTextNode(text));
                 head.insertBefore(script, head.firstChild);
+
             },
 
             queueExec = function (waitCount) {
@@ -90,12 +91,12 @@
 
                 scripts[scriptIndex] = null;
 
-                if (_localStorage && _localStorage.getItem(key)) {
-                    scripts[scriptIndex] = _localStorage.getItem(key);
+                if (_localStorage && localStorage.getItem(key)) {
+                    scripts[scriptIndex] = localStorage.getItem(key);
                     queueExec(_waitCount);
                 } else {
                     getUrl(path, function (text) {
-                        (_localStorage) && _localStorage.setItem(key, text);
+                        (_localStorage) && localStorage.setItem(key, text);
                         scripts[scriptIndex] = text;
                         queueExec(_waitCount);
                     });
