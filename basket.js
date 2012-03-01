@@ -24,7 +24,6 @@
             waitCount = 0,
             waitCallbacks = [],
 
-
             // Minimalist Cross-browser XHR
             // from https://gist.github.com/991713
             getXMLObj = function (s, a) {
@@ -34,6 +33,7 @@
                     s = a.pop();
                     return new(s ? ActiveXObject : XMLHttpRequest)(s)
                 } catch (e) {;
+
                 }
                 while (s)
             },
@@ -50,11 +50,13 @@
             },
 
             injectScript = function (text) {
-                
-                var script = d.createElement("script");
+                var script = d.createElement("script"),
+                    fragment = d.createDocumentFragment();
+                    script.defer = true;
                     head = d.head || d.getElementsByTagName("head")[0];
                 script.appendChild(d.createTextNode(text));
-                head.insertBefore(script, head.firstChild);
+                fragment.appendChild(script);
+                head.appendChild(fragment);
             },
 
             queueExec = function (waitCount) {

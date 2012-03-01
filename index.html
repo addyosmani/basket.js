@@ -1,29 +1,57 @@
 <html>
 	<head>
-		<title>Test</title>
+		<title>Test Basket.js</title>
 	</head>
+	<link rel="stylesheet" type="text/css" href="resources/base.css">
 	<body>
+
+	<div id="container">
+		<h1>Basket.js</h1>
+		<h2>A (proof-of-concept) loader for caching scripts in localStorage </h2>
+		  <div id="message" class="content">If you're seeing this message, something has gone wrong.</div>
+		  <div class="content">
+		  <p>
+		  	Basket.js was created as a response to a tweet by Steve Souders asking that the jQuery project start caching jQuery in localStorage for performance reasons. Intrigued by just how well this might work, I began exploring a minimalist solution to it.
+		  </p>
+
+		  <p>
+		  	The results of these efforts is a script loader that treats localStorage as a cache: if script(s) have previously been saved locally, they will simply be loaded and injected into the current document. If not, they will be XHR'd in for use right away, but cached so that no additional loads are required in the future.
+		  </p>
+		  <p>
+		  	Before we get into the really interesting part of the experiment (performance benchmarking), let's briefly review the basket.js API:
+		  </p>
+		  </div>
+	</div>
+
+	<script type="text/template" id="intro">
+		<p><em>This section was rendered using Underscore templates - just one of a number of scripts that were added to this document when you loaded it and should now be <strong>cached</strong> in localStorage (if supported).
+		    Backbone.js was also loaded and we created a new model with the name: <%= name %> (just for funsies).</em></p>
+	</script>
+
+
 	  <script src="basket.js"></script>
-	  <div id="message"></div>
 	  <script>
 	     var message, str;
 
-	     //note unit tests need to be revised.
-	     
-     	     basket
+     	 basket
 	       .add("test/jquery-1.7.1.min.js").wait()
 	       .add("test/underscore-min.js")
       	   .add("test/backbone-min.js").wait(function() {
 
-      	   		message = $('#message');
-      	   		message.append('<p>jQuery, Underscore and Backbone loaded successfully. This message was added via jQuery.</p>')
 
-				var Meal = Backbone.Model.extend({
-				  idAttribute: "_id"
-				});
+			var testModel = Backbone.Model.extend({
+			  idAttribute: "_id"
+			});
 
-				var cake = new Meal({ _id: 4, name: "Cake" });
-				message.append("Backbone Model test: Cake id is " + cake.id);
+			var myModel = new testModel({ _id: 4, name: "Nyan Cat" });
+			
+
+  	   		message = $('#message');
+  	   		var templateContent = $('#intro').html();
+  	   		var compiled = _.template(templateContent);
+  	   		message.html( compiled({name: myModel.get('name')}));
+
+
 
      	    });
 
