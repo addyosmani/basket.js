@@ -6,28 +6,27 @@
 	  <script src="basket.js"></script>
 	  <div id="message"></div>
 	  <script>
-	     var message;
+	     var message, str;
 
-	     basket
-	       .add("test/jquery-1.7.1.min.js").wait(function(){
-
-	       		message = $('#message');
-	       		message.append('<p>jQuery loaded successfully.</p>');
-
-	       })
+	     //note unit tests need to be revised.
+	     
+     	     basket
+	       .add("test/jquery-1.7.1.min.js").wait()
 	       .add("test/underscore-min.js")
       	   .add("test/backbone-min.js").wait(function() {
 
-          	   	message.append('<p>Backbone.js loaded successfully.</p>');
+      	   		message = $('#message');
+      	   		message.append('<p>jQuery, Underscore and Backbone loaded successfully. This message was added via jQuery.</p>')
 
 				var Meal = Backbone.Model.extend({
 				  idAttribute: "_id"
 				});
 
 				var cake = new Meal({ _id: 4, name: "Cake" });
-				message.append("Model: Cake id is " + cake.id);
+				message.append("Backbone Model test: Cake id is " + cake.id);
 
      	    });
+
 	  </script>
 	</body>
 </html>

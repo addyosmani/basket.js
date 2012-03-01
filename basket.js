@@ -51,7 +51,7 @@
 
             injectScript = function (text) {
                 
-                var script = d.createElement("script"),
+                var script = d.createElement("script");
                     head = d.head || d.getElementsByTagName("head")[0];
                 script.appendChild(d.createTextNode(text));
                 head.insertBefore(script, head.firstChild);
