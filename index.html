@@ -9,14 +9,14 @@
 	     var message;
 
 	     basket
-	       .add("jquery-1.7.1.min.js").wait(function(){
+	       .add("test/jquery-1.7.1.min.js").wait(function(){
 
 	       		message = $('#message');
 	       		message.append('<p>jQuery loaded successfully.</p>');
 
 	       })
-	       .add("underscore-min.js")
-      	   .add("backbone-min.js").wait(function() {
+	       .add("test/underscore-min.js")
+      	   .add("test/backbone-min.js").wait(function() {
 
           	   	message.append('<p>Backbone.js loaded successfully.</p>');
 

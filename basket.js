@@ -50,11 +50,11 @@
             },
 
             injectScript = function (text) {
+                
                 var script = d.createElement("script"),
                     head = d.head || d.getElementsByTagName("head")[0];
                 script.appendChild(d.createTextNode(text));
                 head.insertBefore(script, head.firstChild);
-
             },
 
             queueExec = function (waitCount) {
@@ -63,6 +63,7 @@
                 if (scriptsExecuted >= waitCount) {
                     for (i = 0; i < scripts.length; i++) {
                         script = scripts[i];
+
                         if (!script) {
                             // loading/executed
                             continue;
@@ -73,6 +74,7 @@
 
                         for (j = i; j < scriptsExecuted; j++) {
                             if (callback = waitCallbacks[j]) {
+                                console.log('in callbacks');
                                 waitCallbacks[j] = null;
                                 callback();
                             }
@@ -88,6 +90,7 @@
                 var key = _storagePrefix + path,
                     scriptIndex = scripts.length,
                     _waitCount = waitCount;
+
 
                 scripts[scriptIndex] = null;
 
@@ -106,10 +109,12 @@
 
             wait: function (callback) {
                 waitCount = scripts.length;
+               
 
                 if (callback) {
                     (scriptsExecuted >= waitCount - 1) ? callback() : waitCallbacks[waitCount - 1] = callback;
                 }
+
                 return this;
             }
         };
