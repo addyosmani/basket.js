@@ -6,7 +6,7 @@
 	<body>
 
 	<div id="container">
-		<h1>Basket.js</h1>
+		<h1>basket.js</h1>
 		<h2>A (proof-of-concept) loader for caching scripts in localStorage </h2>
 		  <div id="message" class="content">If you're seeing this message, something has gone wrong.</div>
 		  <div class="content">
@@ -67,6 +67,49 @@
         $('#message').html('Live long and prosper, bro');
     });
 </code></pre>
+
+<h2>Performance testing</h2>
+<p>
+Now onto the juicy part of the experiment. What we're interested in asserting is whether there are any significant performance benefits in locally caching a script in localStorage vs. caching in the browser's standard data cache.</p>
+<p>In order to simplfy this, let's reduce some of the code in basket.js down to loading the contents of a script from localStorage and then injecting this into the current document. The following snippet should hopefully suffice:</p>
+
+<pre>
+// Test for localStorage support
+function hasLocalStorage(a, b) {
+    try {
+        return (a = localStorage).setItem(b, a), a.removeItem(b), !0
+    } catch (c) {
+
+    }
+};
+
+if (hasLocalStorage()) {
+
+    // where scriptContent is the predefined content of
+    // a script we want to benchmark loading
+    // (see the jsPerf test for complete code)
+
+    localStorage.setItem('myscript.js', scriptContent);
+    var text = localStorage.getItem('myscript.js');
+    var script = d.createElement("script"),
+        fragment = d.createDocumentFragment();
+    script.defer = true;
+    head = d.head || d.getElementsByTagName("head")[0];
+    script.appendChild(d.createTextNode(text));
+    fragment.appendChild(script);
+    head.appendChild(fragment);
+
+    // Cleanup for jsPerf test
+    localStorage.clear();
+
+}
+</pre>
+
+<p>We then need a snippet that will emulate loading a script in from the browser cache.</p>
+
+</p>
+
+
 
 		  </p>
 

@@ -1,4 +1,3 @@
-
 /* Basket.js
  * A script-loader that handles caching scripts in localStorage
  * where supported.
@@ -8,12 +7,12 @@
  * Licensed MIT, GPL 
  */
 
-; (function (w, d) {
+ ;(function (w, d) {
 
     function basketLoader() {
 
         var
-            _storagePrefix = "basket-",
+        _storagePrefix = "basket-",
             _localStorage = function (a, b) {
                 try {
                     return (a = localStorage).setItem(b, a), a.removeItem(b), !0
@@ -52,8 +51,8 @@
             injectScript = function (text) {
                 var script = d.createElement("script"),
                     fragment = d.createDocumentFragment();
-                    script.defer = true;
-                    head = d.head || d.getElementsByTagName("head")[0];
+                script.defer = true;
+                head = d.head || d.getElementsByTagName("head")[0];
                 script.appendChild(d.createTextNode(text));
                 fragment.appendChild(script);
                 head.appendChild(fragment);
@@ -111,7 +110,7 @@
 
             wait: function (callback) {
                 waitCount = scripts.length;
-               
+
 
                 if (callback) {
                     (scriptsExecuted >= waitCount - 1) ? callback() : waitCallbacks[waitCount - 1] = callback;
