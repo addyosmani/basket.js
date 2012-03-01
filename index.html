@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>Test Basket.js</title>
+		<title>Basket.js</title>
 	</head>
 	<link rel="stylesheet" type="text/css" href="resources/base.css">
 	<body>
@@ -20,11 +20,61 @@
 		  <p>
 		  	Before we get into the really interesting part of the experiment (performance benchmarking), let's briefly review the basket.js API:
 		  </p>
+		  <p>
+		  <ul>
+		  	<li><strong>basket.add()</strong></li>
+		  	<li><strong>basket.wait()</strong></li>
+		  </ul>
+
+		  <p><strong>basket.add( uri )</strong></p>
+
+<p>uri: A relative URI to a local script to load.</p>
+
+<p><code>.add()</code> allows us to construct loader chains, each of which instruct basket.js to fetch (either externally or from a localStorage cached-copy) a script defined by a supplied uri. The basic loading of a single uri could be achieved as follows:</p>
+
+<pre><code>basket.add('jquery.js');
+</code></pre>
+
+<p>This will check to see if an item with the key <code>basket-jquery.js</code> exists in localStorage (i.e a cached copy of the script). If present, the script contents are read from storage and injected into the current page. If not present, the script will be fetched, cached in storage and then similarly injected into the document for use.</p>
+
+<p>basket.js also supports chaining and so requesting multiple scripts is also straight-forward:</p>
+
+<pre><code>basket
+   .add('jquery.js')
+   .add('underscore.js')
+   .add('backbone.js');
+</code></pre>
+
+<p><em>Note that at present, JSONP/server-side middleware is necessary for the support of remote scripts. This is down to access of script content being limited under cross-origin policies.</em></p>
+
+<p><strong>basket.wait( [,callback] )</strong></p>
+
+<p>callback: An optional function to be executed once a script has loaded</p>
+
+<p>When <code>wait()</code> is inserted into a chain, it informs the chain to ensure previous scripts inserted into the chain complete their loading prior to allowing the next item to load and execute. At it&rsquo;s most basic, <code>wait()</code> can be used as follows:</p>
+
+<pre><code>basket
+    .add('jquery.js').wait()
+    .add('jquery.plugin.js');
+</code></pre>
+
+<p>You can also specify an (optional) callback (typically an anonymous function) that will be executed in order following the previous scripts executing and before subsequent scripts in the chain are executed.</p>
+
+<pre><code>basket
+    .add('jquery.js')
+    .add('underscore.js')
+    .add('app.js').wait(function(){
+        $('#message').html('Live long and prosper, bro');
+    });
+</code></pre>
+
+		  </p>
+
 		  </div>
 	</div>
 
 	<script type="text/template" id="intro">
-		<p><em>This section was rendered using Underscore templates - just one of a number of scripts that were added to this document when you loaded it and should now be <strong>cached</strong> in localStorage (if supported).
+		<p><em>This section was rendered using Underscore templates - just one of a number of scripts that were added to this document using basket.js when you loaded it and should now be <strong>cached</strong> in localStorage (if supported).
 		    Backbone.js was also loaded and we created a new model with the name: <%= name %> (just for funsies).</em></p>
 	</script>
 
