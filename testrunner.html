@@ -16,13 +16,16 @@
         <script src="basket.js"></script>
         <script>
 
+        //localStorage assumed
+        //Need to test for behaviour when not-present
+
             module('Test script API', {
                teardown:function(){
                    localStorage.clear();
                } 
             });
 
-            test('Add a script, execute callback post-load', function(){
+            test('Add a script, execute callback post-load via wait()', function(){
                    expect(1);
                    basket
                    .add("jquery-1.7.1.min.js").wait(function(){
@@ -47,19 +50,25 @@
             });
 
             test('Add multiple scripts, test scripts loaded and can be used', function(){
-                    expect(2);
+                    expect(3);
                     stop();
 
                     basket
                     .add("jquery-1.7.1.min.js").wait(function(){
-
                         var el = $('ul');
                         strictEqual(el.length, 1, 'Selected element correctly using jQuery');
                         start();
                     });
 
+                    stop();
+
                     basket
-                    .add("underscore-min.js");
+                    .add("underscore-min.js").wait(function(){
+                        var sum = _.reduce([1, 2, 3], function(memo, num){ return memo + num; }, 0);
+                        console.log(sum);
+                        strictEqual(sum, 6, 'Sum operation via Underscore processed correctly');
+                        start(); 
+                    });
 
                     stop();
 
