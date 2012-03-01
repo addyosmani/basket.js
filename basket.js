@@ -13,7 +13,7 @@
     function basketLoader() {
 
         var
-            _storagePrefix = "ll-",
+            _storagePrefix = "basket-",
             _localStorage = function (a, b) {
                 try {
                     return (a = localStorage).setItem(b, a), a.removeItem(b), !0

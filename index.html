@@ -10,12 +10,13 @@
 
 	     basket
 	       .add("jquery-1.7.1.min.js").wait(function(){
+
 	       		message = $('#message');
 	       		message.append('<p>jQuery loaded successfully.</p>');
 
 	       })
 	       .add("underscore-min.js")
-      	       .add("backbone-min.js").wait(function() {
+      	   .add("backbone-min.js").wait(function() {
 
           	   	message.append('<p>Backbone.js loaded successfully.</p>');
 
@@ -26,7 +27,8 @@
 				var cake = new Meal({ _id: 4, name: "Cake" });
 				message.append("Model: Cake id is " + cake.id);
 
-     	      });
+     	    });
 	  </script>
 	</body>
 </html>
+

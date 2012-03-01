@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>QUnit Tests</title>
+        <link rel="stylesheet" href="qunit.css">
+    </head>
+    <body>
+        <h1 id="qunit-header">Basket.js tests</h1>
+        <h2 id="qunit-banner"></h2>
+        <ol id="qunit-tests"></ol>
+        <div id="qunit-fixture">
+            <ul></ul>
+        </div>
+        <script src="qunit.js"></script>
+        <script src="basket.js"></script>
+        <script>
+
+            module('Test script API', {
+               teardown:function(){
+                   localStorage.clear();
+               } 
+            });
+
+            test('Add a script, execute callback post-load', function(){
+                   expect(1);
+                   basket
+                   .add("jquery-1.7.1.min.js").wait(function(){
+                        ok(true, 'Callback executed correctly');
+
+                   });
+                  
+            });
+
+            test('Chaining', function(){
+                
+                expect(1);
+                stop();
+                basket
+                    .add("jquery-1.7.1.min.js")
+                    .add("underscore-min.js")
+                    .add("backbone-min.js").wait(function(){
+                       strictEqual(window.localStorage.length, 3, 'Items correctly added via chaining');
+                       start();    
+                });
+
+            });
+
+            test('Add multiple scripts, test scripts loaded and can be used', function(){
+                    expect(2);
+                    stop();
+
+                    basket
+                    .add("jquery-1.7.1.min.js").wait(function(){
+
+                        var el = $('ul');
+                        strictEqual(el.length, 1, 'Selected element correctly using jQuery');
+                        start();
+                    });
+
+                    basket
+                    .add("underscore-min.js");
+
+                    stop();
+
+                    basket
+                    .add("backbone-min.js").wait(function() {
+                        var Meal = Backbone.Model.extend({
+                          idAttribute: "_id"
+                        });
+
+                        var cake = new Meal({ _id: 4, name: "Cake" });
+                        strictEqual(cake.id, 4, 'Retrieved id of Backbone.Model instance');
+                        start();
+                    });
+            });
+
+
+
+
+            module('Test localStorage population');
+
+            test('Add scripts to localStorage via API, scripts can be accessed and are as expected', function(){
+                    expect(2);
+                    stop();
+                    basket
+                        .add("modernizr.js")
+                        .add("underscore-min.js").wait(function(){
+                            var test = localStorage.getItem('basket-modernizr.js');
+                            ok(test.length > 0, 'script contents are greater than 0');
+                            ok(test.indexOf('applicationcache-canvas-canvastext') > 0, true, 'script contents contain expected strings' );
+                            start();
+                            
+                        }); 
+            });
+
+        </script>
+    </body>
+</html>
