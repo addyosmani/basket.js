@@ -7,7 +7,7 @@
 
 	<div id="container">
 		<h1>basket.js</h1>
-		<h2>A simple script loader that caches scripts with localStorage </h2>
+		<h2>A simple (proof-of-concept) script loader that caches scripts with localStorage </h2>
         <p><a href="basket.js">basket.js</a> (3.8KB) &nbsp; <a href="basket.min.js">basket.min.js</a> (1.1KB) &nbsp; 
         <a href="https://twitter.com/share" class="twitter-share-button" data-text="basket.js - a simple script loader that caches scripts with localStorage" data-via="addyosmani">Tweet</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
@@ -17,7 +17,7 @@
 		  <div class="content">
 
 		  <p>
-		  	Basket.js was created as a response to a <a href="https://twitter.com/#!/souders/statuses/166928191649357824">tweet</a> by Steve Souders asking that the jQuery project consider caching jQuery in localStorage for performance reasons. Intrigued by the idea, I began exploring a minimalist solution to it. <em>(Note: I am by <a href="http://www.stevesouders.com/blog/2011/03/28/storager-case-study-bing-google/">no</a> <a href="http://forrst.com/posts/localStorage_script_injection-wBm">means</a> the first person to explore this area).</em>
+		  	Basket.js was created as a response to a <a href="https://twitter.com/#!/souders/statuses/166928191649357824">tweet</a> by Steve Souders asking that the jQuery project consider caching jQuery in localStorage for performance reasons. Intrigued by the idea, I began exploring a minimalist solution to it (just for the sake of experiment - nothing here should be considered for production). <em>(Note: I am by <a href="http://www.stevesouders.com/blog/2011/03/28/storager-case-study-bing-google/">no</a> <a href="http://forrst.com/posts/localStorage_script_injection-wBm">means</a> the first person to explore this area. Also, storing files in localStorage is not considered an optimal approach by many. See <a href="http://paul.kinlan.me/we-need-to-kill-off-the-localstorage-api">this post</a> on killing off the API by Paul Kinlan).</em>
 		  </p>
 
 		  <p>
