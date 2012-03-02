@@ -7,7 +7,7 @@
 
 	<div id="container">
 		<h1>basket.js</h1>
-		<h2>A (proof-of-concept) loader for caching scripts in localStorage </h2>
+		<h2>A simple loader for caching scripts in localStorage </h2>
 		  <div id="message" class="content">If you're seeing this message, something has gone wrong.</div>
 		  <div class="content">
 		  <p>
@@ -15,10 +15,14 @@
 		  </p>
 
 		  <p>
-		  	The results of these efforts is a script loader that treats localStorage as a cache: if script(s) have previously been saved locally, they will simply be loaded and injected into the current document. If not, they will be XHR'd in for use right away, but cached so that no additional loads are required in the future.
+		  	You might remember that Souders previously did a write-up on search engines making use of localStorage caching back in 2011. His conclusions were:
+		  	<blockquote>Bing and Google Search make extensive use of localStorage for stashing SCRIPT blocks that are used on subsequent page views. None of the other top sites from my previous post use localStorage in this way. Are Bing and Google Search onto something? Yes, definitely.</blockquote>
 		  </p>
 		  <p>
-		  	Before we get into the really interesting part of the experiment (performance benchmarking), let's briefly review the basket.js API:
+		  	 To help provide a more general solution for this problem, I put together a script loader that treats localStorage as a cache: if script(s) have previously been saved locally, they will simply be loaded and injected into the current document. If not, they will be XHR'd in for use right away, but cached so that no additional loads are required in the future.
+		  </p>
+		  <p>
+		  	basket.js is extremely simple, but it gets the job done. Let's briefly review its API:
 		  </p>
 		  <p>
 		  <ul>
@@ -68,6 +72,142 @@
     });
 </code></pre>
 
+
+<h2>Implementation</h2>
+<pre>
+/* Basket.js
+ * A script-loader that handles caching scripts in localStorage
+ * where supported.
+ * http://addyosmani.com/
+ * Credits: Addy Osmani, Mathias Bynens, Ironsjp.
+ * Copyright (c) 2012 Addy Osmani; 
+ * Licensed MIT, GPL 
+ */
+
+ ;(function (w, d) {
+
+    function basketLoader() {
+
+        var
+        _storagePrefix = "basket-",
+            _localStorage = function (a, b) {
+                try {
+                    return (
+                    a = localStorage).setItem(b, a), 
+                    a.removeItem(b), !0
+                } catch (c) {}
+            }(),
+            scripts = [],
+            scriptsExecuted = 0,
+            waitCount = 0,
+            waitCallbacks = [],
+
+            // Minimalist Cross-browser XHR
+            // from https://gist.github.com/991713
+            getXMLObj = function (s, a) {
+                a = [a = "Msxml2.XMLHTTP", a + ".3.0", a + ".6.0"];
+                do
+                try {
+                    s = a.pop();
+                    return new(s ? ActiveXObject : XMLHttpRequest)(s)
+                } catch (e) {;
+
+                }
+                while (s)
+            },
+
+            getUrl = function (url, callback) {
+                var xhr = getXMLObj();
+                xhr.open("GET", url, true);
+                xhr.onreadystatechange = function (e) {
+                    if (xhr.readyState === 4) {
+                        callback(xhr.responseText);
+                    }
+                };
+                xhr.send();
+            },
+
+            injectScript = function (text) {
+                var script = d.createElement("script"),
+                    fragment = d.createDocumentFragment();
+                script.defer = true;
+                head = d.head || d.getElementsByTagName("head")[0];
+                script.appendChild(d.createTextNode(text));
+                fragment.appendChild(script);
+                head.appendChild(fragment);
+            },
+
+            queueExec = function (waitCount) {
+                var script, i, j, callback;
+
+                if (scriptsExecuted >= waitCount) {
+                    for (i = 0; i < scripts.length; i++) {
+                        script = scripts[i];
+
+                        if (!script) {
+                            // loading/executed
+                            continue;
+                        }
+                        scripts[i] = null;
+                        injectScript(script);
+                        scriptsExecuted++;
+
+                        for (j = i; j < scriptsExecuted; j++) {
+                            if (callback = waitCallbacks[j]) {
+                                console.log('in callbacks');
+                                waitCallbacks[j] = null;
+                                callback();
+                            }
+                        }
+                    }
+                }
+            };
+
+        return {
+
+            add: function (path) {
+
+                var key = _storagePrefix + path,
+                    scriptIndex = scripts.length,
+                    _waitCount = waitCount;
+
+
+                scripts[scriptIndex] = null;
+
+                if (_localStorage && localStorage.getItem(key)) {
+                    scripts[scriptIndex] = localStorage.getItem(key);
+                    queueExec(_waitCount);
+                } else {
+                    getUrl(path, function (text) {
+                        (_localStorage) && localStorage.setItem(key, text);
+                        scripts[scriptIndex] = text;
+                        queueExec(_waitCount);
+                    });
+                }
+                return this;
+            },
+
+            wait: function (callback) {
+                waitCount = scripts.length;
+
+
+                if (callback) {
+                    (scriptsExecuted >= waitCount - 1) ? 
+                    callback() : waitCallbacks[waitCount - 1] = callback;
+                }
+
+                return this;
+            }
+        };
+
+    }
+
+
+    w['basket'] = basketLoader();
+
+})(this, document);
+</pre>
+<!--
 <h2>Performance testing</h2>
 <p>
 Now onto the juicy part of the experiment. What we're interested in asserting is whether there are any significant performance benefits in locally caching a script in localStorage vs. caching in the browser's standard data cache.</p>
@@ -84,12 +224,6 @@ function hasLocalStorage(a, b) {
 };
 
 if (hasLocalStorage()) {
-
-    // where scriptContent is the predefined content of
-    // a script we want to benchmark loading
-    // (see the jsPerf test for complete code)
-
-    localStorage.setItem('myscript.js', scriptContent);
     var text = localStorage.getItem('myscript.js');
     var script = d.createElement("script"),
         fragment = d.createDocumentFragment();
@@ -99,14 +233,11 @@ if (hasLocalStorage()) {
     fragment.appendChild(script);
     head.appendChild(fragment);
 
-    // Cleanup for jsPerf test
-    localStorage.clear();
-
 }
 </pre>
 
 <p>We then need a snippet that will emulate loading a script in from the browser cache.</p>
-
+-->
 </p>
 
 
