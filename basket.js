@@ -49,9 +49,9 @@
 
             injectScript = function (text) {
                 var script = d.createElement("script"),
-                    fragment = d.createDocumentFragment();
+                    fragment = d.createDocumentFragment(),
+                    head = d.head || d.getElementsByTagName("head")[0];
                 script.defer = true;
-                head = d.head || d.getElementsByTagName("head")[0];
                 script.appendChild(d.createTextNode(text));
                 fragment.appendChild(script);
                 head.appendChild(fragment);
