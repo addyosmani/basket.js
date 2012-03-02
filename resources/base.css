@@ -23,13 +23,17 @@ h1, h2, h3, h4, h5, h6 {
   }
 #container {
   position: relative;
-  padding:40px;
+  padding: 40px;
+  width: 650px;
+  
+  margin:0 auto;
 }
 #background {
   position: fixed;
   top: 0; left: 525px; right: 0; bottom: 0;
   background: #f5f5ff;
   border-left: 1px solid #e5e5ee;
+  border-right: 1px solid #e5e5ee;
   z-index: -1;
 }
 

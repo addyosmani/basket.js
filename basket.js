@@ -1,4 +1,4 @@
-/* Basket.js
+/* Basket.js 0.1
  * A script-loader that handles caching scripts in localStorage
  * where supported.
  * http://addyosmani.com/
@@ -6,7 +6,6 @@
  * Copyright (c) 2012 Addy Osmani; 
  * Licensed MIT, GPL 
  */
-
  ;(function (w, d) {
 
     function basketLoader() {

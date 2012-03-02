@@ -1,1 +1,1 @@
-basket.js - Script loader for caching scripts using localStorage
+basket.js - A proof-of-concept script loader for caching/loading scripts with localStorage
