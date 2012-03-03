@@ -3,8 +3,8 @@
  * where supported.
  * http://addyosmani.com/
  * Credits: Addy Osmani, Mathias Bynens, Ironsjp.
- * Copyright (c) 2012 Addy Osmani; 
- * Licensed MIT, GPL 
+ * Copyright (c) 2012 Addy Osmani;
+ * Licensed MIT, GPL
  */
  ;(function (w, d) {
 
@@ -144,6 +144,6 @@
     }
 
 
-    w['basket'] = basketLoader();
+    w["basket"] = basketLoader();
 
 })(this, document);
