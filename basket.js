@@ -99,17 +99,18 @@
 				return this;
 			},
 
-			add: function(uri, overwrite, callback){
-				var key = _storagePrefix + uri;
+			add: function(uri, options, callback){
+				options = options || {};
+				var key = _storagePrefix + (options.key || uri);
 
 				// default is to overwrite
-				if(overwrite === undefined){
-					overwrite = true;
+				if(options.overwrite === undefined){
+					options.overwrite = true;
 				}
 
 			   // if they key exists and overwrite true, overwrite
 			   if(!!localStorage.getItem(key)){
-					if(!!overwrite){
+					if(options.overwrite){
 						saveUrl(uri, key, callback);
 					}
 			   }else{

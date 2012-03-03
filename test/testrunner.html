@@ -34,22 +34,33 @@
              asyncTest("add() scripts without injection", 1, function(){
                     basket
                         .add("jquery-1.7.1.min.js")
-                        .add("modernizr.js");
-
-                    setTimeout(function(){  
-                         var testItem = window.localStorage.getItem("basket-modernizr.js");
-                        ok(testItem.length >0 , "ensuring items reloaded contain content");
-                    start();
-                    
-                   }, 100);
+                        .add("modernizr.js", null, function() {
+                            var testItem = window.localStorage.getItem("basket-modernizr.js");
+                            ok(testItem && testItem.length > 0, "ensuring items reloaded contain content");
+                            start();                            
+                        });
             });
 
+
+             asyncTest("add() with specific key, then require it", 1, function(){
+                    basket
+                        .add("jquery-1.7.1.min.js", { key: "jquery" }, function() {
+                            basket.require("jquery").wait(function() {
+                                strictEqual(
+                                    !!localStorage.getItem("basket-jquery"),
+                                    true,
+                                    "Item with key 'jquery' exists"
+                                );
+                                start();
+                            });
+                        });
+              });
 
              asyncTest("remove() scripts from storage", 2, function(){
 
                     // Add initial scripts to storage
                     basket
-                        .add("jquery-1.7.1.min.js")
+                        .add("jquery-1.7.1.min.js", { key: 'jquery' })
                         .add("modernizr.js");
 
                     // If the previous test passed, we know add() works
@@ -58,10 +69,10 @@
 
                     setTimeout(function(){                  
                         basket
-                            .remove("jquery-1.7.1.min.js")
+                            .remove("jquery")
                             .remove("modernizr.js");
 
-                         var testjQuery = window.localStorage.getItem("jquery-1.7.1.min.js");
+                         var testjQuery = window.localStorage.getItem("basket-jquery");
                          var testModernizr = window.localStorage.getItem("basket-modernizr.js");
                         strictEqual(!!testModernizr, false, "ensure script 1 removed");
                         strictEqual(!!testjQuery, false, "ensure script 2 removed");
