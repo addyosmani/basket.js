@@ -47,6 +47,12 @@
                 xhr.send();
             },
 
+            saveUrl= function(url, key){
+                getUrl(url, function (text) {
+                   localStorage.setItem(key, text);
+                });
+            },
+
             injectScript = function (text) {
                 var script = d.createElement("script"),
                     fragment = d.createDocumentFragment(),
@@ -74,7 +80,6 @@
 
                         for (j = i; j < scriptsExecuted; j++) {
                             if (callback = waitCallbacks[j]) {
-                                console.log('in callbacks');
                                 waitCallbacks[j] = null;
                                 callback();
                             }
@@ -85,12 +90,10 @@
 
         return {
 
-            add: function (path) {
-
-                var key = _storagePrefix + path,
+            require: function (uri) {
+                var key = _storagePrefix + uri,
                     scriptIndex = scripts.length,
                     _waitCount = waitCount;
-
 
                 scripts[scriptIndex] = null;
 
@@ -98,7 +101,7 @@
                     scripts[scriptIndex] = localStorage.getItem(key);
                     queueExec(_waitCount);
                 } else {
-                    getUrl(path, function (text) {
+                    getUrl(uri, function (text) {
                         (_localStorage) && localStorage.setItem(key, text);
                         scripts[scriptIndex] = text;
                         queueExec(_waitCount);
@@ -107,10 +110,29 @@
                 return this;
             },
 
+            add: function(uri, overwrite, callback){
+                var key = _storagePrefix + uri;
+               if(!!localStorage.getItem(key)){
+                   if(!!overwrite){
+                    saveUrl(uri, key);
+                   }
+               }else{
+                    saveUrl(uri, key);
+               }
+               if(callback){
+                   callback();
+               }
+               return this;
+            },
+
+            remove: function(uri){
+                var key = _storagePrefix + uri;
+                localStorage.removeItem(key);
+                return this;
+            },
+
             wait: function (callback) {
                 waitCount = scripts.length;
-
-
                 if (callback) {
                     (scriptsExecuted >= waitCount - 1) ? callback() : waitCallbacks[waitCount - 1] = callback;
                 }

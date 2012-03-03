@@ -25,35 +25,79 @@
                } 
             });
 
-            test('Add a script, execute callback post-load via wait()', function(){
+            test('require() a script, execute callback post-load via wait()', function(){
                    expect(1);
                    basket
-                   .add("jquery-1.7.1.min.js").wait(function(){
+                   .require("jquery-1.7.1.min.js").wait(function(){
                         ok(true, 'Callback executed correctly');
 
                    });
             });
 
-            test('Chaining', function(){
+
+             asyncTest('add() scripts without injection', 1, function(){
+                    basket
+                        .add("jquery-1.7.1.min.js")
+                        .add("modernizr.js");
+
+                    setTimeout(function(){  
+                         var testItem = window.localStorage.getItem('basket-modernizr.js');
+                        ok(testItem.length >0 , 'ensuring items reloaded contain content');
+                    start();
+                    
+                   }, 100);
+
+                
+            });
+
+
+             asyncTest('remove() scripts from storage', 2, function(){
+
+                    // Add initial scripts to storage
+                    basket
+                        .add("jquery-1.7.1.min.js")
+                        .add("modernizr.js");
+
+                    // If the previous test passed, we know add() works
+                    // lets assume there should be two items in LS now.
+                    // Remove them.
+
+                    setTimeout(function(){                  
+                        basket
+                            .remove("jquery-1.7.1.min.js")
+                            .remove("modernizr.js");
+
+                         var testjQuery = window.localStorage.getItem('jquery-1.7.1.min.js');
+                         var testModernizr = window.localStorage.getItem('basket-modernizr.js');
+                        strictEqual(!!testModernizr, false, 'ensure script 1 removed');
+                        strictEqual(!!testjQuery, false, 'ensure script 2 removed');
+                    start();
+                    
+                   }, 100);
+
+                
+            });
+
+            test('Chaining require() calls', function(){
                 
                 expect(1);
                 stop();
                 basket
-                    .add("jquery-1.7.1.min.js")
-                    .add("underscore-min.js")
-                    .add("backbone-min.js").wait(function(){
+                    .require("jquery-1.7.1.min.js")
+                    .require("underscore-min.js")
+                    .require("backbone-min.js").wait(function(){
                        strictEqual(window.localStorage.length, 3, 'Items correctly added via chaining');
                        start();    
                 });
 
             });
 
-            test('Add multiple scripts, test scripts loaded and can be used', function(){
+            test('require() multiple scripts, test scripts loaded and can be used', function(){
                     expect(3);
                     stop();
 
                     basket
-                    .add("jquery-1.7.1.min.js").wait(function(){
+                    .require("jquery-1.7.1.min.js").wait(function(){
                         var el = $('ul');
                         strictEqual(el.length, 1, 'Selected element correctly using jQuery');
                         start();
@@ -62,9 +106,8 @@
                     stop();
 
                     basket
-                    .add("underscore-min.js").wait(function(){
+                    .require("underscore-min.js").wait(function(){
                         var sum = _.reduce([1, 2, 3], function(memo, num){ return memo + num; }, 0);
-                        console.log(sum);
                         strictEqual(sum, 6, 'Sum operation via Underscore processed correctly');
                         start(); 
                     });
@@ -72,7 +115,7 @@
                     stop();
 
                     basket
-                    .add("backbone-min.js").wait(function() {
+                    .require("backbone-min.js").wait(function() {
                         var Meal = Backbone.Model.extend({
                           idAttribute: "_id"
                         });
@@ -88,12 +131,12 @@
 
             module('Test localStorage population');
 
-            test('Add scripts to localStorage via API, scripts can be accessed and are as expected', function(){
+            test('require() cache scripts to localStorage, scripts can be accessed and contain expected contents', function(){
                     expect(2);
                     stop();
                     basket
-                        .add("modernizr.js")
-                        .add("underscore-min.js").wait(function(){
+                        .require("modernizr.js")
+                        .require("underscore-min.js").wait(function(){
                             var test = localStorage.getItem('basket-modernizr.js');
                             ok(test.length > 0, 'script contents are greater than 0');
                             ok(test.indexOf('applicationcache-canvas-canvastext') > 0, true, 'script contents contain expected strings' );

@@ -8,7 +8,7 @@
 	<div id="container">
 		<h1>basket.js</h1>
 		<h2>A simple (proof-of-concept) script loader that caches scripts with localStorage </h2>
-        <p><a href="basket.js">basket.js</a> (3.8KB) &nbsp; <a href="basket.min.js">basket.min.js</a> (1.1KB) &nbsp; 
+        <p><a href="basket.js">basket.js</a> (4.2KB) &nbsp; <a href="basket.min.js">basket.min.js</a> (1.2KB) &nbsp; 
         <a href="https://twitter.com/share" class="twitter-share-button" data-text="basket.js - a simple script loader that caches scripts with localStorage" data-via="addyosmani">Tweet</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
         </p>
@@ -32,17 +32,19 @@
 		  </p>
 		  <p>
 		  <ul>
-		  	<li><strong>basket.add()</strong></li>
+		  	<li><strong>basket.require()</strong></li>
+            <li><strong>basket.add()</strong></li>
+            <li><strong>basket.remove()</strong></li>
 		  	<li><strong>basket.wait()</strong></li>
 		  </ul>
 
-		  <p><strong>basket.add( uri )</strong></p>
+		  <p><strong>basket.require( uri )</strong></p>
 
         <p>uri: A relative URI to a local script to load.</p>
 
-        <p><code>.add()</code> allows us to construct loader chains, each of which instruct basket.js to fetch (either externally or from a localStorage cached-copy) a script defined by a supplied uri. The basic loading of a single uri could be achieved as follows:</p>
+        <p><code>.require()</code> allows us to construct loader chains, each of which instruct basket.js to fetch (either externally or from a localStorage cached-copy) a script defined by a supplied uri. The basic loading of a single uri could be achieved as follows:</p>
 
-        <pre><code>basket.add('jquery.js');</code></pre>
+        <pre><code>basket.require('jquery.js');</code></pre>
 
         <p>This will check to see if an item with the key <code>basket-jquery.js</code> exists in localStorage (i.e a cached copy of the script). If present, the script contents are read from storage and injected into the current page. If not present, the script will be fetched, cached in storage and then similarly injected into the document for use.</p>
 
@@ -50,11 +52,36 @@
 
         
         <pre><code>basket
-    .add('jquery.js')
-    .add('underscore.js')
-    .add('backbone.js');</code></pre>
+    .require('jquery.js')
+    .require('underscore.js')
+    .require('backbone.js');</code></pre>
 
         <p><em>Note that at present, JSONP/server-side middleware is necessary for the support of remote scripts. This is down to access of script content being limited under cross-origin policies.</em></p>
+
+        <p><strong>basket.add( uri, [,overwrite] )</strong></p>
+
+        <p>uri: A relative URI to a local script to be saved to localStorage (but not executed)</p>
+
+        <p>overwrite: A boolean defining whether an entry being added can overwrite an existing entry with the same path/filename.</p>
+
+        <p><code>add()</code> allows you to add scripts to localStorage without actually injecting them into the current document. It accepts a URI, which it then fetches the contents of and caches. If the <code>overwrite</code> argument is supplied (and is true), basket.js will overwrite an existing entry for the script being added if one is found.</p>
+
+        <pre><code>basket
+    .add('jquery.js')
+    .add('handlebars.js')
+    .add('jquery.plugin1.js')
+    .add('jquery.plugin2.js');</code></pre>
+
+
+        <p><strong>basket.remove(uri)</strong></p>
+
+        <p>uri: A relative URI to a local script to be removed from localStorage</p>
+
+        <p><code>remove()</code> will simply remove a previously cached script from localStorage. An example of how to use it can be seen below:</p>
+
+        <pre><code>basket
+    .remove('jquery.js')
+    .remove('modernizr.js');</code></pre>
 
         <p><strong>basket.wait( [,callback] )</strong></p>
 
@@ -63,16 +90,16 @@
         <p>When <code>wait()</code> is inserted into a chain, it informs the chain to ensure previous scripts inserted into the chain complete their loading prior to allowing the next item to load and execute. At it&rsquo;s most basic, <code>wait()</code> can be used as follows:</p>
 
         <pre><code>basket
-    .add('jquery.js').wait()
-    .add('jquery.plugin1.js');
-    .add('jquery.plugin2.js');</code></pre>
+    .require('jquery.js').wait()
+    .require('jquery.plugin1.js')
+    .require('jquery.plugin2.js');</code></pre>
 
         <p>You can also specify an (optional) callback (typically an anonymous function) that will be executed in order following the previous scripts executing and before subsequent scripts in the chain are executed.</p>
 
         <pre><code>basket
-    .add('jquery.js')
-    .add('underscore.js')
-    .add('app.js').wait(function(){
+    .require('jquery.js')
+    .require('underscore.js')
+    .require('app.js').wait(function(){
         
         var numbers = [10, 5, 100, 2, 1000];
         $('#message')
@@ -85,9 +112,9 @@
     <pre><code>var message, str;
 
 basket
-    .add("test/jquery-1.7.1.min.js").wait()
-    .add("test/underscore-min.js")
-    .add("test/backbone-min.js").wait(function() {
+    .require("test/jquery-1.7.1.min.js").wait()
+    .require("test/underscore-min.js")
+    .require("test/backbone-min.js").wait(function() {
 
         // Backbone is now available, so let's define
         // a test model with a sample attribute
@@ -132,9 +159,9 @@ basket
 	     var message, str;
 
      	 basket
-	       .add("test/jquery-1.7.1.min.js").wait()
-	       .add("test/underscore-min.js")
-      	   .add("test/backbone-min.js").wait(function() {
+	       .require("test/jquery-1.7.1.min.js").wait()
+	       .require("test/underscore-min.js")
+      	   .require("test/backbone-min.js").wait(function() {
 
 
 			var testModel = Backbone.Model.extend({
@@ -142,6 +169,9 @@ basket
 			});
 
 			var myModel = new testModel({ _id: 4, name: "Nyan Cat" });
+
+            //basket.remove('test/backbone-min.js');
+            //basket.require('test/modernizr.js');
 			
 
   	   		message = $('#message');
