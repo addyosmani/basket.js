@@ -28,10 +28,14 @@
 				xhr.send();
 			},
 
-			saveUrl= function(url, key){
+			saveUrl = function(url, key){
 				getUrl(url, function (text) {
 				   localStorage.setItem(key, text);
 				});
+			},
+
+			isFunc =  function(func){
+				 return Object.prototype.toString.call(func) == "[object Function]";
 			},
 
 			injectScript = function (text) {
@@ -100,7 +104,7 @@
 			   }else{
 					saveUrl(uri, key);
 			   }
-			   if(callback){
+			   if(isFunc(callback)){
 				   callback();
 			   }
 			   return this;
