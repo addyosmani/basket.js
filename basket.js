@@ -108,7 +108,7 @@
 					options.overwrite = true;
 				}
 
-			   // if they key exists and overwrite true, overwrite
+				// if they key exists and overwrite true, overwrite
 				if(!!localStorage.getItem(key)){
 					if(options.overwrite){
 						saveUrl(uri, key, callback);
