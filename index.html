@@ -40,7 +40,7 @@
 
 		  <p><strong>basket.require( uri )</strong></p>
 
-        <p>uri: A relative URI to a local script to load.</p>
+        <p><em>uri:</em> A relative URI to a local script to load.</p>
 
         <p><code>.require()</code> allows us to construct loader chains, each of which instruct basket.js to fetch (either externally or from a localStorage cached-copy) a script defined by a supplied uri. The basic loading of a single uri could be achieved as follows:</p>
 
@@ -58,11 +58,13 @@
 
         <p><em>Note that at present, JSONP/server-side middleware is necessary for the support of remote scripts. This is down to access of script content being limited under cross-origin policies.</em></p>
 
-        <p><strong>basket.add( uri, [,overwrite] )</strong></p>
+        <p><strong>basket.add( uri, [,overwrite], [,callback] )</strong></p>
 
-        <p>uri: A relative URI to a local script to be saved to localStorage (but not executed)</p>
+        <p><em>uri:</em> A relative URI to a local script to be saved to localStorage (but not executed)</p>
 
-        <p>overwrite: A boolean defining whether an entry being added can overwrite an existing entry with the same path/filename.</p>
+        <p><em>overwrite:</em> A boolean defining whether an entry being added can overwrite an existing entry with the same path/filename.</p>
+
+        <p><em>callback:</em> An optional function to be executed once a script has been added to localStorage</p>
 
         <p><code>add()</code> allows you to add scripts to localStorage without actually injecting them into the current document. It accepts a URI, which it then fetches the contents of and caches. If the <code>overwrite</code> argument is supplied (and is true), basket.js will overwrite an existing entry for the script being added if one is found.</p>
 
@@ -72,10 +74,17 @@
     .add('jquery.plugin1.js')
     .add('jquery.plugin2.js');</code></pre>
 
+        <p>An example of how to use the <code>callback</code> is as follows:</p>
+
+        <pre><code>basket
+    .add('jquery.js')
+    .add('handlebars.js', true, function(){
+        console.log('jQuery and Handlebars exist in localStorage now');
+    });</code></pre>
 
         <p><strong>basket.remove(uri)</strong></p>
 
-        <p>uri: A relative URI to a local script to be removed from localStorage</p>
+        <p><em>uri:</em> A relative URI to a local script to be removed from localStorage</p>
 
         <p><code>remove()</code> will simply remove a previously cached script from localStorage. An example of how to use it can be seen below:</p>
 
@@ -85,7 +94,7 @@
 
         <p><strong>basket.wait( [,callback] )</strong></p>
 
-        <p>callback: An optional function to be executed once a script has loaded</p>
+        <p><em>callback:</em> An optional function to be executed once a script has loaded</p>
 
         <p>When <code>wait()</code> is inserted into a chain, it informs the chain to ensure previous scripts inserted into the chain complete their loading prior to allowing the next item to load and execute. At it&rsquo;s most basic, <code>wait()</code> can be used as follows:</p>
 
