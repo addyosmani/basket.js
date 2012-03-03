@@ -6,7 +6,7 @@
  * Copyright (c) 2012 Addy Osmani;
  * Licensed MIT, GPL
  */
- ;(function (w, d) {
+ ;(function (window, document) {
 
     function basketLoader() {
 
@@ -35,11 +35,11 @@
             },
 
             injectScript = function (text) {
-                var script = d.createElement("script"),
-                    head = d.head || d.getElementsByTagName("head")[0];
+                var script = document.createElement("script"),
+                    head = document.head || document.getElementsByTagName("head")[0];
 
                 script.defer = true;
-                script.appendChild(d.createTextNode(text));
+                script.appendChild(document.createTextNode(text));
                 head.appendChild(script);
             },
 
@@ -125,6 +125,6 @@
     }
 
 
-    w["basket"] = basketLoader();
+    window["basket"] = basketLoader();
 
 })(this, document);
