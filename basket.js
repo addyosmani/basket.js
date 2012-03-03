@@ -28,9 +28,13 @@
 				xhr.send();
 			},
 
-			saveUrl = function(url, key){
+			saveUrl = function(url, key, callback){
 				getUrl(url, function (text) {
 				   localStorage.setItem(key, text);
+				   
+				   if(isFunc(callback)){
+						callback();
+					}
 				});
 			},
 
@@ -97,15 +101,20 @@
 
 			add: function(uri, overwrite, callback){
 				var key = _storagePrefix + uri;
+
+				// default is to overwrite
+				if(overwrite === undefined){
+					overwrite = true;
+				}
+
+			   // if they key exists and overwrite true, overwrite
 			   if(!!localStorage.getItem(key)){
-				   if(!!overwrite){
-					saveUrl(uri, key);
-				   }
+					if(!!overwrite){
+						saveUrl(uri, key, callback);
+					}
 			   }else{
-					saveUrl(uri, key);
-			   }
-			   if(isFunc(callback)){
-				   callback();
+					//key doesnt exist, add key as new entry
+					saveUrl(uri, key, callback);
 			   }
 			   return this;
 			},
