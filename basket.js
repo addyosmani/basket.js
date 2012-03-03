@@ -125,6 +125,6 @@
     }
 
 
-    w['basket'] = basketLoader();
+    w["basket"] = basketLoader();
 
 })(this, document);
