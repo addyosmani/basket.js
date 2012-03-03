@@ -113,11 +113,12 @@
 					if(options.overwrite){
 						saveUrl(uri, key, callback);
 					}
-			   }else{
+				}else{
 					//key doesnt exist, add key as new entry
 					saveUrl(uri, key, callback);
-			   }
-			   return this;
+				}
+
+				return this;
 			},
 
 			remove: function(uri){
