@@ -17,22 +17,8 @@
             waitCount = 0,
             waitCallbacks = [],
 
-            // Minimalist Cross-browser XHR
-            // from https://gist.github.com/991713
-            getXMLObj = function (s, a) {
-                a = [a = "Msxml2.XMLHTTP", a + ".3.0", a + ".6.0"];
-                do
-                try {
-                    s = a.pop();
-                    return new(s ? ActiveXObject : XMLHttpRequest)(s)
-                } catch (e) {;
-
-                }
-                while (s)
-            },
-
             getUrl = function (url, callback) {
-                var xhr = getXMLObj();
+                var xhr = new XMLHttpRequest();
                 xhr.open("GET", url, true);
                 xhr.onreadystatechange = function (e) {
                     if (xhr.readyState === 4) {
