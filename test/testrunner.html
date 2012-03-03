@@ -15,10 +15,6 @@
         <script src="qunit.js"></script>
         <script src="../basket.js"></script>
         <script>
-
-        //localStorage assumed
-        //Need to test for behaviour when not-present
-
             module("Test script API", {
                teardown:function(){
                    localStorage.clear();
@@ -46,8 +42,6 @@
                     start();
                     
                    }, 100);
-
-                
             });
 
 
@@ -78,10 +72,7 @@
                 
             });
 
-            test("Chaining require() calls", function(){
-                
-                expect(1);
-                stop();
+            asyncTest("Chaining require() calls", 1, function(){                
                 basket
                     .require("jquery-1.7.1.min.js")
                     .require("underscore-min.js")
@@ -92,9 +83,7 @@
 
             });
 
-            test("require() multiple scripts, test scripts loaded and can be used", function(){
-                    expect(3);
-                    stop();
+            asyncTest("require() multiple scripts, test scripts loaded and can be used", 3, function(){
 
                     basket
                     .require("jquery-1.7.1.min.js").wait(function(){
@@ -131,9 +120,7 @@
 
             module("Test localStorage population");
 
-            test("require() cache scripts to localStorage, scripts can be accessed and contain expected contents", function(){
-                    expect(2);
-                    stop();
+            asyncTest("require() cache scripts to localStorage, scripts can be accessed and contain expected contents", 2, function(){
                     basket
                         .require("modernizr.js")
                         .require("underscore-min.js").wait(function(){
@@ -141,7 +128,6 @@
                             ok(test.length > 0, "script contents are greater than 0");
                             ok(test.indexOf("applicationcache-canvas-canvastext") > 0, true, "script contents contain expected strings" );
                             start();
-                            
                         }); 
             });
 
