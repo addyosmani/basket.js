@@ -3,8 +3,8 @@
  * where supported.
  * http://addyosmani.com/
  * Credits: Addy Osmani, Mathias Bynens, Ironsjp.
- * Copyright (c) 2012 Addy Osmani; 
- * Licensed MIT, GPL 
+ * Copyright (c) 2012 Addy Osmani;
+ * Licensed MIT, GPL
  */
  ;(function (w, d) {
 
@@ -12,11 +12,6 @@
 
         var
         _storagePrefix = "basket-",
-            _localStorage = function (a, b) {
-                try {
-                    return (a = localStorage).setItem(b, a), a.removeItem(b), !0
-                } catch (c) {}
-            }(),
             scripts = [],
             scriptsExecuted = 0,
             waitCount = 0,
@@ -93,16 +88,17 @@
             require: function (uri) {
                 var key = _storagePrefix + uri,
                     scriptIndex = scripts.length,
-                    _waitCount = waitCount;
+                    _waitCount = waitCount,
+                    source = localStorage.getItem(key);
 
                 scripts[scriptIndex] = null;
 
-                if (_localStorage && localStorage.getItem(key)) {
-                    scripts[scriptIndex] = localStorage.getItem(key);
+                if (source) {
+                    scripts[scriptIndex] = source;
                     queueExec(_waitCount);
                 } else {
                     getUrl(uri, function (text) {
-                        (_localStorage) && localStorage.setItem(key, text);
+                        localStorage.setItem(key, text);
                         scripts[scriptIndex] = text;
                         queueExec(_waitCount);
                     });
