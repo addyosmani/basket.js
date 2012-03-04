@@ -39,9 +39,11 @@ config.init({
 			eqnull: true,
 			expr: true
 		}
-	},
-	uglify: {}
+	}
 });
 
-// Default task.
-task.registerTask('default', 'lint qunit concat min');
+// Dev - default
+task.registerTask('default', 'lint qunit');
+
+// Release
+task.registerTask('release', 'lint qunit concat min');
