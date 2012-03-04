@@ -36,7 +36,8 @@ config.init({
 			sub: true,
 			undef: true,
 			boss: true,
-			eqnull: true
+			eqnull: true,
+			expr: true
 		}
 	},
 	uglify: {}
