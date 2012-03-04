@@ -21,11 +21,18 @@
 				}
 			});
 
-			test("require() a script, execute callback post-load via wait()", function() {
-					expect(1);
-					basket
-					.require("jquery-1.7.1.min.js").wait(function() {
-						ok(true, "Callback executed correctly");
+
+			asyncTest("require() a script, execute callback post-load via wait()", function(){
+				expect(2);
+				basket
+					.require("jquery-1.7.1.min.js")
+					.wait(function(){
+						ok(true, "callback invoked");
+						ok(
+							localStorage.getItem("basket-jquery-1.7.1.min.js"),
+							"waited correctly"
+							);
+						start();
 					});
 			});
 
