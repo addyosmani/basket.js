@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset="utf-8" />
+		<meta charset="utf-8">
 		<title>QUnit Tests</title>
 		<link rel="stylesheet" href="qunit.css">
 	</head>
@@ -16,27 +16,26 @@
 		<script src="../lib/basket.js"></script>
 		<script>
 			module("Test script API", {
-				teardown:function(){
+				teardown: function() {
 					localStorage.clear();
 				}
 			});
 
-			test("require() a script, execute callback post-load via wait()", function(){
+			test("require() a script, execute callback post-load via wait()", function() {
 					expect(1);
 					basket
-					.require("jquery-1.7.1.min.js").wait(function(){
+					.require("jquery-1.7.1.min.js").wait(function() {
 						ok(true, "Callback executed correctly");
-
 					});
 			});
 
 
-			 asyncTest("add() scripts without injection", 1, function(){
+			asyncTest("add() scripts without injection", 1, function() {
 					basket
 						.add("jquery-1.7.1.min.js")
 						.add("modernizr.js");
 
-					setTimeout(function(){
+					setTimeout(function() {
 						var testItem = window.localStorage.getItem("basket-modernizr.js");
 						ok(testItem.length >0 , "ensuring items reloaded contain content");
 						start();
@@ -44,7 +43,7 @@
 			});
 
 
-			asyncTest("remove() scripts from storage", 2, function(){
+			asyncTest("remove() scripts from storage", 2, function() {
 
 					// Add initial scripts to storage
 					basket
@@ -55,7 +54,7 @@
 					// lets assume there should be two items in LS now.
 					// Remove them.
 
-					setTimeout(function(){
+					setTimeout(function() {
 						basket
 							.remove("jquery-1.7.1.min.js")
 							.remove("modernizr.js");
@@ -70,21 +69,21 @@
 
 			});
 
-			asyncTest("Chaining require() calls", 1, function(){
+			asyncTest("Chaining require() calls", 1, function() {
 				basket
 					.require("jquery-1.7.1.min.js")
 					.require("underscore-min.js")
-					.require("backbone-min.js").wait(function(){
+					.require("backbone-min.js").wait(function() {
 						strictEqual(window.localStorage.length, 3, "Items correctly added via chaining");
 						start();
 				});
 
 			});
 
-			asyncTest("require() multiple scripts, test scripts loaded and can be used", 3, function(){
+			asyncTest("require() multiple scripts, test scripts loaded and can be used", 3, function() {
 
 					basket
-					.require("jquery-1.7.1.min.js").wait(function(){
+					.require("jquery-1.7.1.min.js").wait(function() {
 						var el = $("ul");
 						strictEqual(el.length, 1, "Selected element correctly using jQuery");
 						start();
@@ -93,8 +92,8 @@
 					stop();
 
 					basket
-					.require("underscore-min.js").wait(function(){
-						var sum = _.reduce([1, 2, 3], function(memo, num){ return memo + num; }, 0);
+					.require("underscore-min.js").wait(function() {
+						var sum = _.reduce([1, 2, 3], function(memo, num) { return memo + num; }, 0);
 						strictEqual(sum, 6, "Sum operation via Underscore processed correctly");
 						start();
 					});
@@ -116,26 +115,26 @@
 
 			module("Test localStorage population");
 
-			asyncTest("require() cache scripts to localStorage, scripts can be accessed and contain expected contents", 2, function(){
+			asyncTest("require() cache scripts to localStorage, scripts can be accessed and contain expected contents", 2, function() {
 					basket
 						.require("modernizr.js")
-						.require("underscore-min.js").wait(function(){
+						.require("underscore-min.js").wait(function() {
 							var test = localStorage.getItem("basket-modernizr.js");
 							ok(test.length > 0, "script contents are greater than 0");
-							ok(test.indexOf("applicationcache-canvas-canvastext") > 0, true, "script contents contain expected strings" );
+							ok(test.indexOf("applicationcache-canvas-canvastext") > 0, true, "script contents contain expected strings");
 							start();
 						});
 			});
 
 			module("Utilities");
 
-			test("Can correctly detect if input is a function or not. Used for callbacks", function(){
+			test("Can correctly detect if input is a function or not. Used for callbacks", function() {
 				expect(2);
 				// isFunc() logic abstracted from the private section of basket.js
 				function method(){};
 				var variable = "test";
-				strictEqual(Object.prototype.toString.call(method) == "[object Function]", true);
-				strictEqual(Object.prototype.toString.call(variable) == "[object Function]", false);
+				strictEqual(Object.prototype.toString.call(method) === "[object Function]", true);
+				strictEqual(Object.prototype.toString.call(variable) === "[object Function]", false);
 
 			});
 
