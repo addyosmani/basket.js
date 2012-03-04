@@ -6,7 +6,7 @@ A proof-of-concept script loader for caching/loading scripts with localStorage
 ## Contributing
 
 ###Style Guide
-This project is following the [Idiomatic](https://github.com/rwldrn/idiomatic.js) guide to writing JavaScript - a concise extension to the jQuery Core Style [guidelines](docs.jquery.com/JQuery_Core_Style_Guidelines). Please ensure any pull requests being sent upstream follow these closely.
+This project is following the [Idiomatic](https://github.com/rwldrn/idiomatic.js) guide to writing JavaScript - a concise extension to the jQuery Core Style [guidelines](http://docs.jquery.com/JQuery_Core_Style_Guidelines). Please ensure any pull requests being sent upstream follow these closely.
 
 ###Unit Tests
 We are also attempting to get as much unit test coverage as possible. For this reason, please add unit tests for any new or changed functionality and remember to lint and test your code using [grunt](https://github.com/cowboy/grunt).
