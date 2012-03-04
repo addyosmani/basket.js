@@ -10,4 +10,4 @@ _Also, please don't edit files in the "dist" subdirectory as they are generated 
 
 ## License
 Copyright (c) 2012 Addy Osmani  
-Licensed under the MIT license.
+Licensed under the MIT and GPL licenses.

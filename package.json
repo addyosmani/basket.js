@@ -16,6 +16,10 @@
 		"name": "Mathias Bynens"
 	},{
 		"name": "Rick Waldron"
+	},{
+		"name": "Sindre Sorhus",
+		"email": "sindresorhus@gmail.com",
+		"url": "http://sindresorhus.com"
 	}],
 	"repository": {
 		"type": "git",
