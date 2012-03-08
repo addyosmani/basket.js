@@ -1,3 +1,4 @@
+(function() {
 module("Test script API", {
 	teardown: function() {
 		localStorage.clear();
@@ -5,15 +6,24 @@ module("Test script API", {
 });
 
 
-asyncTest("require() a script, execute callback post-load via wait()", 2, function(){
+asyncTest("require() a script, execute callback post-load via wait()", 4, function(){
 	basket
 		.require("jquery-1.7.1.min.js")
 		.wait(function(){
-			ok(true, "callback invoked");
+			ok(true, "first callback invoked");
 			ok(
 				localStorage.getItem("basket-jquery-1.7.1.min.js"),
-				"waited correctly"
-				);
+				"file saved in local storage correctly"
+			);
+			start();
+		})
+		.require("modernizr.js")
+		.wait(function(){
+			ok(true, "second callback invoked");
+			ok(
+				localStorage.getItem("basket-modernizr.js"),
+				"file saved in local storage correctly"
+			);
 			start();
 		});
 });
@@ -129,3 +139,5 @@ test("Can correctly detect if input is a function or not. Used for callbacks", f
 	strictEqual(Object.prototype.toString.call(method) === "[object Function]", true);
 	strictEqual(Object.prototype.toString.call(variable) === "[object Function]", false);
 });
+
+}());
