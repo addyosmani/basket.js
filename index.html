@@ -8,7 +8,7 @@
 	<body>
 
 	<div id="container">
-		<h1>basket.js</h1>
+		<h1>basket.js (0.2)</h1>
 		<h2>A simple (proof-of-concept) script loader that caches scripts with localStorage </h2>
 		<p>
 			<a href="dist/basket.js">basket.js</a> (3.3KB) &nbsp;
@@ -19,145 +19,198 @@
 		<div id="message" class="content"><p><strong>If you're seeing this message, something has gone wrong. Please ensure you are testing this page using a HTTP server.</strong></p></div>
 		<div class="content">
 
-		<p>
-			Basket.js was created as a response to a <a href="https://twitter.com/#!/souders/statuses/166928191649357824">tweet</a> by Steve Souders asking that the jQuery project consider caching jQuery in localStorage for performance reasons. Intrigued by the idea, I began exploring a minimalist solution to it (just for the sake of experiment - nothing here should be considered for production). <em>(Note: I am by <a href="http://www.stevesouders.com/blog/2011/03/28/storager-case-study-bing-google/">no</a> <a href="http://forrst.com/posts/localStorage_script_injection-wBm">means</a> the first person to explore this area. Also, storing files in localStorage is not considered an optimal approach by many. See <a href="http://paul.kinlan.me/we-need-to-kill-off-the-localstorage-api">this post</a> on killing off the API by Paul Kinlan).</em>
-		</p>
+<h3>Introduction</h3>
 
-		<p>
-			You may remember Souders previously did research and a <a href="http://www.stevesouders.com/blog/2011/03/28/storager-case-study-bing-google/">write-up</a> on search engines making use of localStorage caching back in 2011. His conclusions were:
-			<blockquote>Bing and Google Search make extensive use of localStorage for stashing SCRIPT blocks that are used on subsequent page views. None of the other top sites from my previous post use localStorage in this way. Are Bing and Google Search onto something? Yes, definitely.</blockquote>
-		</p>
-		<p>
-			 To help provide a more general solution for this problem, I put together a script loader that treats localStorage as a cache: if script(s) have previously been saved locally, they will simply be loaded and injected into the current document. If not, they will be XHR'd in for use right away, but cached so that no additional loads are required in the future.
-		</p>
-		<p>
-			basket.js is extremely simple, but it gets the job done. Let's briefly review its API:
-		</p>
-		<p>
-		<ul>
-			<li><strong>basket.require()</strong></li>
-			<li><strong>basket.add()</strong></li>
-			<li><strong>basket.remove()</strong></li>
-			<li><strong>basket.wait()</strong></li>
-		</ul>
+<p>basket.js is a small JavaScript library supporting localStorage caching of scripts. If script(s) have previously been saved locally, they will simply be loaded and injected into the current document. If not, they will be XHR'd in for use right away, but cached so that no additional loads are required in the future.</p>
 
-		<p><strong>basket.require( uri )</strong></p>
+<h3>Why localStorage?</h3>
 
-		<p><em>uri:</em> A relative URI to a local script to load.</p>
+<p>Tests by Bing and Google have shown that there are performance benefits to caching assets in localStorage (especially on mobile) when compared to simply reading and writing from the standard browser cache. This project is currently working on replicating these tests in the public so that we have definitive statistics on whether this is true. </p>
 
-		<p><code>.require()</code> allows us to construct loader chains, each of which instruct basket.js to fetch (either externally or from a localStorage cached-copy) a script defined by a supplied uri. The basic loading of a single uri could be achieved as follows:</p>
+<p>Developers have also been wondering why we opted for localStorage as opposed to alternatives such as IndexedDB. Jens Arps has shown that IDB is at present <a href="http://jsperf.com/indexeddb-vs-localstorage/2">significantly slower</a> than localStorage for reading and writing assets. Other developers exploring this space have also shown that localStorage works just fine for caching data (it's actually significantly <a href="http://www.webdirections.org/blog/localstorage-perhaps-not-so-harmful/">faster</a> in Safari at the moment than any other browser). </p>
 
-		<pre><code>basket.require('jquery.js');</code></pre>
+<p>We believe that in time, once implementers have optimized localStorage, it will become more feasible to use cross-browser. In the mean time, we are also exploring solutions such as the <a href="http://www.html5rocks.com/en/tutorials/file/filesystem/">FileSystem API</a> as a storage mechanism for caching scripts locally.</p>
 
-		<p>This will check to see if an item with the key <code>basket-jquery.js</code> exists in localStorage (i.e a cached copy of the script). If present, the script contents are read from storage and injected into the current page. If not present, the script will be fetched, cached in storage and then similarly injected into the document for use.</p>
+<h3>Project History</h3>
 
-		<p>basket.js also supports chaining and so requesting multiple scripts is also straight-forward:</p>
+<p>This project was created as a response to a <a href="https://twitter.com/#!/souders/statuses/166928191649357824">tweet</a> by Steve Souders asking that the jQuery project consider caching jQuery in localStorage for performance reasons. Intrigued by the idea, we began exploring a minimalist solution to it (just for the sake of experimentation).</p>
+
+<p>You may remember Souders previously did research and a <a href="http://www.stevesouders.com/blog/2011/03/28/storager-case-study-bing-google/">write-up</a> on search engines making use of localStorage caching back in 2011. His conclusions were:</p>
+
+<p><strong>Bing and Google Search make extensive use of localStorage for stashing SCRIPT blocks that are used on subsequent page views. None of the other top sites from my previous post use localStorage in this way. Are Bing and Google Search onto something? Yes, definitely.</strong></p>
+
+<p>To help provide a more general solution for this problem, we put together a script loader that treats localStorage as a cache.</p>
+
+<h3>Compatibility</h3>
+
+<p>basket.js supports locally caching scripts in any browser with <a href="http://caniuse.com/#search=localstorage">localStorage capabilities</a>.</p>
+
+<h3>API And Examples</h3>
+
+<p>Let's briefly review the current basket.js API, which differs from the API supported in 0.1.</p>
+
+<ul>
+<li><strong>basket.require()</strong></li>
+<li><strong>basket.add()</strong></li>
+<li><strong>basket.remove()</strong></li>
+<li><strong>basket.wait()</strong></li>
+</ul>
+
+<p><strong>basket.require( uri )</strong></p>
+
+<p><em>uri:</em> A relative URI to a local script to load.</p>
+
+<p><code>.require()</code> allows us to construct loader chains, each of which instruct basket.js to fetch (either externally or from a localStorage cached-copy) a script defined by a supplied uri. The basic loading of a single uri could be achieved as follows:</p>
+
+<pre><code>basket.require('jquery.js');</code></pre>
+
+<p>This will check to see if an item with the key <code>basket-jquery.js</code> exists in localStorage (i.e a cached copy of the script). If present, the script contents are read from storage and injected into the current page. If not present, the script will be fetched, cached in storage and then similarly injected into the document for use.</p>
+
+<p>basket.js also supports chaining and so requesting multiple scripts is also straight-forward:</p>
+
+<pre><code>basket
+    .require('jquery.js')
+    .require('underscore.js')
+    .require('backbone.js');
+</code></pre>
+
+<p><strong>basket.require( key )</strong></p>
+
+<p>If a script has been saved to a specific key in localStorage (e.g <code>jquery</code>), it can be accessed using <code>require()</code> as follows:</p>
+
+<pre><code>basket.require('jquery');</code></pre>
+
+<p>Note that at present, JSONP/server-side middleware is necessary for the support of remote scripts. This is down to access of script content being limited under cross-origin policies.</p>
+
+<p><strong>basket.add( uri, [,options], [,callback] )</strong></p>
+
+<p><em>uri:</em> A relative URI to a local script to be saved to localStorage (but not executed)</p>
+
+<p><em>options:</em> An object allowing you to configure the add operation. It supports two optional keys: overwrite - A boolean defining whether an entry being added can overwrite an existing entry with the same path/filename.</p>
+
+<p><em>key:</em> A key-name under which to save a specific script
+callback: An optional function to be executed once a script has been added to localStorage</p>
+
+<p><code>add()</code> allows you to add scripts to localStorage without actually injecting them into the current document. It accepts a URI, which it then fetches the contents of and caches. If the overwrite argument is supplied (and is <code>true</code>), basket.js will overwrite an existing entry for the script being added if one is found.</p>
+
+<pre><code>basket
+    .add('jquery.js')
+    .add('handlebars.js')
+    .add('jquery.plugin1.js')
+    .add('jquery.plugin2.js');
+</code></pre>
+
+<p>An example of how to use the callback is as follows:</p>
+
+<pre><code>basket
+    .add('jquery.js')
+    .add('handlebars.js', {}, function(){
+        console.log('jQuery and Handlebars exist in localStorage now');
+    });
+</code></pre>
+
+<p>If you wish to store a script under a specific key name (e.g if you have a build process outputting a script of a name such as <code>012345.js</code> and would like to store it under say, <code>main</code>), this could be done as follows:</p>
+
+<pre><code>basket.add('012345.js', { key: 'main' });</code></pre>
+
+<p>Similarly, if you wish to store <code>jquery-1.7.1.min.js</code> as <code>jquery</code>, this can be done as well:</p>
+
+<pre><code>basket.add('jquery-1.7.1.min.js', { key: 'jquery' });</code></pre>
+
+<p>Finally if you would like to use options it is fairly trivial to add a script with an option to overwrite it if it already exists, store it under a specific key and add a callback to it as follows:</p>
+
+<pre><code>basket.add('jquery-1.7.1', { key: 'foo', overwrite: false }, function() {
+});
+</code></pre>
+
+<p><strong>basket.remove( uri )</strong></p>
+
+<p><em>uri:</em> A relative URI to a local script to be removed from localStorage</p>
+
+<p>remove() will simply remove a previously cached script from localStorage. An example of how to use it can be seen below:</p>
+
+<pre><code>basket
+    .remove('jquery.js')
+    .remove('modernizr.js');
+</code></pre>
+
+<p><strong>basket.remove( key )</strong></p>
+
+<p>If a script has been saved to a specific key in localStorage (e.g <code>jquery</code>), it can be removed using remove() as follows:</p>
+
+<pre><code>basket.remove('jquery');</code></pre>
+
+<p><strong>basket.wait( [,callback] )</strong></p>
+
+<p><em>callback:</em> An optional function to be executed once a script has loaded</p>
+
+<p>When <code>wait()</code> is inserted into a chain, it informs the chain to ensure previous scripts inserted into the chain complete their loading prior to allowing the next item to load and execute. At it’s most basic, <code>wait()</code> can be used as follows:</p>
+
+<pre><code>basket
+    .require('jquery.js').wait()
+    .require('jquery.plugin1.js')
+    .require('jquery.plugin2.js');
+</code></pre>
+
+<p>You can also specify an (optional) callback (typically an anonymous function) that will be executed in order following the previous scripts executing and before subsequent scripts in the chain are executed.</p>
+
+<pre><code>basket
+    .require('jquery.js')
+    .require('underscore.js')
+    .require('app.js').wait(function(){
+
+	var numbers = [10, 5, 100, 2, 1000];
+    $('#message')
+        .html('Live long and prosper, bro.
+        Want the minimum value in our array? Boom:' + _.min(numbers));
+
+});
+</code></pre>
 
 
-		<pre><code>basket
-	.require('jquery.js')
-	.require('underscore.js')
-	.require('backbone.js');</code></pre>
+<p>Finally, in case you're interested, here's the basket.js example that was used to power the intro to this page:</p>
 
-		<p><em>Note that at present, JSONP/server-side middleware is necessary for the support of remote scripts. This is down to access of script content being limited under cross-origin policies.</em></p>
-
-		<p><strong>basket.add( uri, [,overwrite], [,callback] )</strong></p>
-
-		<p><em>uri:</em> A relative URI to a local script to be saved to localStorage (but not executed)</p>
-
-		<p><em>overwrite:</em> A boolean defining whether an entry being added can overwrite an existing entry with the same path/filename.</p>
-
-		<p><em>callback:</em> An optional function to be executed once a script has been added to localStorage</p>
-
-		<p><code>add()</code> allows you to add scripts to localStorage without actually injecting them into the current document. It accepts a URI, which it then fetches the contents of and caches. If the <code>overwrite</code> argument is supplied (and is true), basket.js will overwrite an existing entry for the script being added if one is found.</p>
-
-		<pre><code>basket
-	.add('jquery.js')
-	.add('handlebars.js')
-	.add('jquery.plugin1.js')
-	.add('jquery.plugin2.js');</code></pre>
-
-		<p>An example of how to use the <code>callback</code> is as follows:</p>
-
-		<pre><code>basket
-	.add('jquery.js')
-	.add('handlebars.js', true, function(){
-		console.log('jQuery and Handlebars exist in localStorage now');
-	});</code></pre>
-
-		<p><strong>basket.remove(uri)</strong></p>
-
-		<p><em>uri:</em> A relative URI to a local script to be removed from localStorage</p>
-
-		<p><code>remove()</code> will simply remove a previously cached script from localStorage. An example of how to use it can be seen below:</p>
-
-		<pre><code>basket
-	.remove('jquery.js')
-	.remove('modernizr.js');</code></pre>
-
-		<p><strong>basket.wait( [,callback] )</strong></p>
-
-		<p><em>callback:</em> An optional function to be executed once a script has loaded</p>
-
-		<p>When <code>wait()</code> is inserted into a chain, it informs the chain to ensure previous scripts inserted into the chain complete their loading prior to allowing the next item to load and execute. At it&rsquo;s most basic, <code>wait()</code> can be used as follows:</p>
-
-		<pre><code>basket
-	.require('jquery.js').wait()
-	.require('jquery.plugin1.js')
-	.require('jquery.plugin2.js');</code></pre>
-
-		<p>You can also specify an (optional) callback (typically an anonymous function) that will be executed in order following the previous scripts executing and before subsequent scripts in the chain are executed.</p>
-
-		<pre><code>basket
-	.require('jquery.js')
-	.require('underscore.js')
-	.require('app.js').wait(function(){
-
-		var numbers = [10, 5, 100, 2, 1000];
-		$('#message')
-			.html('Live long and prosper, bro.
-			Want the minimum value in our array? Boom:' + _.min(numbers));
-
-	});</code></pre>
-
-	<p>Finally, in case you're interested, here's the basket.js example that was used to power the intro to this page:</p>
-	<pre><code>var message, str;
-
+<pre><code>var message, str;
 basket
-	.require("test/jquery-1.7.1.min.js").wait()
-	.require("test/underscore-min.js")
-	.require("test/backbone-min.js").wait(function() {
+    .require('test/jquery-1.7.1.min.js').wait()
+    .require('test/underscore-min.js')
+    .require('test/backbone-min.js').wait(function() {</p>
 
-		// Backbone is now available, so let's define
-		// a test model with a sample attribute
+    // Backbone is now available, so let's define
+    // a test model with a sample attribute
 
-		var testModel = Backbone.Model.extend({
-		  idAttribute: "_id"
-		});
+    var testModel = Backbone.Model.extend({
+      idAttribute: '_id'
+    });
 
-		// Create an instance of the model
-		var myModel = new testModel({ _id: 4, name: "Nyan Cat" });
+    // Create an instance of the model
+    var myModel = new testModel({ _id: 4, name: 'Nyan Cat' });
 
-		// Cache a reference to our message holder with jQuery
-		message = $('#message');
+    // Cache a reference to our message holder with jQuery
+    message = $('#message');
 
-		// Where #intro contains a template, get our templating on:
+    // Where #intro contains a template, get our templating on:
 
-		var templateContent = $('#intro').html();
-		var compiled = _.template(templateContent);
-		message.html( compiled({name: myModel.get('name')}));
+    var templateContent = $('#intro').html();
+    var compiled = _.template(templateContent);
+    message.html( compiled({name: myModel.get('name')}));
 
-	});
-	</code></pre>
+});
+</code></pre>
 
-
-	<p>&nbsp;</p>
-		<h2>What's next?</h2>
-		<p>
-			The next phase for this project will be putting together <a href="http://jsperf.com">jsPerf</a> tests that compare localStorage caching vs. standard browser caching. There have been a number of attempts I've seen to previously achieve this on the site, but they have been somewhat <a href="http://jsperf.com/another-eval">unreliable</a>.</p>
-			<p>The end-goal of this project is to help inform about the true benefits (or drawbacks) about localStorage caching for scripts so that developers can make informed decisions about employing the approach.
-		</p>
-		</p>
+<p>&nbsp;</p>
+<h3>The Future</h3>
+<p>We are currently investigating a number of different features we would like to bring to the project. Some of these include:</p>
+<ul>
+		<li><a href="https://github.com/addyosmani/basket.js/issues/27">Support for TTL</a></li>
+		<li><a href="https://github.com/addyosmani/basket.js/issues/26">Intelligent file-versioning</a></li>
+		<li><a href="https://github.com/addyosmani/basket.js/issues/25">Adding support for multiple files to <code>.require()</code></a></li>
+		<li><a href="https://github.com/addyosmani/basket.js/issues/24">Performance benchmarks (compared to IndexedDB, Browser cache and more)</a></li>
+</ul>
+<p>&nbsp;</p>
+<h3>Team, License &amp; Contribution Guide</h3>
+<p>basket.js is released under an MIT/GPL license and is currently maintained by <a href="https://github.com/addyosmani">Addy Osmani</a>, <a href="https://github.com/sindresorhus">Sindre Sorhus</a> and <a href="https://github.com/peol">Andrée Hanson</a>. We would also like to extend our thanks to <a href="https://github.com/rwldrn">Rick Waldron</a> for the optimizations he suggested for improving the project.</p>
+<p>For more information on our style-guide and how to get involved with basket.js, please see the README in our project <a href="http://github.com/addyosmani/basket.js">repo</a>.</p>
 		</div>
 	</div>
 
@@ -165,7 +218,7 @@ basket
 		<p><em>This section was rendered using the micro-templating in Underscore.js. It's just one of a number of scripts that were added to this document using basket.js when you loaded it and should now be <strong>cached</strong> in localStorage (if supported). If you visit this page again, the scripts will be loaded from there rather than being refetched. Backbone.js was also loaded and we created a new model with the name: <%= name %> (just for funsies).</em></p>
 	</script>
 	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-	<script src="basket.js"></script>
+	<script src="dist/basket.min.js"></script>
 	<script>
 		var message, str;
 
