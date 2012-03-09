@@ -20,6 +20,10 @@
 		"name": "Sindre Sorhus",
 		"email": "sindresorhus@gmail.com",
 		"url": "http://sindresorhus.com"
+	},{
+		"name": "Andrée Hansson",
+		"email": "peolanha@gmail.com",
+		"url": "http://andreehansson.se"
 	}],
 	"repository": {
 		"type": "git",
