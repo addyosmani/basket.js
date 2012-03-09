@@ -1,7 +1,7 @@
 {
 	"name": "basket.js",
 	"description": "A script-loader that handles caching scripts in localStorage where supported",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"homepage": "http://addyosmani.github.com/basket.js",
 	"author": {
 		"name": "Addy Osmani",
@@ -40,7 +40,11 @@
 	"devDependencies": {
 		"grunt": "~0.2.15"
 	},
-	"keywords": ["script", "loader", "localStorage"],
+	"keywords": [
+		"script",
+		"loader",
+		"localStorage"
+	],
 	"main": "lib/basket.js",
 	"scripts": {
 		"test": "grunt test"

@@ -10,9 +10,10 @@
 	<div id="container">
 		<h1>basket.js</h1>
 		<h2>A simple (proof-of-concept) script loader that caches scripts with localStorage </h2>
-		<p><a href="basket.js">basket.js</a> (4.2KB) &nbsp; <a href="basket.min.js">basket.min.js</a> (1.2KB) &nbsp;
-		<a href="https://twitter.com/share" class="twitter-share-button" data-text="basket.js - a simple script loader that caches scripts with localStorage" data-via="addyosmani">Tweet</a>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+		<p>
+			<a href="dist/basket.js">basket.js</a> (3.3KB) &nbsp;
+			<a href="dist/basket.min.js">basket.min.js</a> (0.6KB gzipped) &nbsp;
+			<a href="https://twitter.com/share" class="twitter-share-button" data-text="basket.js - a simple script loader that caches scripts with localStorage" data-via="addyosmani">Tweet</a>
 		</p>
 
 		<div id="message" class="content"><p><strong>If you're seeing this message, something has gone wrong. Please ensure you are testing this page using a HTTP server.</strong></p></div>
@@ -163,8 +164,7 @@ basket
 	<script type="text/template" id="intro">
 		<p><em>This section was rendered using the micro-templating in Underscore.js. It's just one of a number of scripts that were added to this document using basket.js when you loaded it and should now be <strong>cached</strong> in localStorage (if supported). If you visit this page again, the scripts will be loaded from there rather than being refetched. Backbone.js was also loaded and we created a new model with the name: <%= name %> (just for funsies).</em></p>
 	</script>
-
-
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 	<script src="basket.js"></script>
 	<script>
 		var message, str;
