@@ -2,12 +2,14 @@
 config.init({
 	pkg: '<json:package.json>',
 	meta: {
-		banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-			'<%= template.today("m/d/yyyy") %>\n' +
+		banner: '/*! <%= pkg.name %>\n' +
+			'* v<%= pkg.version %> - ' +
+			'<%= template.today("yyyy-mm-dd") %>\n' +
 			'<%= pkg.homepage ? "* " + pkg.homepage + "\n" : "" %>' +
-			'* Copyright (c) <%= template.today("yyyy") %> <%= pkg.author.name %>;' +
+			'* (c) <%= pkg.author.name %>;' +
 			' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %>\n' +
-			'* Credits: <%= _.pluck(pkg.contributors, "name").join(", ") %> */'
+			'* Created by: <%= _.pluck(pkg.maintainers, "name").join(", ") %>\n' +
+			'* Contributors: <%= _.pluck(pkg.contributors, "name").join(", ") %> */'
 	},
 	concat: {
 		'dist/basket.js': ['<banner>', '<file_strip_banner:lib/basket.js>']
