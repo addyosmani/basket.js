@@ -19,7 +19,7 @@ config.init({
 		files: ['grunt.js', 'lib/**/*.js']
 	},
 	qunit: {
-		index: ['test/testrunner.html']
+		index: ['test/index.html']
 	},
 	watch: {
 		files: '<config:lint.files>',
