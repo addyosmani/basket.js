@@ -8,14 +8,8 @@
 		"email": "addyosmani@gmail.com",
 		"url": "http://addyosmani.com"
 	},
-	"contributors": [{
+	"maintainers": [{
 		"name": "Addy Osmani"
-	},{
-		"name": "Ironsjp"
-	},{
-		"name": "Mathias Bynens"
-	},{
-		"name": "Rick Waldron"
 	},{
 		"name": "Sindre Sorhus",
 		"email": "sindresorhus@gmail.com",
@@ -24,6 +18,13 @@
 		"name": "Andrée Hansson",
 		"email": "peolanha@gmail.com",
 		"url": "http://andreehansson.se"
+	}],
+	"contributors": [{
+		"name": "Ironsjp"
+	},{
+		"name": "Mathias Bynens"
+	},{
+		"name": "Rick Waldron"
 	}],
 	"repository": {
 		"type": "git",
@@ -43,10 +44,12 @@
 	"keywords": [
 		"script",
 		"loader",
-		"localStorage"
+		"localStorage",
+		"caching"
 	],
 	"main": "lib/basket.js",
 	"scripts": {
-		"test": "grunt test"
+		"dev": "grunt",
+		"test": "grunt qunit"
 	}
 }
