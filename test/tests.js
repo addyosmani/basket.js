@@ -9,7 +9,6 @@ module( 'Test script API', {
 asyncTest( 'require() 1 script', 2, function() {
 	var cancel = setTimeout(function() {
 		ok( false, 'Callback never invoked' );
-		ok( false );
 		start();
 	}, 2500);
 
@@ -30,8 +29,6 @@ asyncTest( 'require() 1 script', 2, function() {
 asyncTest( 'require() 2 scripts with .wait()', 3, function() {
 	var cancel = setTimeout(function() {
 		ok( false, 'Callback never invoked' );
-		ok( false );
-		ok( false );
 		start();
 	}, 2500);
 
@@ -54,8 +51,6 @@ asyncTest( 'require() 2 scripts with .wait()', 3, function() {
 asyncTest( 'require() 2 scripts (one non-executed) with .wait()', 4, function() {
 	var cancel = setTimeout(function() {
 		ok( false, 'Callback never invoked' );
-		ok( false );
-		ok( false );
 		start();
 	}, 2500);
 
