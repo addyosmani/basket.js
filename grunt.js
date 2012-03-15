@@ -7,7 +7,7 @@ config.init({
 			'<%= template.today("yyyy-mm-dd") %>\n' +
 			'<%= pkg.homepage ? "* " + pkg.homepage + "\n" : "" %>' +
 			'* (c) <%= pkg.author.name %>;' +
-			' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %>\n' +
+			' <%= _.pluck(pkg.licenses, "type").join(", ") %> License\n' +
 			'* Created by: <%= _.pluck(pkg.maintainers, "name").join(", ") %>\n' +
 			'* Contributors: <%= _.pluck(pkg.contributors, "name").join(", ") %> */'
 	},

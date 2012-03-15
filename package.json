@@ -35,8 +35,6 @@
 	},
 	"licenses": [{
 		"type": "MIT"
-	},{
-		"type": "GPL"
 	}],
 	"devDependencies": {
 		"grunt": "~0.2.15"

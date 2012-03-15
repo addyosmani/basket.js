@@ -18,5 +18,5 @@ We are also attempting to get as much unit test coverage as possible. For this r
 [Addy Osmani](https://github.com/addyosmani) (lead), [Andrée Hansson](https://github.com/peol), [Sindre Sorhus](https://github.com/sindresorhus)
 
 ## License
-Copyright (c) 2012 Addy Osmani  
-Licensed under the MIT and GPL licenses
+(c) Addy Osmani  
+[MIT License](http://en.wikipedia.org/wiki/MIT_License)
