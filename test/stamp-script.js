@@ -1,0 +1,1 @@
+basket.lastXHR = +new Date();
