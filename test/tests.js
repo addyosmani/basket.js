@@ -82,3 +82,15 @@ asyncTest( 'require(), custom key', 1, function() {
 			start();
 		});
 });
+
+
+asyncTest( 'clear()', 1, function() {
+	basket
+		.require({ url: 'jquery-1.7.1.min.js' })
+		.wait(function() {
+			basket.clear();
+			ok( !basket.get('jquery-1.7.1.min.js'), 'basket.js data in localStorage cleared' );
+
+			start();
+		});
+});
