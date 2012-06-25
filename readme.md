@@ -19,7 +19,9 @@ We are also attempting to get as much unit test coverage as possible. For this r
 
 ## Team
 
-[Addy Osmani](https://github.com/addyosmani) (lead), [Andrée Hansson](https://github.com/peol), [Sindre Sorhus](https://github.com/sindresorhus)
+[ ![Addy Osmani avatar](http://www.gravatar.com/avatar/96270e4c3e5e9806cf7245475c00b275.png?s=60) Addy Osmani ](https://github.com/addyosmani) (lead)  
+[ ![Sindre Sorhus avatar](http://www.gravatar.com/avatar/d36a92237c75c5337c17b60d90686bf9.png?s=60) Sindre Sorhus ](https://github.com/sindresorhus)  
+[ ![Andrée Hansson avatar](http://www.gravatar.com/avatar/9a22324229aebc599d46dacab494ce77.png?s=60) Andrée Hansson ](https://github.com/peol)
 
 
 ## License
