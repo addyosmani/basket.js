@@ -15,13 +15,22 @@ module.exports = function( grunt ) {
 				'* Contributors: <%= _.pluck(pkg.contributors, "name").join(", ") %>\n*/'
 		},
 		concat: {
-			'dist/basket.js': ['<banner>', '<file_strip_banner:lib/basket.js>']
+			'dist/basket.js': [
+				'<banner>',
+				'<file_strip_banner:lib/basket.js>'
+			]
 		},
 		min: {
-			'dist/basket.min.js': ['<banner>', 'dist/basket.js']
+			'dist/basket.min.js': [
+				'<banner>',
+				'dist/basket.js'
+			]
 		},
 		lint: {
-			files: ['grunt.js', 'lib/**/*.js']
+			files: [
+				'grunt.js',
+				'lib/**/*.js'
+			]
 		},
 		qunit: {
 			index: ['test/index.html']

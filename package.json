@@ -37,7 +37,7 @@
 		"type": "MIT"
 	}],
 	"devDependencies": {
-		"grunt": "~0.3.1"
+		"grunt": "~0.3.10"
 	},
 	"keywords": [
 		"script",
