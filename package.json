@@ -1,8 +1,17 @@
 {
 	"name": "basket.js",
-	"description": "A script-loader that handles caching scripts in localStorage where supported",
 	"version": "0.2.0",
+	"description": "A script-loader that handles caching scripts in localStorage where supported",
+	"keywords": [
+		"script",
+		"loader",
+		"localStorage",
+		"caching"
+	],
 	"homepage": "http://addyosmani.github.com/basket.js",
+	"bugs": {
+		"url": "https://github.com/addyosmani/basket.js/issues"
+	},
 	"author": {
 		"name": "Addy Osmani",
 		"email": "addyosmani@gmail.com",
@@ -26,28 +35,19 @@
 	},{
 		"name": "Rick Waldron"
 	}],
+	"main": "lib/basket.js",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/addyosmani/basket.js"
 	},
-	"bugs": {
-		"url": "https://github.com/addyosmani/basket.js/issues"
-	},
-	"licenses": [{
-		"type": "MIT"
-	}],
-	"devDependencies": {
-		"grunt": "~0.3.10"
-	},
-	"keywords": [
-		"script",
-		"loader",
-		"localStorage",
-		"caching"
-	],
-	"main": "lib/basket.js",
 	"scripts": {
 		"dev": "grunt",
 		"test": "grunt qunit"
-	}
+	},
+	"devDependencies": {
+		"grunt": "~0.3.10"
+	},
+	"licenses": [{
+		"type": "MIT"
+	}]
 }
