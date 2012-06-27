@@ -97,34 +97,35 @@ asyncTest( 'clear()', 1, function() {
 
 
 asyncTest( 'store data using expiration (non-expired)', 2, function() {
-        basket
-                .require({ url: 'stamp-script.js', expire: 1 })
-                .wait(function() {
-                        var stamp = basket.lastXHR;
-                        ok( basket.get('stamp-script.js'), 'Data exists in localStorage' );
+	basket
+		.require({ url: 'stamp-script.js', expire: 1 })
+		.wait(function() {
+			var stamp = basket.lastXHR;
+			ok( basket.get('stamp-script.js'), 'Data exists in localStorage' );
 
-                        basket
-                                .require({ url: 'stamp-script.js' })
-                                .wait(function() {
-                                        ok( basket.lastXHR === stamp, 'Data retrieved from localStorage' );
-                                        start();
-                                });
-                });
+			basket
+				.require({ url: 'stamp-script.js' })
+				.wait(function() {
+					console.log( basket , stamp)
+					ok( basket.lastXHR === stamp, 'Data retrieved from localStorage' );
+					start();
+				});
+		});
 });
 
 
 asyncTest( 'store data using expiration (expired)', 2, function() {
-        basket
-                .require({ url: 'stamp-script.js', expire: -1 })
-                .wait(function() {
-                        var stamp = basket.lastXHR;
-                        ok( basket.get('stamp-script.js'), 'Data exists in localStorage' );
+		basket
+			.require({ url: 'stamp-script.js', expire: -1 })
+			.wait(function() {
+				var stamp = basket.lastXHR;
+				ok( basket.get('stamp-script.js'), 'Data exists in localStorage' );
 
-                        basket
-                                .require({ url: 'stamp-script.js' })
-                                .wait(function() {
-                                        ok( basket.lastXHR !== stamp, 'Data retrieved from server' );
-                                        start();
-                                });
-                });
+				basket
+					.require({ url: 'stamp-script.js' })
+					.wait(function() {
+						ok( basket.lastXHR !== stamp, 'Data retrieved from server' );
+						start();
+					});
+			});
 });
