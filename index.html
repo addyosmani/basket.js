@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<title>basket.js - a simple script loader that caches scripts with localStorage</title>
 	</head>
-	<link rel="stylesheet" type="text/css" href="assets/base.css">
+	<link rel="stylesheet" type="text/css" href="asset/base.css">
 	<body>
 
 	<div id="container">
@@ -223,9 +223,9 @@ basket
 		var message, str;
 
 		basket
-			.require("test/jquery.min.js").wait()
-			.require("test/underscore-min.js")
-			.require("test/backbone-min.js").wait(function() {
+			.require("test/fixtures/jquery.min.js").wait()
+			.require("test/fixtures/underscore-min.js")
+			.require("test/fixtures/backbone-min.js").wait(function() {
 
 
 			var testModel = Backbone.Model.extend({
@@ -235,7 +235,7 @@ basket
 			var myModel = new testModel({ _id: 4, name: "Nyan Cat" });
 
 			//basket.remove('test/backbone-min.js');
-			//basket.require('test/modernizr.js');
+			//basket.require('test/modernizr.min.js');
 
 
 			message = $('#message');
