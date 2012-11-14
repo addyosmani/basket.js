@@ -1,3 +1,4 @@
+/*global module, asyncTest, ok, start, basket*/
 module( 'Test script API', {
 	teardown: function() {
 		localStorage.clear();
@@ -95,19 +96,23 @@ asyncTest( 'clear()', 1, function() {
 		});
 });
 
+function getLSData() {
+	return JSON.parse(localStorage.getItem('basket-fixtures/stamp-script.js'));
+}
 
 asyncTest( 'store data using expiration (non-expired)', 2, function() {
 	basket
 		.require({ url: 'fixtures/stamp-script.js', expire: 1 })
 		.wait(function() {
-			var stamp = basket.lastXHR;
+			var stamp = getLSData().stamp;
 			ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
 
 			basket
 				.require({ url: 'fixtures/stamp-script.js' })
 				.wait(function() {
-					console.log( basket , stamp)
-					ok( basket.lastXHR === stamp, 'Data retrieved from localStorage' );
+					var stampAfter = getLSData().stamp;
+					ok( stamp === stampAfter, 'Data retrieved from localStorage' );
+
 					start();
 				});
 		});
@@ -118,13 +123,15 @@ asyncTest( 'store data using expiration (expired)', 2, function() {
 		basket
 			.require({ url: 'fixtures/stamp-script.js', expire: -1 })
 			.wait(function() {
-				var stamp = basket.lastXHR;
+				var stamp = getLSData().stamp;
 				ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
 
 				basket
 					.require({ url: 'fixtures/stamp-script.js' })
 					.wait(function() {
-						ok( basket.lastXHR !== stamp, 'Data retrieved from server' );
+						var stampAfter = getLSData().stamp;
+						ok( stamp !== stampAfter, 'Data retrieved from server' );
+
 						start();
 					});
 			});
