@@ -139,7 +139,7 @@ asyncTest( 'get()', 2, function() {
 		.require({ url: 'fixtures/jquery.min.js', key: 'jquery' })
 		.wait(function() {
 			ok( basket.get('jquery'), 'Data retrieved under custom key' );
-			ok( !basket.get("anotherkey").stamp, 'No Data retrieved under custom key' );
+			ok( !basket.get('anotherkey').stamp, 'No Data retrieved under custom key' );
 
 			start();
 		});
@@ -157,7 +157,7 @@ asyncTest( 'store data using file-versioning (not previous explicit version)', 3
 					.wait(function() {
 						var req = basket.get('fixtures/stamp-script.js');
 						ok( stamp !== req.stamp, 'Data retrieved from server' );
-						ok( req.url.indexOf("basket-unique=123") > 0, 'Sending basket unique parameter' );
+						ok( req.url.indexOf('basket-unique=123') > 0, 'Sending basket unique parameter' );
 
 						start();
 					});
@@ -194,7 +194,7 @@ asyncTest( 'store data using file-versioning (different release)', 3, function()
 					.wait(function() {
 						var req = basket.get('fixtures/stamp-script.js');
 						ok( stamp !== req.stamp, 'Data retrieved from server' );
-						ok( req.url.indexOf("basket-unique=456") > 0, 'Sending basket unique parameter' );
+						ok( req.url.indexOf('basket-unique=456') > 0, 'Sending basket unique parameter' );
 						start();
 					});
 			});
