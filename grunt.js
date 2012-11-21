@@ -33,7 +33,7 @@ module.exports = function( grunt ) {
 			]
 		},
 		qunit: {
-			index: ['test/index.html']
+			index: ['http://localhost:8080/test/index.html']
 		},
 		watch: {
 			files: '<config:lint.files>',
