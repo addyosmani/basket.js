@@ -39,6 +39,10 @@ module.exports = function( grunt ) {
 			files: '<config:lint.files>',
 			tasks: 'lint test'
 		},
+		server: {
+			base: '.',
+			port: 8080
+		},
 		jshint: {
 			options: {
 				es5: true,
@@ -68,4 +72,6 @@ module.exports = function( grunt ) {
 	// Release
 	grunt.registerTask('release', 'lint qunit concat min');
 
+	//Tests
+	grunt.registerTask('test', 'lint server qunit');
 };

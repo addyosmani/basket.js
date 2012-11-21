@@ -42,7 +42,7 @@
 	},
 	"scripts": {
 		"dev": "grunt",
-		"test": "grunt qunit"
+		"test": "grunt test"
 	},
 	"devDependencies": {
 		"grunt": "~0.3.10"
