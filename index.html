@@ -62,13 +62,13 @@
 <p><em>objects:</em> One or more plain JavaScript objects to configure the require operation.</p>
 <dl>
 	<dt>url</dt>
-		<dd><strong>Required</strong> relative URI to a local script to load.</dd>
+		<dd><strong>Required</strong> Relative URI to a local script.</dd>
 	<dt>key</dt>
-		<dd><strong>Optional</strong> key-name used to identify script internaly. <strong>If not passed the <em>url</em> will be used as key.</strong></dd>
+		<dd><strong>Optional</strong> Use this to define an alternative name, will default to <em>uri.</em></dd>
 	<dt>expire</dt>
-		<dd><strong>Optional</strong> a lifetime in hours to expire file cache in localStorage.</dd>
+		<dd><strong>Optional</strong> Set an expiration date, defined in hours before basket.js will re-fetch the script.</dd>
 	<dt>execute</dt>
-		<dd><strong>Optional</strong> allow put a file in cache without inject into the document.</dd>
+		<dd><strong>Optional</strong> Whether to execute the script on load.</dd>
 	<dt>unique</dt>
 		<dd><strong>Optional</strong> used to set a version id to file.</dd>
 </dl>
