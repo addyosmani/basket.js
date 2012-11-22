@@ -62,15 +62,15 @@
 <p><em>objects:</em> One or more plain JavaScript objects to configure the require operation.</p>
 <dl>
 	<dt>url</dt>
-		<dd><strong>Required</strong> relative URI to a local script to load.</dd>
+		<dd><strong>Required</strong> Relative URI to a local script.</dd>
 	<dt>key</dt>
-		<dd><strong>Optional</strong> key-name used to identify script internaly. <strong>If not passed the <em>url</em> will be used as key.</strong></dd>
+		<dd><strong>Optional</strong> Use this to define an alternative name, will default to <em>uri.</em></dd>
 	<dt>expire</dt>
-		<dd><strong>Optional</strong> a lifetime in hours to expire file cache in localStorage.</dd>
+		<dd><strong>Optional</strong> Set a lifespan of file cache in localStorage in hours.</dd>
 	<dt>execute</dt>
-		<dd><strong>Optional</strong> allow put a file in cache without inject into the document.</dd>
+		<dd><strong>Optional</strong> Defaults to 'true'. Set to 'false' to only cache, but not execute the file.</dd>
 	<dt>unique</dt>
-		<dd><strong>Optional</strong> used to set a version id to file.</dd>
+		<dd><strong>Optional</strong> Used to bust a cached file.</dd>
 </dl>
 
 <p><code>.require()</code> allows us to construct loader chains, each of which instruct basket.js to fetch (either externally or from a localStorage cached-copy) a script defined by a supplied uri. The basic loading of a single uri could be achieved as follows:</p>
@@ -95,7 +95,8 @@
 
 <p><strong> If <code>key</code> is unset, the url will be used as key.</strong></p>
 
-<p>You can Use <code>expire</code> to set a lifetime in hours for a cached file. The script will be fetched again if required after this time.</p>
+<p>You can use <code>expire</code> to set a lifetime in hours for a cached file. The script will be re-fetch if required after this time.</p>
+<p>To re-fetching after 7 days you could set 168 ( i.e. 7 * 24 = 168 ).</p>
 <p>If expire is unset, the default time will be used. ( i.e. 5000 hours, almost 7 months )</p>
 
 <pre><code>basket.require({ url: 'jquery.min.js', expire: 2 });</code> </pre>
@@ -125,7 +126,7 @@
 	<dt>expire</dt>
 		<dd>Updated to the expiration timestamp.</dd>
 	<dt>data</dt>
-		<dd>Contains the script text.</dd>
+		<dd>File contents.</dd>
 </dl>
 <pre><code>
 	var req, ttl;
