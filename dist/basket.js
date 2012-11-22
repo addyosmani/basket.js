@@ -1,64 +1,62 @@
-/*! basket.js - v0.2.0 - 3/9/2012
+/*!
+* basket.js
+* v0.3.0 - 2012-11-22
 * http://addyosmani.github.com/basket.js
-* Copyright (c) 2012 Addy Osmani; Licensed MIT, GPL
-* Credits: Addy Osmani, Ironsjp, Mathias Bynens, Rick Waldron, Sindre Sorhus, Andrée Hansson */
+* (c) Addy Osmani; MIT License
+* Created by: Addy Osmani, Sindre Sorhus, Andrée Hansson
+* Contributors: Ironsjp, Mathias Bynens, Rick Waldron
+*/
 
-;(function ( window, document ) {
-	"use strict";
+(function( window, document ) {
+	'use strict';
 
-	var
-	storagePrefix = "basket-",
-	scripts = [],
-	scriptsExecuted = 0,
-	waitCount = 0,
-	waitCallbacks = [],
+	var head = document.head || document.getElementsByTagName('head')[0];
+	var storagePrefix = 'basket-';
+	var scripts = [];
+	var scriptsExecuted = 0;
+	var globalWaitCount = 0;
+	var waitCallbacks = [];
+	var defaultExpiration = 5000;
 
-	getUrl = function( url, callback ) {
+	var isFunc = function( fn ) {
+		return {}.toString.call( fn ) === '[object Function]';
+	};
+
+	var getUrl = function( url, callback ) {
 		var xhr = new XMLHttpRequest();
-		xhr.open( "GET", url, true );
+		xhr.open( 'GET', url );
 
 		xhr.onreadystatechange = function() {
-			if ( xhr.readyState === 4 ) {
+			if ( xhr.readyState === 4 && xhr.status === 200 ) {
 				callback( xhr.responseText );
 			}
 		};
 
 		xhr.send();
-	},
+	};
 
-	saveUrl = function( url, key, callback ) {
-		getUrl( url, function( text ) {
-			localStorage.setItem( key, text );
+	var saveUrl = function( obj, callback ) {
+		getUrl( obj.url, function( text ) {
+			var storeObj = wrapStoreData( obj, text );
+			localStorage.setItem( storagePrefix + obj.key, JSON.stringify( storeObj ) );
 
-			if ( isFunc(callback) ) {
-				callback();
+			if ( isFunc( callback ) ) {
+				callback( text );
 			}
 		});
-	},
+	};
 
-	isFunc = function( func ) {
-		return Object.prototype.toString.call( func ) === "[object Function]";
-	},
-
-	injectScript = function( text ) {
-		var
-		script = document.createElement("script"),
-		head = document.head || document.getElementsByTagName("head")[ 0 ];
-
+	var injectScript = function( text ) {
+		var script = document.createElement('script');
 		script.defer = true;
 		// Have to use .text, since we support IE8,
 		// which won't allow appending to a script
 		script.text = text;
-
 		head.appendChild( script );
-	},
+	};
 
-	queueExec = function( waitCount ) {
-		var
-		i,
-		j,
-		script,
-		callback;
+	var queueExec = function( waitCount, doExecute ) {
+		var i, j, script, callback;
 
 		if ( scriptsExecuted >= waitCount ) {
 			for ( i = 0; i < scripts.length; i++ ) {
@@ -70,7 +68,11 @@
 				}
 
 				scripts[ i ] = null;
-				injectScript( script );
+
+				if ( doExecute ) {
+					injectScript( script );
+				}
+
 				scriptsExecuted++;
 
 				for ( j = i; j < scriptsExecuted; j++ ) {
@@ -85,50 +87,54 @@
 		}
 	};
 
+	var wrapStoreData = function( obj, data ) {
+		var now = +new Date();
+		obj.data = data;
+		obj.stamp = now;
+		obj.expire = now + ( (obj.expire || defaultExpiration) * 60 * 60 * 1000 );
+
+		return obj;
+	};
+
+	var handleStackObject = function( obj ) {
+		var waitCount = globalWaitCount;
+		var scriptIndex = scripts.length;
+		var source;
+
+		var callback = function( text ) {
+			scripts[ scriptIndex ] = text;
+			queueExec( waitCount, obj.execute );
+		};
+		
+		if ( !obj.url ) {
+			return;
+		}
+		obj.key =  ( obj.key || obj.url );
+		source = basket.get( obj.key );
+
+		obj.execute = obj.execute !== false;
+		scripts[ scriptIndex ] = null;
+		
+		if ( !source || source.expire - +new Date() < 0  || obj.unique !== source.unique) {
+			if ( obj.unique ) {
+				// set parameter to prevent browser cache
+				obj.url += ( ( obj.url.indexOf('?') > 0 ) ? '&' : '?' ) + 'basket-unique=' + obj.unique;
+			}
+			saveUrl( obj, callback );
+		} else {
+			callback( source.data );
+		}
+
+		if ( isFunc( obj.wait ) ) {
+			basket.wait( obj.wait );
+		}
+	};
+
 	window.basket = {
-		require: function ( uri, options ) {
-			options = options || {};
-
-			var
-			localWaitCount = waitCount,
-			scriptIndex = scripts.length,
-			key = storagePrefix + ( options.key || uri ),
-			source = localStorage.getItem( key );
-
-			scripts[ scriptIndex ] = null;
-
-			if ( source ) {
-				scripts[ scriptIndex ] = source;
-				queueExec( localWaitCount );
-			} else {
-				getUrl( uri, function( text ) {
-					localStorage.setItem( key, text );
-					scripts[ scriptIndex ] = text;
-					queueExec( localWaitCount );
-				});
-			}
-
-			return this;
-		},
-
-		add: function( uri, options, callback ) {
-			options = options || {};
-
-			var key = storagePrefix + ( options.key || uri );
-
-			// default is to overwrite
-			if ( typeof options.overwrite === "undefined" ) {
-				options.overwrite = true;
-			}
-
-			// if they key exists and overwrite true, overwrite
-			if ( localStorage.getItem(key) ) {
-				if( options.overwrite ) {
-					saveUrl( uri, key, callback );
-				}
-			} else {
-				//key doesnt exist, add key as new entry
-				saveUrl( uri, key, callback );
+		require: function() {
+			var i, l;
+			for ( i = 0, l = arguments.length; i < l; i++ ) {
+				handleStackObject( arguments[ i ] );
 			}
 
 			return this;
@@ -136,17 +142,17 @@
 
 		remove: function( key ) {
 			localStorage.removeItem( storagePrefix + key );
-
 			return this;
 		},
 
 		wait: function( callback ) {
-			waitCount = scripts.length - 1;
-			if ( callback ) {
-				if ( scriptsExecuted > waitCount ) {
+			globalWaitCount = scripts.length - 1;
+
+			if ( isFunc( callback ) ) {
+				if ( scriptsExecuted > globalWaitCount ) {
 					callback();
 				} else {
-					waitCallbacks[ waitCount ] = callback;
+					waitCallbacks[ globalWaitCount ] = callback;
 				}
 			}
 
@@ -154,8 +160,22 @@
 		},
 
 		get: function( key ) {
-			return localStorage.getItem( storagePrefix + key ) || null;
+			return JSON.parse(localStorage.getItem( storagePrefix + key )) || false;
+		},
+
+		clear: function() {
+			var key;
+			var ls = localStorage;
+			var now =  +new Date();
+
+			for ( key in ls ) {
+				if ( key.indexOf( storagePrefix ) === 0 ) {
+					delete ls[ key ];
+				}
+			}
+
+			return this;
 		}
 	};
 
-}( this, document ));
+})( this, document );

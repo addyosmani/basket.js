@@ -70,7 +70,7 @@ module.exports = function( grunt ) {
 	grunt.registerTask('default', 'lint concat min');
 
 	// Release
-	grunt.registerTask('release', 'lint qunit concat min');
+	grunt.registerTask('release', 'lint server qunit concat min');
 
 	//Tests
 	grunt.registerTask('test', 'lint server qunit');
