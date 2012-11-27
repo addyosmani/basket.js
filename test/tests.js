@@ -117,13 +117,13 @@ asyncTest( 'store data using expiration (non-expired)', 2, function() {
 	basket
 		.require({ url: 'fixtures/stamp-script.js', expire: 1 })
 		.wait(function() {
-			var stamp = basket.get('basket-fixtures/stamp-script.js').stamp;
+			var stamp = basket.get('fixtures/stamp-script.js').stamp;
 			ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
 
 			basket
 				.require({ url: 'fixtures/stamp-script.js' })
 				.wait(function() {
-					var stampAfter = basket.get('basket-fixtures/stamp-script.js').stamp;
+					var stampAfter = basket.get('fixtures/stamp-script.js').stamp;
 					ok( stamp === stampAfter, 'Data retrieved from localStorage' );
 
 					start();
@@ -151,7 +151,77 @@ asyncTest( 'store data using expiration (expired)', 2, function() {
 });
 
 
-asyncTest( 'expires old in localStorage when Quote Exceeded', 2, function() {
+asyncTest( 'get()', 2, function() {
+	basket
+		.require({ url: 'fixtures/jquery.min.js', key: 'jquery' })
+		.wait(function() {
+			ok( basket.get('jquery'), 'Data retrieved under custom key' );
+			ok( !basket.get('anotherkey').stamp, 'No Data retrieved under custom key' );
+
+			start();
+		});
+});
+
+
+asyncTest( 'store data using file-versioning (not previous explicit version)', 3, function() {
+		basket
+			.require({ url: 'fixtures/stamp-script.js' })
+			.wait(function() {
+				var stamp = basket.get('fixtures/stamp-script.js').stamp;
+				ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
+
+				basket
+					.require({ url: 'fixtures/stamp-script.js', unique: 123 })
+					.wait(function() {
+						var req = basket.get('fixtures/stamp-script.js');
+						ok( stamp !== req.stamp, 'Data retrieved from server' );
+						ok( req.url.indexOf('basket-unique=123') > 0, 'Sending basket unique parameter' );
+
+						start();
+					});
+			});
+});
+
+
+asyncTest( 'store data using file-versioning (same release)', 2, function() {
+		basket
+			.require({ url: 'fixtures/stamp-script.js', unique: 123 })
+			.wait(function() {
+				var stamp = basket.get('fixtures/stamp-script.js').stamp;
+				ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
+
+				basket
+					.require({ url: 'fixtures/stamp-script.js', unique: 123 })
+					.wait(function() {
+						var stampAfter = basket.get('fixtures/stamp-script.js').stamp;
+						ok( stamp === stampAfter, 'Data retrieved from server' );
+
+						start();
+					});
+			});
+});
+
+
+asyncTest( 'store data using file-versioning (different release)', 3, function() {
+		basket
+			.require({ url: 'fixtures/stamp-script.js', unique: 123 })
+			.wait(function() {
+				var stamp = basket.get('fixtures/stamp-script.js').stamp;
+				ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
+
+				basket
+					.require({ url: 'fixtures/stamp-script.js', unique: 456 })
+					.wait(function() {
+						var req = basket.get('fixtures/stamp-script.js');
+						ok( stamp !== req.stamp, 'Data retrieved from server' );
+						ok( req.url.indexOf('basket-unique=456') > 0, 'Sending basket unique parameter' );
+						start();
+					});
+			});
+});
+
+
+asyncTest( 'remove oldest script in localStorage when Quote Exceeded', 2, function() {
 	var i = 0;
 	var l = 10;
 	var k = 0;
@@ -176,7 +246,7 @@ asyncTest( 'expires old in localStorage when Quote Exceeded', 2, function() {
 });
 
 
-asyncTest( 'file is very large then quota limit ', 3, function() {
+asyncTest( 'file is larger then quota limit ', 3, function() {
 
 	basket
 		.require({ url: 'fixtures/largeScript.js', key: 'largeScript0' }, { url: 'fixtures/largeScript.js', key: 'largeScript1' })

@@ -1,4 +1,4 @@
-# basket.js
+# basket.js [![Build Status](https://secure.travis-ci.org/addyosmani/basket.js.png?branch=gh-pages)](http://travis-ci.org/addyosmani/basket.js)
 
 A proof-of-concept script loader for caching/loading scripts with localStorage
 
