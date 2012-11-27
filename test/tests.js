@@ -96,6 +96,23 @@ asyncTest( 'clear()', 1, function() {
 		});
 });
 
+
+asyncTest( 'clear( expired ) - remove only expired keys ', 2, function() {
+	basket
+		.require(
+			{ url: 'fixtures/largeScript.js', key: 'largeScript0', expire: -1 },
+		 	{ url: 'fixtures/largeScript.js', key: 'largeScript1' }
+		).wait(function() {
+			basket.clear( true );
+			// check if scripts added was removed from localStorage
+			ok( !basket.get( 'largeScript0' ) , 'Expired script removed' );
+			ok( basket.get( 'largeScript1' ) , 'Non-expired script exists in localstorage' );
+			
+			start();
+		});
+});
+
+
 asyncTest( 'store data using expiration (non-expired)', 2, function() {
 	basket
 		.require({ url: 'fixtures/stamp-script.js', expire: 1 })
@@ -131,4 +148,46 @@ asyncTest( 'store data using expiration (expired)', 2, function() {
 						start();
 					});
 			});
+});
+
+
+asyncTest( 'expires old in localStorage when Quote Exceeded', 2, function() {
+	var i = 0;
+	var l = 10;
+	var k = 0;
+
+	(function add() {
+		// Try add script in localStorage
+		basket
+			.require({ url: 'fixtures/largeScript.js', key: 'largeScript' + i })
+			.wait(function() {
+				if ( i < l ) {
+					// add one more file
+					add( ++i );
+				} else {
+					// check if first script added was removed from localStorage
+					ok( !basket.get( 'largeScript0' ) , 'First Script deleted' );
+					// check if the last script added still on localStorage
+					ok( basket.get( 'largeScript10' ) , 'Last Script still alive' );
+					start();
+				}
+			});
+	})();		
+});
+
+
+asyncTest( 'file is very large then quota limit ', 3, function() {
+
+	basket
+		.require({ url: 'fixtures/largeScript.js', key: 'largeScript0' }, { url: 'fixtures/largeScript.js', key: 'largeScript1' })
+		.wait()
+		.require({ url: 'fixtures/veryLargeScript.js', key: 'largeScript2' })
+		.wait(function() {
+			// check if scripts added was removed from localStorage
+			ok( !basket.get( 'largeScript0' ) , 'First Script deleted' );
+			ok( !basket.get( 'largeScript1' ) , 'Second Script deleted' );
+			// check if the last script added still on localStorage
+			ok( !basket.get( 'largeScript2' ) , 'Last Script not added' );
+			start();
+		});
 });
