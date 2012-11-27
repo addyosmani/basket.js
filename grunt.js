@@ -33,11 +33,15 @@ module.exports = function( grunt ) {
 			]
 		},
 		qunit: {
-			index: ['test/index.html']
+			index: ['http://localhost:8080/test/index.html']
 		},
 		watch: {
 			files: '<config:lint.files>',
 			tasks: 'lint test'
+		},
+		server: {
+			base: '.',
+			port: 8080
 		},
 		jshint: {
 			options: {
@@ -66,6 +70,8 @@ module.exports = function( grunt ) {
 	grunt.registerTask('default', 'lint concat min');
 
 	// Release
-	grunt.registerTask('release', 'lint qunit concat min');
+	grunt.registerTask('release', 'lint server qunit concat min');
 
+	//Tests
+	grunt.registerTask('test', 'lint server qunit');
 };
