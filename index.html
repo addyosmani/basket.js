@@ -11,8 +11,8 @@
 		<h1>basket.js (0.3)</h1>
 		<h2>A simple (proof-of-concept) script loader that caches scripts with localStorage </h2>
 		<p>
-			<a href="dist/basket.js">basket.js</a> (3.9KB) &nbsp;
-			<a href="dist/basket.min.js">basket.min.js</a> (0.9KB gzipped) &nbsp;
+			<a href="dist/basket.js">basket.js</a> (4.6KB) &nbsp;
+			<a href="dist/basket.min.js">basket.min.js</a> (1KB gzipped) &nbsp;
 			<a href="https://twitter.com/share" class="twitter-share-button" data-text="basket.js - a simple script loader that caches scripts with localStorage" data-via="addyosmani">Tweet</a>
 		</p>
 
@@ -83,9 +83,9 @@
 
 <pre><code>basket.require({ url: 'jquery.js' }, { url: 'underscore.js' }, { url: 'backbone.js' });</code></pre>
 
-<p>The HTML5 spec suggests storage quota with the limit of 5MB for localStorage. Which means browsers can implement your own quota. Basket.js will care exceeded quota removing oldest entries on load and when browser throws QUOTA_EXCEEDED_ERR error. Some browsers like Opera will ask the user about increasing the quota when it exceeds a set threshold.</p>
+<p>The HTML5 spec suggests storage quota with the limit of 5MB for localStorage. Which means browsers can implement their own quota. Basket.js will handle exceeded quota by removing oldest entries on load and when browser throws QUOTA_EXCEEDED_ERR error. Some browsers like Opera will ask the user about increasing the quota when it exceeds a set threshold.</p>
 
-<p>basket.js will remove only your own entries. The space consumed by other apps in same origin will not be modified.</p>
+<p>basket.js will remove only your own entries. The space consumed by other code in same origin will not be touched.</p>
 
 <p>Note that at present, JSONP/server-side middleware is necessary for the support of remote scripts. This is down to access of script content being limited under cross-origin policies.</p>
 
@@ -99,9 +99,9 @@
 
 <p><strong> If <code>key</code> is unset, the url will be used as key.</strong></p>
 
-<p>You can use <code>expire</code> to set a lifetime in hours for a cached file. The script will be re-fetch if required after this time.</p>
-<p>To re-fetching after 7 days you could set 168 ( i.e. 7 * 24 = 168 ).</p>
-<p>If expire is unset, the default time will be used. ( i.e. 5000 hours, almost 7 months )</p>
+<p>You can use <code>expire</code> to set a lifetime in hours for a cached file. The script will be re-fetched if required after this time.</p>
+<p>To re-fetch after 7 days you could set 168 ( i.e. 7 * 24 = 168 ).</p>
+<p>If <code>expire</code> is unset, the default time will be used. ( i.e. 5000 hours, almost 7 months )</p>
 
 <pre><code>basket.require({ url: 'jquery.min.js', expire: 2 });</code> </pre>
 
@@ -148,8 +148,8 @@
 <p>remove() will simply remove a previously cached script from localStorage. An example of how to use it can be seen below:</p>
 
 <pre><code>basket
-    .remove('jquery.js')
-    .remove('modernizr');
+	.remove('jquery.js')
+	.remove('modernizr');
 </code></pre>
 
 
@@ -160,20 +160,20 @@
 <p>When <code>wait()</code> is inserted into a chain, it informs the chain to ensure previous scripts inserted into the chain complete their loading prior to allowing the next item to load and execute. At it’s most basic, <code>wait()</code> can be used as follows:</p>
 
 <pre><code>basket
-    .require({ url: 'jquery.js' }).wait()
-    .require({ url: 'jquery.plugin1.js' }, { url: 'jquery.plugin2.js' });
+	.require({ url: 'jquery.js' }).wait()
+	.require({ url: 'jquery.plugin1.js' }, { url: 'jquery.plugin2.js' });
 </code></pre>
 
 <p>You can also specify an (optional) callback (typically an anonymous function) that will be executed in order following the previous scripts executing and before subsequent scripts in the chain are executed.</p>
 
 <pre><code>basket
-    .require({ url: 'jquery.js' }).wait()
-    .require({ url: 'underscore.js' }, { url: 'app.js' })
-    .wait(function(){
+	.require({ url: 'jquery.js' }).wait()
+	.require({ url: 'underscore.js' }, { url: 'app.js' })
+	.wait(function(){
 		var numbers = [10, 5, 100, 2, 1000];
-	    $('#message')
-	        .html('Live long and prosper, bro.
-	        Want the minimum value in our array? Boom:' + _.min(numbers));
+		$('#message')
+			.html('Live long and prosper, bro.
+			Want the minimum value in our array? Boom:' + _.min(numbers));
 
 	});
 </code></pre>
@@ -183,27 +183,27 @@
 
 <pre><code>var message, str;
 basket
-    .require({ url: 'test/jquery-1.7.1.min.js' }).wait()
-    .require({ url: 'test/underscore-min.js' }, { url: 'test/backbone-min.js' })
-    .wait(function() {
-	    // Backbone is now available, so let's define
-	    // a test model with a sample attribute
+	.require({ url: 'test/jquery-1.7.1.min.js' }).wait()
+	.require({ url: 'test/underscore-min.js' }, { url: 'test/backbone-min.js' })
+	.wait(function() {
+		// Backbone is now available, so let's define
+		// a test model with a sample attribute
 
-	    var testModel = Backbone.Model.extend({
-	      idAttribute: '_id'
-	    });
+		var testModel = Backbone.Model.extend({
+		  idAttribute: '_id'
+		});
 
-	    // Create an instance of the model
-	    var myModel = new testModel({ _id: 4, name: 'Nyan Cat' });
+		// Create an instance of the model
+		var myModel = new testModel({ _id: 4, name: 'Nyan Cat' });
 
-	    // Cache a reference to our message holder with jQuery
-	    message = $('#message');
+		// Cache a reference to our message holder with jQuery
+		message = $('#message');
 
-	    // Where #intro contains a template, get our templating on:
+		// Where #intro contains a template, get our templating on:
 
-	    var templateContent = $('#intro').html();
-	    var compiled = _.template(templateContent);
-	    message.html( compiled({name: myModel.get('name')}));
+		var templateContent = $('#intro').html();
+		var compiled = _.template(templateContent);
+		message.html( compiled({name: myModel.get('name')}));
 
 	});
 </code></pre>
