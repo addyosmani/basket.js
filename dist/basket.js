@@ -1,10 +1,10 @@
 /*!
 * basket.js
-* v0.3.0 - 2012-11-22
+* v0.3.0 - 2012-11-28
 * http://addyosmani.github.com/basket.js
 * (c) Addy Osmani; MIT License
 * Created by: Addy Osmani, Sindre Sorhus, Andrée Hansson
-* Contributors: Ironsjp, Mathias Bynens, Rick Waldron
+* Contributors: Ironsjp, Mathias Bynens, Rick Waldron, Felipe Morais
 */
 
 (function( window, document ) {
@@ -20,6 +20,43 @@
 
 	var isFunc = function( fn ) {
 		return {}.toString.call( fn ) === '[object Function]';
+	};
+
+	var addLocalStorage = function( key, storeObj ) {
+		try {
+			localStorage.setItem( storagePrefix + key, JSON.stringify( storeObj ) );
+			return true;
+		} catch( e ) {
+			if ( e.name.toUpperCase().indexOf('QUOTA') >= 0 ) {
+				var item;
+				var tempScripts = [];
+
+				for ( item in localStorage ) {
+					if ( item.indexOf( storagePrefix ) === 0 ) {
+						tempScripts.push( JSON.parse( localStorage[ item ] ) );
+					}
+				}
+
+				if ( tempScripts.length ) {
+					tempScripts.sort(function( a, b ) {
+						return a.stamp - b.stamp;
+					});
+
+					basket.remove( tempScripts[ 0 ].key );
+
+					return addLocalStorage( key, storeObj );
+
+				} else {
+					// no files to remove. More large than available quota
+					return;
+				}
+
+			} else {
+				// some other error
+				return;
+			}
+		}
+
 	};
 
 	var getUrl = function( url, callback ) {
@@ -38,7 +75,8 @@
 	var saveUrl = function( obj, callback ) {
 		getUrl( obj.url, function( text ) {
 			var storeObj = wrapStoreData( obj, text );
-			localStorage.setItem( storagePrefix + obj.key, JSON.stringify( storeObj ) );
+
+			addLocalStorage( obj.key , storeObj );
 
 			if ( isFunc( callback ) ) {
 				callback( text );
@@ -91,7 +129,7 @@
 		var now = +new Date();
 		obj.data = data;
 		obj.stamp = now;
-		obj.expire = now + ( (obj.expire || defaultExpiration) * 60 * 60 * 1000 );
+		obj.expire = now + ( ( obj.expire || defaultExpiration ) * 60 * 60 * 1000 );
 
 		return obj;
 	};
@@ -105,17 +143,18 @@
 			scripts[ scriptIndex ] = text;
 			queueExec( waitCount, obj.execute );
 		};
-		
+
 		if ( !obj.url ) {
 			return;
 		}
+
 		obj.key =  ( obj.key || obj.url );
 		source = basket.get( obj.key );
 
 		obj.execute = obj.execute !== false;
 		scripts[ scriptIndex ] = null;
-		
-		if ( !source || source.expire - +new Date() < 0  || obj.unique !== source.unique) {
+
+		if ( !source || source.expire - +new Date() < 0  || obj.unique !== source.unique ) {
 			if ( obj.unique ) {
 				// set parameter to prevent browser cache
 				obj.url += ( ( obj.url.indexOf('?') > 0 ) ? '&' : '?' ) + 'basket-unique=' + obj.unique;
@@ -133,6 +172,7 @@
 	window.basket = {
 		require: function() {
 			var i, l;
+
 			for ( i = 0, l = arguments.length; i < l; i++ ) {
 				handleStackObject( arguments[ i ] );
 			}
@@ -160,22 +200,25 @@
 		},
 
 		get: function( key ) {
-			return JSON.parse(localStorage.getItem( storagePrefix + key )) || false;
+			return JSON.parse( localStorage.getItem( storagePrefix + key ) ) || false;
 		},
 
-		clear: function() {
-			var key;
-			var ls = localStorage;
-			var now =  +new Date();
+		clear: function( expired ) {
+			var item, key;
+			var now = +new Date();
 
-			for ( key in ls ) {
-				if ( key.indexOf( storagePrefix ) === 0 ) {
-					delete ls[ key ];
+			for ( item in localStorage ) {
+				key = item.split( storagePrefix )[ 1 ];
+				if ( key && ( !expired || this.get( key ).expire <= now ) ) {
+					this.remove( key );
 				}
 			}
 
 			return this;
 		}
 	};
+
+	// delete expired keys
+	basket.clear( true );
 
 })( this, document );
