@@ -247,7 +247,6 @@ asyncTest( 'remove oldest script in localStorage when Quote Exceeded', 2, functi
 
 
 asyncTest( 'file is larger then quota limit ', 3, function() {
-
 	basket
 		.require({ url: 'fixtures/largeScript.js', key: 'largeScript0' }, { url: 'fixtures/largeScript.js', key: 'largeScript1' })
 		.wait()
@@ -261,3 +260,4 @@ asyncTest( 'file is larger then quota limit ', 3, function() {
 			start();
 		});
 });
+
