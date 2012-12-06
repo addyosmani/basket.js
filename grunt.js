@@ -17,7 +17,6 @@ module.exports = function( grunt ) {
 		concat: {
 			'dist/basket.js': [
 				'<banner>',
-				'lib/when.js',
 				'<file_strip_banner:lib/basket.js>'
 			]
 		},
