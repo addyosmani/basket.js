@@ -17,6 +17,7 @@ module.exports = function( grunt ) {
 		concat: {
 			'dist/basket.js': [
 				'<banner>',
+				'lib/when.js',
 				'<file_strip_banner:lib/basket.js>'
 			]
 		},
@@ -29,7 +30,7 @@ module.exports = function( grunt ) {
 		lint: {
 			files: [
 				'grunt.js',
-				'lib/**/*.js'
+				'lib/basket.js'
 			]
 		},
 		qunit: {

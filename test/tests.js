@@ -1,4 +1,5 @@
 /*global module, asyncTest, ok, start, basket*/
+'use strict';
 module( 'Test script API', {
 	teardown: function() {
 		localStorage.clear();
@@ -13,21 +14,21 @@ asyncTest( 'require() 1 script', 2, function() {
 		start();
 	}, 2500);
 
-	basket.require({
-		url: 'fixtures/jquery.min.js' ,
-		wait: function() {
-			clearTimeout( cancel );
+	basket.require(
+		{url: 'fixtures/jquery.min.js'}
+	)
+	.then(function() {
+		clearTimeout( cancel );
 
-			ok( true, 'Callback invoked' );
-			ok( basket.get('fixtures/jquery.min.js'), 'Data exists in localStorage' );
+		ok( true, 'Callback invoked' );
+		ok( basket.get('fixtures/jquery.min.js'), 'Data exists in localStorage' );
 
-			start();
-		}
+		start();
 	});
 });
 
 
-asyncTest( 'require() 2 scripts with .wait()', 3, function() {
+asyncTest( 'require() 2 scripts with .then()', 3, function() {
 	var cancel = setTimeout(function() {
 		ok( false, 'Callback never invoked' );
 		start();
@@ -37,7 +38,7 @@ asyncTest( 'require() 2 scripts with .wait()', 3, function() {
 			{ url: 'fixtures/jquery.min.js' },
 			{ url: 'fixtures/modernizr.min.js' }
 		)
-		.wait(function() {
+		.then(function() {
 			clearTimeout( cancel );
 
 			ok( true, 'Callback invoked' );
@@ -49,7 +50,7 @@ asyncTest( 'require() 2 scripts with .wait()', 3, function() {
 });
 
 
-asyncTest( 'require() 2 scripts (one non-executed) with .wait()', 4, function() {
+asyncTest( 'require() 2 scripts (one non-executed) with .then()', 4, function() {
 	var cancel = setTimeout(function() {
 		ok( false, 'Callback never invoked' );
 		start();
@@ -59,7 +60,7 @@ asyncTest( 'require() 2 scripts (one non-executed) with .wait()', 4, function() 
 			{ url: 'fixtures/fail-script.js', execute: false },
 			{ url: 'fixtures/modernizr.min.js' }
 		)
-		.wait(function() {
+		.then(function() {
 			clearTimeout( cancel );
 
 			ok( true, 'Callback invoked' );
@@ -77,7 +78,7 @@ asyncTest( 'require(), custom key', 1, function() {
 
 	basket
 		.require({ url: 'fixtures/jquery.min.js', key: key })
-		.wait(function() {
+		.then(function() {
 			ok( basket.get(key), 'Data exists in localStorage under custom key' );
 
 			start();
@@ -88,7 +89,7 @@ asyncTest( 'require(), custom key', 1, function() {
 asyncTest( 'clear()', 1, function() {
 	basket
 		.require({ url: 'fixtures/jquery.min.js' })
-		.wait(function() {
+		.then(function() {
 			basket.clear();
 			ok( !basket.get('fixtures/jquery.min.js'), 'basket.js data in localStorage cleared' );
 
@@ -101,13 +102,13 @@ asyncTest( 'clear( expired ) - remove only expired keys ', 2, function() {
 	basket
 		.require(
 			{ url: 'fixtures/largeScript.js', key: 'largeScript0', expire: -1 },
-		 	{ url: 'fixtures/largeScript.js', key: 'largeScript1' }
-		).wait(function() {
+			{ url: 'fixtures/largeScript.js', key: 'largeScript1' }
+		).then(function() {
 			basket.clear( true );
 			// check if scripts added was removed from localStorage
 			ok( !basket.get( 'largeScript0' ) , 'Expired script removed' );
 			ok( basket.get( 'largeScript1' ) , 'Non-expired script exists in localstorage' );
-			
+
 			start();
 		});
 });
@@ -116,13 +117,13 @@ asyncTest( 'clear( expired ) - remove only expired keys ', 2, function() {
 asyncTest( 'store data using expiration (non-expired)', 2, function() {
 	basket
 		.require({ url: 'fixtures/stamp-script.js', expire: 1 })
-		.wait(function() {
+		.then(function() {
 			var stamp = basket.get('fixtures/stamp-script.js').stamp;
 			ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
 
 			basket
 				.require({ url: 'fixtures/stamp-script.js' })
-				.wait(function() {
+				.then(function() {
 					var stampAfter = basket.get('fixtures/stamp-script.js').stamp;
 					ok( stamp === stampAfter, 'Data retrieved from localStorage' );
 
@@ -135,13 +136,13 @@ asyncTest( 'store data using expiration (non-expired)', 2, function() {
 asyncTest( 'store data using expiration (expired)', 2, function() {
 		basket
 			.require({ url: 'fixtures/stamp-script.js', expire: -1 })
-			.wait(function() {
+			.then(function() {
 				var stamp = basket.get('fixtures/stamp-script.js').stamp;
 				ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
 
 				basket
 					.require({ url: 'fixtures/stamp-script.js' })
-					.wait(function() {
+					.then(function() {
 						var stampAfter = basket.get('fixtures/stamp-script.js').stamp;
 						ok( stamp !== stampAfter, 'Data retrieved from server' );
 
@@ -154,7 +155,7 @@ asyncTest( 'store data using expiration (expired)', 2, function() {
 asyncTest( 'get()', 2, function() {
 	basket
 		.require({ url: 'fixtures/jquery.min.js', key: 'jquery' })
-		.wait(function() {
+		.then(function() {
 			ok( basket.get('jquery'), 'Data retrieved under custom key' );
 			ok( !basket.get('anotherkey').stamp, 'No Data retrieved under custom key' );
 
@@ -166,13 +167,13 @@ asyncTest( 'get()', 2, function() {
 asyncTest( 'store data using file-versioning (not previous explicit version)', 3, function() {
 		basket
 			.require({ url: 'fixtures/stamp-script.js' })
-			.wait(function() {
+			.then(function() {
 				var stamp = basket.get('fixtures/stamp-script.js').stamp;
 				ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
 
 				basket
 					.require({ url: 'fixtures/stamp-script.js', unique: 123 })
-					.wait(function() {
+					.then(function() {
 						var req = basket.get('fixtures/stamp-script.js');
 						ok( stamp !== req.stamp, 'Data retrieved from server' );
 						ok( req.url.indexOf('basket-unique=123') > 0, 'Sending basket unique parameter' );
@@ -186,13 +187,13 @@ asyncTest( 'store data using file-versioning (not previous explicit version)', 3
 asyncTest( 'store data using file-versioning (same release)', 2, function() {
 		basket
 			.require({ url: 'fixtures/stamp-script.js', unique: 123 })
-			.wait(function() {
+			.then(function() {
 				var stamp = basket.get('fixtures/stamp-script.js').stamp;
 				ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
 
 				basket
 					.require({ url: 'fixtures/stamp-script.js', unique: 123 })
-					.wait(function() {
+					.then(function() {
 						var stampAfter = basket.get('fixtures/stamp-script.js').stamp;
 						ok( stamp === stampAfter, 'Data retrieved from server' );
 
@@ -205,13 +206,13 @@ asyncTest( 'store data using file-versioning (same release)', 2, function() {
 asyncTest( 'store data using file-versioning (different release)', 3, function() {
 		basket
 			.require({ url: 'fixtures/stamp-script.js', unique: 123 })
-			.wait(function() {
+			.then(function() {
 				var stamp = basket.get('fixtures/stamp-script.js').stamp;
 				ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
 
 				basket
 					.require({ url: 'fixtures/stamp-script.js', unique: 456 })
-					.wait(function() {
+					.then(function() {
 						var req = basket.get('fixtures/stamp-script.js');
 						ok( stamp !== req.stamp, 'Data retrieved from server' );
 						ok( req.url.indexOf('basket-unique=456') > 0, 'Sending basket unique parameter' );
@@ -224,13 +225,12 @@ asyncTest( 'store data using file-versioning (different release)', 3, function()
 asyncTest( 'remove oldest script in localStorage when Quote Exceeded', 2, function() {
 	var i = 0;
 	var l = 10;
-	var k = 0;
 
 	(function add() {
 		// Try add script in localStorage
 		basket
 			.require({ url: 'fixtures/largeScript.js', key: 'largeScript' + i })
-			.wait(function() {
+			.then(function() {
 				if ( i < l ) {
 					// add one more file
 					add( ++i );
@@ -242,16 +242,16 @@ asyncTest( 'remove oldest script in localStorage when Quote Exceeded', 2, functi
 					start();
 				}
 			});
-	})();		
+	})();
 });
 
 
 asyncTest( 'file is larger then quota limit ', 3, function() {
 	basket
 		.require({ url: 'fixtures/largeScript.js', key: 'largeScript0' }, { url: 'fixtures/largeScript.js', key: 'largeScript1' })
-		.wait()
-		.require({ url: 'fixtures/veryLargeScript.js', key: 'largeScript2' })
-		.wait(function() {
+		.then();
+	basket.require({ url: 'fixtures/veryLargeScript.js', key: 'largeScript2' })
+		.then(function() {
 			// check if scripts added was removed from localStorage
 			ok( !basket.get( 'largeScript0' ) , 'First Script deleted' );
 			ok( !basket.get( 'largeScript1' ) , 'Second Script deleted' );
