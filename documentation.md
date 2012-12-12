@@ -81,11 +81,11 @@ The second parameter to `then()` is a function that will be called if the promis
 basket.require({ url: 'jquery-1.7.1.min.js', key: 'jquery' });
 ```
 
-If you wish to store a script under a specific key name (e.g if you have a build process outputting a script of a name such as `012345.js` and would like to store it under say, `main`), you can set the `key` property to the name you want to use.
+If you wish to store a script under a specific key name (e.g. if you have a build process which creates a script with a name like `012345.js` and want to store it as, say, `main`), you can set the `key` property to the name you want to use.
 
 This can also be useful for libraries with version numbers in their URIs when you don't need a particular version. In the above example the cache will be checked for a script stored as "jquery" regardless of its original URI. This allows us to use an older version stored in the cache if one exists.
 
-If `key` is not set the url will be used instead
+If `key` is not set the url will be used instead.
 
 **Cache expiry**
 
