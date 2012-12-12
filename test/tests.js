@@ -261,3 +261,17 @@ asyncTest( 'file is larger then quota limit ', 3, function() {
 		});
 });
 
+asyncTest( 'non-existant file causes error handler to be called', 2, function() {
+	basket
+		.require({ url: 'non-existant.js' })
+		.then(function() {
+			ok( false, 'The success callback should not be called' );
+			start();
+		}, function(error) {
+			ok( error, 'Error callback called' );
+			ok( !basket.get( 'non-existant.js' ), 'No cache entry for missing file' );
+			start();
+		});
+});
+
+
