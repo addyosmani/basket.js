@@ -49,9 +49,6 @@
 	"devDependencies": {
 		"grunt": "~0.3.10"
 	},
-	"dependencies": {
-		"rsvp": "~1.0.0"
-	},
 	"licenses": [{
 		"type": "MIT"
 	}]
