@@ -29,7 +29,7 @@ module.exports = function( grunt ) {
 		lint: {
 			files: [
 				'grunt.js',
-				'lib/**/*.js'
+				'lib/basket.js'
 			]
 		},
 		qunit: {
