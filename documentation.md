@@ -53,14 +53,27 @@ Multiple scripts will be requested. The scripts are requested asynchronously and
 
 ```javascript
 basket.require({ url: 'jquery.js' })
-	.then(function()
-	{
+	.then(function() {
 		basket.require({ url: 'jquery-ui.js' });
 	});
 })
 ```
 
 Here we ask basket.js to load jQuery. Once it has been fetched and executed, the promise returned by `require()` will be fulfilled and the callback passed to the `then()` method of the promise will be executed. Now we can do anything the requires jquery to be loaded including load any scripts that depend on it.
+
+**Error handling**
+
+```javascript
+basket.require({ url: 'missing.js' })
+	.then(function() {
+		// Success
+	}, function( error ) {
+		// There was an error fetching the script
+		console.log( error );
+	});
+```
+
+The second parameter to `then()` is a function that will be called if the promise is rejected. That is, if there was an error fetching the script. The only parameter to the error callback will be an Error object with details of the failure.
 
 **Using an alias**
 
