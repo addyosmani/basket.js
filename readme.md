@@ -19,11 +19,12 @@ We are also attempting to get as much unit test coverage as possible. For this r
 
 ## Team
 
-[ ![Addy Osmani avatar](http://www.gravatar.com/avatar/96270e4c3e5e9806cf7245475c00b275.png?s=60) Addy Osmani ](https://github.com/addyosmani) (lead)  
-[ ![Sindre Sorhus avatar](http://www.gravatar.com/avatar/d36a92237c75c5337c17b60d90686bf9.png?s=60) Sindre Sorhus ](https://github.com/sindresorhus)  
+[ ![Addy Osmani avatar](http://www.gravatar.com/avatar/96270e4c3e5e9806cf7245475c00b275.png?s=60) Addy Osmani ](https://github.com/addyosmani) (lead)
+[ ![Sindre Sorhus avatar](http://www.gravatar.com/avatar/d36a92237c75c5337c17b60d90686bf9.png?s=60) Sindre Sorhus ](https://github.com/sindresorhus)
 [ ![Andrée Hansson avatar](http://www.gravatar.com/avatar/9a22324229aebc599d46dacab494ce77.png?s=60) Andrée Hansson ](https://github.com/peol)
+[ ![Mat Scales avatar](http://www.gravatar.com/avatar/c2b874c38990ed90a0ed15ac33bda00f.png?s=60) Mat Scales ](https://github.com/wibblymat)
 
 
 ## License
-(c) Addy Osmani  
+(c) Addy Osmani
 [MIT License](http://en.wikipedia.org/wiki/MIT_License)
