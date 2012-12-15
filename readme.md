@@ -1,7 +1,6 @@
 # basket.js [![Build Status](https://secure.travis-ci.org/addyosmani/basket.js.png?branch=gh-pages)](http://travis-ci.org/addyosmani/basket.js)
 
-A proof-of-concept script loader for caching/loading scripts with localStorage
-
+A [proof-of-concept](http://addyosmani.github.com/basket.js) script loader for caching and loading scripts using localStorage
 
 ## Contribute
 
@@ -26,5 +25,5 @@ We are also attempting to get as much unit test coverage as possible. For this r
 
 
 ## License
-(c) Addy Osmani
+(c) Addy Osmani, the basket.js project
 [MIT License](http://en.wikipedia.org/wiki/MIT_License)
