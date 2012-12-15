@@ -1,6 +1,6 @@
 /*!
 * basket.js
-* v0.3.0 - 2012-11-28
+* v0.3.0 - 2012-12-15
 * http://addyosmani.github.com/basket.js
 * (c) Addy Osmani; MIT License
 * Created by: Addy Osmani, Sindre Sorhus, Andrée Hansson
@@ -10,17 +10,40 @@
 (function( window, document ) {
 	'use strict';
 
+	// Monkey-patching an "all" method onto RSVP
+	// Returns a promise that will be fulfilled when the array of promises passed in are all
+	// fulfilled
+	RSVP.all = function( promises ) {
+		var i, results = [];
+		var allPromise = new RSVP.Promise();
+		var remaining = promises.length;
+
+		var resolver = function( index ) {
+			return function( value ) {
+				resolve( index, value );
+			};
+		};
+		var resolve = function( index, value ) {
+			results[ index ] = value;
+			if ( --remaining === 0 ) {
+				allPromise.resolve( results );
+			}
+		};
+		var reject = function( error ) {
+			allPromise.reject( error );
+		};
+
+		for ( i = 0; i < remaining; i++ ) {
+			promises[ i ].then( resolver( i ), reject );
+		}
+
+		return allPromise;
+	};
+
 	var head = document.head || document.getElementsByTagName('head')[0];
 	var storagePrefix = 'basket-';
-	var scripts = [];
-	var scriptsExecuted = 0;
-	var globalWaitCount = 0;
-	var waitCallbacks = [];
+	var promises = [];
 	var defaultExpiration = 5000;
-
-	var isFunc = function( fn ) {
-		return {}.toString.call( fn ) === '[object Function]';
-	};
 
 	var addLocalStorage = function( key, storeObj ) {
 		try {
@@ -47,7 +70,7 @@
 					return addLocalStorage( key, storeObj );
 
 				} else {
-					// no files to remove. More large than available quota
+					// no files to remove. Larger than available quota
 					return;
 				}
 
@@ -59,28 +82,33 @@
 
 	};
 
-	var getUrl = function( url, callback ) {
+	var getUrl = function( url ) {
 		var xhr = new XMLHttpRequest();
+		var promise = new RSVP.Promise();
 		xhr.open( 'GET', url );
 
 		xhr.onreadystatechange = function() {
-			if ( xhr.readyState === 4 && xhr.status === 200 ) {
-				callback( xhr.responseText );
+			if ( xhr.readyState === 4 ) {
+				if( xhr.status === 200 ) {
+					promise.resolve( xhr.responseText );
+				} else {
+					promise.reject( new Error( xhr.statusText ) );
+				}
 			}
 		};
 
 		xhr.send();
+
+		return promise;
 	};
 
-	var saveUrl = function( obj, callback ) {
-		getUrl( obj.url, function( text ) {
+	var saveUrl = function( obj ) {
+		return getUrl( obj.url ).then( function( text ) {
 			var storeObj = wrapStoreData( obj, text );
 
 			addLocalStorage( obj.key , storeObj );
 
-			if ( isFunc( callback ) ) {
-				callback( text );
-			}
+			return text;
 		});
 	};
 
@@ -93,38 +121,6 @@
 		head.appendChild( script );
 	};
 
-	var queueExec = function( waitCount, doExecute ) {
-		var i, j, script, callback;
-
-		if ( scriptsExecuted >= waitCount ) {
-			for ( i = 0; i < scripts.length; i++ ) {
-				script = scripts[ i ];
-
-				if ( !script ) {
-					// loading/executed
-					continue;
-				}
-
-				scripts[ i ] = null;
-
-				if ( doExecute ) {
-					injectScript( script );
-				}
-
-				scriptsExecuted++;
-
-				for ( j = i; j < scriptsExecuted; j++ ) {
-					callback = waitCallbacks[ j ];
-
-					if ( isFunc(callback) ) {
-						waitCallbacks[ j ] = null;
-						callback();
-					}
-				}
-			}
-		}
-	};
-
 	var wrapStoreData = function( obj, data ) {
 		var now = +new Date();
 		obj.data = data;
@@ -135,14 +131,7 @@
 	};
 
 	var handleStackObject = function( obj ) {
-		var waitCount = globalWaitCount;
-		var scriptIndex = scripts.length;
-		var source;
-
-		var callback = function( text ) {
-			scripts[ scriptIndex ] = text;
-			queueExec( waitCount, obj.execute );
-		};
+		var source, promise;
 
 		if ( !obj.url ) {
 			return;
@@ -152,20 +141,22 @@
 		source = basket.get( obj.key );
 
 		obj.execute = obj.execute !== false;
-		scripts[ scriptIndex ] = null;
 
 		if ( !source || source.expire - +new Date() < 0  || obj.unique !== source.unique ) {
 			if ( obj.unique ) {
 				// set parameter to prevent browser cache
 				obj.url += ( ( obj.url.indexOf('?') > 0 ) ? '&' : '?' ) + 'basket-unique=' + obj.unique;
 			}
-			saveUrl( obj, callback );
+			promise = saveUrl( obj );
 		} else {
-			callback( source.data );
+			promise = new RSVP.Promise();
+			promise.resolve( source.data );
 		}
 
-		if ( isFunc( obj.wait ) ) {
-			basket.wait( obj.wait );
+		if( obj.execute ) {
+			return promise.then( injectScript );
+		} else {
+			return promise;
 		}
 	};
 
@@ -174,10 +165,10 @@
 			var i, l;
 
 			for ( i = 0, l = arguments.length; i < l; i++ ) {
-				handleStackObject( arguments[ i ] );
+				promises.push( handleStackObject( arguments[ i ] ) );
 			}
 
-			return this;
+			return RSVP.all( promises );
 		},
 
 		remove: function( key ) {
@@ -185,22 +176,8 @@
 			return this;
 		},
 
-		wait: function( callback ) {
-			globalWaitCount = scripts.length - 1;
-
-			if ( isFunc( callback ) ) {
-				if ( scriptsExecuted > globalWaitCount ) {
-					callback();
-				} else {
-					waitCallbacks[ globalWaitCount ] = callback;
-				}
-			}
-
-			return this;
-		},
-
 		get: function( key ) {
-			return JSON.parse( localStorage.getItem( storagePrefix + key ) ) || false;
+			return JSON.parse( localStorage.getItem( storagePrefix + key ) || 'false' );
 		},
 
 		clear: function( expired ) {
