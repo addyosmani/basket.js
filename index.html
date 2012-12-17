@@ -8,9 +8,10 @@
 	<body>
 
 	<div id="container">
-		<h1>basket.js (0.3)</h1>
+		<h1><img src="asset/logo.png" style="width:450px;" alt="basket.js"/> </h1>
 		<h2>A simple (proof-of-concept) script loader that caches scripts with localStorage </h2>
 		<p>
+		    <strong>Version 0.3: </strong> 
 			<a href="dist/basket.js">basket.js</a> (4.6KB) &nbsp;
 			<a href="dist/basket.min.js">basket.min.js</a> (1KB gzipped) &nbsp;
 			<a href="https://twitter.com/share" class="twitter-share-button" data-text="basket.js - a simple script loader that caches scripts with localStorage" data-via="addyosmani">Tweet</a>
@@ -25,7 +26,7 @@
 
 <h3>Why localStorage?</h3>
 
-<p>Tests by Bing and Google have shown that there are performance benefits to caching assets in localStorage (especially on mobile) when compared to simply reading and writing from the standard browser cache. This project is currently working on replicating these tests in the public so that we have definitive statistics on whether this is true. </p>
+<p><a href="http://www.stevesouders.com/blog/2011/03/28/storager-case-study-bing-google/">Tests</a> by Google and Bing have shown that there are performance benefits to caching assets in localStorage (especially on mobile) when compared to simply reading and writing from the standard browser cache. This project is currently working on replicating these tests in the public so that we have definitive statistics on whether this is true. </p>
 
 <p>Developers have also been wondering why we opted for localStorage as opposed to alternatives such as IndexedDB. Jens Arps has shown that IDB is at present <a href="http://jsperf.com/indexeddb-vs-localstorage/2">significantly slower</a> than localStorage for reading and writing assets. Other developers exploring this space have also shown that localStorage works just fine for caching data (it's actually significantly <a href="http://www.webdirections.org/blog/localstorage-perhaps-not-so-harmful/">faster</a> in Safari at the moment than any other browser). </p>
 
@@ -212,8 +213,8 @@ basket
 <p><strong>basket.clear( expired )</strong></p>
 <p>This will remove the keys associated with basket.js. If expired is true, only expired keys will be removed.</p>
 <pre>
-	<code> basket.clear(); </code> 
-	<code> basket.clear( true ); </code>
+<code> basket.clear(); </code> 
+<code> basket.clear( true ); </code>
 </pre>
 
 <p>&nbsp;</p>
@@ -228,7 +229,7 @@ basket
 
 <p>&nbsp;</p>
 <h3>Team, License &amp; Contribution Guide</h3>
-<p>basket.js is released under an <a href="http://en.wikipedia.org/wiki/MIT_License">MIT License</a> and is currently maintained by <a href="https://github.com/addyosmani">Addy Osmani</a>, <a href="https://github.com/sindresorhus">Sindre Sorhus</a> and <a href="https://github.com/peol">Andrée Hansson</a>. We would also like to extend our thanks to <a href="https://github.com/rwldrn">Rick Waldron</a> for the optimizations he suggested for improving the project.</p>
+<p>basket.js is released under an <a href="http://en.wikipedia.org/wiki/MIT_License">MIT License</a> and is currently maintained by <a href="https://github.com/addyosmani">Addy Osmani</a>, <a href="https://github.com/sindresorhus">Sindre Sorhus</a>, <a href="https://github.com/wibblymat">Mat Scales</a> and <a href="https://github.com/peol">Andrée Hansson</a>. We would also like to extend our thanks to <a href="https://github.com/rwldrn">Rick Waldron</a> for the optimizations he suggested for improving the project.</p>
 <p>For more information on our style-guide and how to get involved with basket.js, please see the README in our project <a href="http://github.com/addyosmani/basket.js">repo</a>.</p>
 		</div>
 	</div>
@@ -264,6 +265,6 @@ basket
 			});
 
 	</script>
-		<a href="http://github.com/addyosmani/basket.js"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/e6bef7a091f5f3138b8cd40bc3e114258dd68ddf/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub"></a>
+		<a href="http://github.com/addyosmani/basket.js"><img style="position: absolute; top: 0; right: 0; border: 0;" src="asset/github-ribbon.png" alt="Fork me on GitHub"></a>
 	</body>
 </html>

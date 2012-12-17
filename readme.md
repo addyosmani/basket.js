@@ -1,6 +1,9 @@
-# basket.js [![Build Status](https://secure.travis-ci.org/addyosmani/basket.js.png?branch=gh-pages)](http://travis-ci.org/addyosmani/basket.js)
+<img src="asset/logo.png" style="width:450px"/> 
+
 
 A [proof-of-concept](http://addyosmani.github.com/basket.js) script loader for caching and loading scripts using localStorage
+
+[![Build Status](https://secure.travis-ci.org/addyosmani/basket.js.png?branch=gh-pages)](http://travis-ci.org/addyosmani/basket.js)
 
 ## Contribute
 
