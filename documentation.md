@@ -164,6 +164,6 @@ basket
 `clear()` removes items from the cache.
 
 ```javascript
-	basket.clear();
-	basket.clear( true );
+basket.clear();
+basket.clear( true );
 ```
