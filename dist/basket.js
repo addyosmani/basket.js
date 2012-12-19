@@ -1,6 +1,6 @@
 /*!
 * basket.js
-* v0.3.0 - 2012-12-15
+* v0.3.0 - 2012-12-18
 * http://addyosmani.github.com/basket.js
 * (c) Addy Osmani; MIT License
 * Created by: Addy Osmani, Sindre Sorhus, Andrée Hansson
@@ -42,7 +42,6 @@
 
 	var head = document.head || document.getElementsByTagName('head')[0];
 	var storagePrefix = 'basket-';
-	var promises = [];
 	var defaultExpiration = 5000;
 
 	var addLocalStorage = function( key, storeObj ) {
@@ -162,7 +161,7 @@
 
 	window.basket = {
 		require: function() {
-			var i, l;
+			var i, l, promises = [];
 
 			for ( i = 0, l = arguments.length; i < l; i++ ) {
 				promises.push( handleStackObject( arguments[ i ] ) );
@@ -177,7 +176,12 @@
 		},
 
 		get: function( key ) {
-			return JSON.parse( localStorage.getItem( storagePrefix + key ) || 'false' );
+			var item = localStorage.getItem( storagePrefix + key );
+			try	{
+				return JSON.parse( item || 'false' );
+			} catch( e ) {
+				return false;
+			}
 		},
 
 		clear: function( expired ) {

@@ -274,4 +274,13 @@ asyncTest( 'non-existant file causes error handler to be called', 2, function() 
 		});
 });
 
-
+asyncTest( 'handle the case where localStorage contains something we did not expect', 2, function() {
+	localStorage.setItem( 'basket-test', 'An invalid JSON string' );
+	basket
+		.require({ url: 'fixtures/jquery.min.js', key: 'test' })
+		.then(function() {
+			start();
+			ok( basket.get( 'test' ), 'successfully retrieved the script' );
+			ok( basket.get( 'test' ).key === 'test', 'got a valid cache object' );
+		});
+});
