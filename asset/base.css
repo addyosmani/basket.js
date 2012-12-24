@@ -213,10 +213,8 @@ pre code {
 }
 
 .boxout {
-	border-radius: 20px;
-	border: 2px solid rgb(220, 220, 235);
+	border-radius: 5px;
+	border: 1px solid rgb(220, 220, 235);
 	background-color: rgb(240, 240, 255);
 	padding: 10px;
-	margin: 0 auto;
-	width: 500px;
 }
