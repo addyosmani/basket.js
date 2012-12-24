@@ -1,4 +1,4 @@
-<img src="http://addyosmani.github.com/basket.js/asset/logo.png" style="width:450px"/> 
+![basket.js logo](https://raw.github.com/addyosmani/basket.js/gh-pages/asset/logo.png)
 
 
 A [proof-of-concept](http://addyosmani.github.com/basket.js) script loader for caching and loading scripts using localStorage
