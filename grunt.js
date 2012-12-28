@@ -12,7 +12,9 @@ module.exports = function( grunt ) {
 				'* (c) <%= pkg.author.name %>;' +
 				' <%= _.pluck(pkg.licenses, "type").join(", ") %> License\n' +
 				'* Created by: <%= _.pluck(pkg.maintainers, "name").join(", ") %>\n' +
-				'* Contributors: <%= _.pluck(pkg.contributors, "name").join(", ") %>\n*/'
+				'* Contributors: <%= _.pluck(pkg.contributors, "name").join(", ") %>\n' +
+				'* Uses rsvp.js, https://github.com/tildeio/rsvp.js\n' +
+				'*/'
 		},
 		concat: {
 			'dist/basket.js': [
@@ -23,6 +25,11 @@ module.exports = function( grunt ) {
 		min: {
 			'dist/basket.min.js': [
 				'<banner>',
+				'dist/basket.js'
+			],
+			'dist/basket.full.min.js': [
+				'<banner>',
+				'components/rsvp/rsvp.min.js',
 				'dist/basket.js'
 			]
 		},
