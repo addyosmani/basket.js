@@ -1,10 +1,11 @@
 /*!
 * basket.js
-* v0.3.0 - 2012-12-18
+* v0.3.0 - 2012-12-28
 * http://addyosmani.github.com/basket.js
 * (c) Addy Osmani; MIT License
 * Created by: Addy Osmani, Sindre Sorhus, Andrée Hansson
 * Contributors: Ironsjp, Mathias Bynens, Rick Waldron, Felipe Morais
+* Uses rsvp.js, https://github.com/tildeio/rsvp.js
 */
 
 (function( window, document ) {
