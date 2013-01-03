@@ -167,3 +167,23 @@ basket
 basket.clear();
 basket.clear( true );
 ```
+
+### basket.isValidItem
+
+`basket.isValidItem( source, obj )`
+
+* **source** The source of the item returned from localStorage
+* **obj** The item passed into `require`
+
+**Optional** method that is called when validating a previously cached item.  `isValidItem` is called for each item in a `require` call.
+
+`isValidItem()` is expected to return true is the item is valid.  If `isValidItem()` returns false, the item will be loaded from the network.  `isValidItem()` if present is an additonal check and does not override the existing checks for expiration and uniqueness.
+
+This is targetted at advanced usage and is strictly optional.  The use of `unique` and `expire` parameters are the most appropriate way to handle common scenarios.
+
+
+```javascript
+basket.isValidItem = function( source, obj ) {
+	return myVerificationFunction( source, obj );
+};
+```
