@@ -284,3 +284,24 @@ asyncTest( 'handle the case where localStorage contains something we did not exp
 			ok( basket.get( 'test' ).key === 'test', 'got a valid cache object' );
 		});
 });
+
+asyncTest( 'file is fetched from server even it exists when isValidItem answers no', 2, function() {
+		basket
+			.require({ url: 'fixtures/stamp-script.js'})
+			.then(function() {
+				var stamp = basket.get('fixtures/stamp-script.js').stamp;
+				ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
+				basket.isValidItem = function(source, obj) {
+					return false;
+				};
+				basket
+					.require({ url: 'fixtures/stamp-script.js' })
+					.then(function() {
+						var stampAfter = basket.get('fixtures/stamp-script.js').stamp;
+						ok( stamp !== stampAfter, 'Data retrieved from server' );
+
+						start();
+					});
+			});
+});
+
