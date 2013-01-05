@@ -4,6 +4,7 @@ module( 'Test script API', {
 	teardown: function() {
 		localStorage.clear();
 		basket.fail = false;
+		basket.isValidItem = null;
 	}
 });
 
