@@ -40,11 +40,11 @@ This fetches a single script and executes it. If the script was already in the l
 **Multiple scripts**
 
 ```javascript
-basket.require({
+basket.require(
 	{ url: 'jquery.js' },
 	{ url: 'underscore.js' },
 	{ url: 'backbone.js' }
-});
+);
 ```
 
 Multiple scripts will be requested. The scripts are requested asynchronously and so my load and execute in any order.
