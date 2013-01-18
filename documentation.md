@@ -19,7 +19,7 @@ To free space basket.js will only remove cached scripts that it placed in localS
 
 **details** Either an object or an array of objects with the following fields:
 
-* **uri** (*required*) The URI for the script. At present this must be a URI on the same origin as the caller.
+* **url** (*required*) The URI for the script. At present this must be a URI on the same origin as the caller.
 * **key** The name that will be used to refer to this script. By default this is the *uri*.
 * **expire** How long (in hours) before the cached item expires.
 * **execute** Whether to cause the script to be executed once it has been retrieved. Defaults to true.
