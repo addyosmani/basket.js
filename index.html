@@ -82,7 +82,7 @@
 <p><em>details:</em> Either an object or an array of objects with the following fields:</p>
 
 <ul>
-	<li><strong>uri</strong> (<em>required</em>) The URI for the script. At present this must be a URI on the same origin as the caller.</li>
+	<li><strong>url</strong> (<em>required</em>) The URI for the script. At present this must be a URI on the same origin as the caller.</li>
 	<li><strong>key</strong> The name that will be used to refer to this script. By default this is the <em>uri</em>.</li>
 	<li><strong>expire</strong> How long (in hours) before the cached item expires.</li>
 	<li><strong>execute</strong> Whether to cause the script to be executed once it has been retrieved. Defaults to true.</li>
@@ -109,7 +109,7 @@
 );
 </code></pre>
 
-<p>Multiple scripts will be requested. The scripts are requested asynchronously and so my load and execute in any order.</p>
+<p>Multiple scripts will be requested. The scripts are requested asynchronously and so may load and execute in any order.</p>
 
 <strong>Ordering dependencies</strong>
 
