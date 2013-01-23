@@ -1,4 +1,4 @@
-<h3 id="clear-doc">basket.clear</h3>
+### basket.clear
 
 `basket.clear( expired )`
 

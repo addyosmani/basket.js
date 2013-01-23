@@ -1,4 +1,4 @@
-<h3 id="get-doc">basket.get</h3>
+### basket.get
 
 `basket.get( key )`
 

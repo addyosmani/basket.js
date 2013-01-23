@@ -1,4 +1,4 @@
-<h3 id="remove-doc">basket.remove</h3>
+### basket.remove
 
 `basket.remove( key )`
 

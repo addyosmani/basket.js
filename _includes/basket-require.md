@@ -1,4 +1,4 @@
-<h3 id="require-doc">basket.require</h3>
+### basket.require
 
 `basket.require( details )`
 
