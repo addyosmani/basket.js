@@ -2,23 +2,7 @@
 layout: default
 ---
 
-		<h1><img src="asset/logo.png" width="450" alt="basket.js logo"></h1>
-		<h2>A simple (proof-of-concept) script loader that caches scripts with localStorage </h2>
-		<a href="https://twitter.com/share" class="twitter-share-button" data-text="basket.js - a simple script loader that caches scripts with localStorage" data-via="addyosmani">Tweet</a>
-		<p>
-		    <strong>Version 0.3: </strong>
-			<a href="dist/basket.js">basket.js</a> (4.4KB) &nbsp;
-			<a href="dist/basket.min.js">basket.min.js</a>* (1.1KB gzipped) &nbsp;
-			<a href="dist/basket.full.min.js">basket.full.min.js</a> (2.0KB gzipped) &nbsp;
-			<small>* = Use this version if you want to manually handle the <a href="https://github.com/tildeio/rsvp.js">rsvp.js</a> dependency</small>
-		</p>
-
-		<div id="message" class="content"><p><strong>If you're seeing this message, something has gone wrong. Please ensure you are testing this page using a HTTP server.</strong></p></div>
-		<div class="content">
-
-<h3>Introduction</h3>
-
-<p>basket.js is a small JavaScript library supporting localStorage caching of scripts. If script(s) have previously been saved locally, they will simply be loaded and injected into the current document. If not, they will be XHR'd in for use right away, but cached so that no additional loads are required in the future.</p>
+{% include introduction.md %}
 
 <h3>Why localStorage?</h3>
 
@@ -225,4 +209,3 @@ basket.clear( true );
 <h3>Team, License &amp; Contribution Guide</h3>
 <p>basket.js is released under an <a href="http://en.wikipedia.org/wiki/MIT_License">MIT License</a> and is currently maintained by <a href="https://github.com/addyosmani">Addy Osmani</a>, <a href="https://github.com/sindresorhus">Sindre Sorhus</a>, <a href="https://github.com/wibblymat">Mat Scales</a> and <a href="https://github.com/peol">Andrée Hansson</a>. We would also like to extend our thanks to <a href="https://github.com/rwldrn">Rick Waldron</a> for the optimizations he suggested for improving the project.</p>
 <p>For more information on our style-guide and how to get involved with basket.js, please see the README in our project <a href="http://github.com/addyosmani/basket.js">repo</a>.</p>
-		</div>
