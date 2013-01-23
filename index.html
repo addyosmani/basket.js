@@ -9,28 +9,7 @@ layout: default
 {% include about-localstorage.md %}
 {% include api.html %}
 {% include basket-require.md %}
-
-<h3 id="get-doc">basket.get</h3>
-
-<p><code>basket.get( key )</code></p>
-
-<p><em>key:</em> The key to lookup in the localStorage cache.</p>
-
-<p><code>get()</code> will return an object if script is found or false if not. The object contains the same data as that passed to <code>require()</code> when it was first loaded, with some additional details added:</p>
-
-<ul>
-	<li><strong>stamp</strong> The timestamp for when the file was fetched.</li>
-	<li><strong>expire</strong> The timestamp for when the item will expire.</li>
-	<li><strong>data</strong> The file contents of the script.</li>
-</ul>
-
-<pre><code>var req, ttl;
-basket.require({ url: 'jquery.min.js', key: 'jquery' });
-req = basket.get('jquery');
-// know the lifetime
-ttl = req.expire - req.stamp;
-</code></pre>
-
+{% include basket-get.md %}
 
 <h3 id="remove-doc">basket.remove</h3>
 
