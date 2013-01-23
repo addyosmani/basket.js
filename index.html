@@ -3,14 +3,7 @@ layout: default
 ---
 
 {% include introduction.md %}
-
-<h3>Why localStorage?</h3>
-
-<p><a href="http://www.stevesouders.com/blog/2011/03/28/storager-case-study-bing-google/">Tests</a> by Google and Bing have shown that there are performance benefits to caching assets in localStorage (especially on mobile) when compared to simply reading and writing from the standard browser cache. This project is currently working on replicating these tests in the public so that we have definitive statistics on whether this is true. </p>
-
-<p>Developers have also been wondering why we opted for localStorage as opposed to alternatives such as IndexedDB. Jens Arps has shown that IDB is at present <a href="http://jsperf.com/indexeddb-vs-localstorage/2">significantly slower</a> than localStorage for reading and writing assets. Other developers exploring this space have also shown that localStorage works just fine for caching data (it's actually significantly <a href="http://www.webdirections.org/blog/localstorage-perhaps-not-so-harmful/">faster</a> in Safari at the moment than any other browser). </p>
-
-<p>We believe that in time, once implementers have optimized localStorage, it will become more feasible to use cross-browser. In the mean time, we are also exploring solutions such as the <a href="http://www.html5rocks.com/en/tutorials/file/filesystem/">FileSystem API</a> as a storage mechanism for caching scripts locally.</p>
+{% include why-localstorage.md %}
 
 <h3>Project History</h3>
 
