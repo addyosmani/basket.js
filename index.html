@@ -11,20 +11,8 @@ layout: default
 {% include basket-require.md %}
 {% include basket-get.md %}
 {% include basket-remove.md %}
+{% include basket-clear.md %}
 
-<h3 id="clear-doc">basket.clear</h3>
-
-<p><code>basket.clear( expired )</code></p>
-
-<p><em>expired:</em> If <code>expired</code> is true then only items that have expired will be removed. Otherwise all items are removed.</p>
-
-<p><code>clear()</code> removes items from the cache.</p>
-
-<pre><code>basket.clear();
-basket.clear( true );
-</code></pre>
-
-<p>&nbsp;</p>
 <h3>The Future</h3>
 <p>We are currently investigating a number of different features we would like to bring to the project, as well as looking to produce some high-quality <a href="https://github.com/addyosmani/basket.js/issues/24">performance benchmarks</a> (compared to IndexedDB, Browser cache and more). To find out more, check out <a href="https://github.com/addyosmani/basket.js/issues">what we're working on</a>.</p>
 
