@@ -10,19 +10,7 @@ layout: default
 {% include api.html %}
 {% include basket-require.md %}
 {% include basket-get.md %}
-
-<h3 id="remove-doc">basket.remove</h3>
-
-<p><code>basket.remove( key )</code></p>
-
-<p><em>key:</em> The key to remove from the localStorage cache.</p>
-
-<p><code>remove()</code> will simply remove a previously cached script from localStorage. An example of how to use it can be seen below:</p>
-
-<pre><code>basket
-	.remove('jquery.js')
-	.remove('modernizr');
-</code></pre>
+{% include basket-remove.md %}
 
 <h3 id="clear-doc">basket.clear</h3>
 
