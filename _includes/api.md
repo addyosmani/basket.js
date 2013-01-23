@@ -2,13 +2,15 @@
 
 ### Summary of changes since version 0.2
 
-**basket.require() now returns a Promise**. Calls to `require()` are no longer chainable but you get better flexibilty in handling dependancies and errors in return.
+- **basket.require() now returns a Promise**. Calls to `require()` are no longer chainable but you get better flexibilty in handling dependencies and errors in return.
 
-**The basket.wait() method has been removed**. The promise returned by `require()` fulfills the same purpose in a more standard way.
+- **The basket.wait() method has been removed**. The promise returned by `require()` fulfills the same purpose in a more standard way.
 
-**The basket.add() method has been removed**. Manually adding items to the cache is no longer supported.
+- **The basket.add() method has been removed**. Manually adding items to the cache is no longer supported.
 
-**basket.clear() has been added**.
+- **basket.clear() has been added**.
+
+---
 
 See the updated documentation below for more details.
 
@@ -19,7 +21,7 @@ See the updated documentation below for more details.
 
 ### basket.require
 
-`basket.require( details )`
+`basket.require(details)`
 
 *details:* Either an object or an array of objects with the following fields:
 
@@ -57,11 +59,11 @@ Multiple scripts will be requested. The scripts are requested asynchronously and
 **Ordering dependencies**
 
 ```javascript
-basket.require({ url: 'jquery.js' })
-	.then(function() {
+basket
+	.require({ url: 'jquery.js' })
+	.then(function () {
 		basket.require({ url: 'jquery-ui.js' });
 	});
-})
 ```
 
 Here we ask basket.js to load jQuery. Once it has been fetched and executed, the promise returned by `require()` will be fulfilled and the callback passed to the `then()` method of the promise will be executed. Now we can do anything the requires jquery to be loaded including load any scripts that depend on it.
@@ -69,12 +71,13 @@ Here we ask basket.js to load jQuery. Once it has been fetched and executed, the
 **Error handling**
 
 ```javascript
-basket.require({ url: 'missing.js' })
-	.then(function() {
+basket
+	.require({ url: 'missing.js' })
+	.then(function () {
 		// Success
-	}, function( error ) {
+	}, function (error) {
 		// There was an error fetching the script
-		console.log( error );
+		console.log(error);
 	});
 ```
 
@@ -113,10 +116,9 @@ The script will be cached but will not be added to the document to be executed.
 **Cache busting**
 
 ```javascript
-/* fetch and cache the file */
+// fetch and cache the file
 basket.require({ url: 'jquery.min.js' });
-
-/* fetch and cache again */
+// fetch and cache again
 basket.require({ url: 'jquery.min.js', unique: 123 });
 ```
 
@@ -127,7 +129,7 @@ basket.js will add the "basket-unique" parameter on to the url to also prevent t
 
 ### basket.get
 
-`basket.get( key )`
+`basket.get(key)`
 
 **key** The key to lookup in the localStorage cache.
 
@@ -148,7 +150,7 @@ ttl = req.expire - req.stamp;
 
 ### basket.remove
 
-`basket.remove( key )`
+`basket.remove(key)`
 
 **key** The key to remove from the localStorage cache.
 
@@ -162,7 +164,7 @@ basket
 
 ### basket.clear
 
-`basket.clear( expired )`
+`basket.clear(expired)`
 
 **expired** If `expired` is true then only items that have expired will be removed. Otherwise all items are removed.
 
@@ -170,12 +172,12 @@ basket
 
 ```javascript
 basket.clear();
-basket.clear( true );
+basket.clear(true);
 ```
 
 ### basket.isValidItem
 
-`basket.isValidItem( source, obj )`
+`basket.isValidItem(source, obj)`
 
 * **source** The source of the item returned from localStorage
 * **obj** The item passed into `require`
@@ -188,7 +190,7 @@ This is targetted at advanced usage and is strictly optional.  The use of `uniqu
 
 
 ```javascript
-basket.isValidItem = function( source, obj ) {
-	return myVerificationFunction( source, obj );
+basket.isValidItem = function (source, obj) {
+	return myVerificationFunction(source, obj);
 };
 ```
