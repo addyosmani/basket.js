@@ -1,10 +1,12 @@
-/*global module, asyncTest, ok, start, basket*/
+/*global module, asyncTest, test, ok, start, basket, sinon*/
 'use strict';
 module( 'Test script API', {
 	teardown: function() {
 		localStorage.clear();
 		basket.fail = false;
 		basket.isValidItem = null;
+		basket.first = 0;
+		basket.second = 0;
 	}
 });
 
@@ -308,7 +310,7 @@ asyncTest( 'file is fetched from server even if it exists when isValidItem answe
 			.then(function() {
 				var stamp = basket.get('fixtures/stamp-script.js').stamp;
 				ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
-				basket.isValidItem = function(source, obj) {
+				basket.isValidItem = function() {
 					return false;
 				};
 				basket
@@ -321,3 +323,70 @@ asyncTest( 'file is fetched from server even if it exists when isValidItem answe
 					});
 			});
 });
+
+asyncTest( 'when first file fails, second file is fetched but not executed', 3, function() {
+	var server = sinon.fakeServer.create();
+	basket.first = basket.second = 0;
+
+	server.respondWith( 'GET', '/second.js', [ 200, { 'Content-Type': 'text/javascript' }, 'basket.second = 1;' ] );
+
+	basket.require({ url: '/first.js' })
+		.thenRequire({ url: '/second.js' })
+		.then( function() {
+
+		}, function() {
+			ok( !basket.get( '/first.js' ), 'first script failed to load' );
+			ok( basket.get( '/second.js' ), 'second script was loaded and stored' );
+			ok( basket.second === 0, 'second script did not execute' );
+
+			start();
+			server.restore();
+		});
+
+	server.respond();
+});
+
+asyncTest( 'second file is fetched early but executes later', 6, function() {
+	var server = sinon.fakeServer.create();
+	basket.first = basket.second = 0;
+
+
+	var firstPromise = basket.require({ url: '/first.js' });
+	firstPromise.then( function() {
+		ok( basket.get( '/second.js' ), 'second script was already loaded and stored' );
+		ok( basket.first === 1, 'first script should have been executed' );
+		ok( basket.second === 0, 'second script should not have been executed yet' );
+	});
+
+	firstPromise
+		.thenRequire({ url: '/second.js' })
+		.then( function() {
+			ok( basket.first === 1, 'first script is eventually executed' );
+			ok( basket.second === 2, 'second script is eventually executed second' );
+
+			start();
+			server.restore();
+		});
+
+	ok( server.requests.length === 2, 'Both requests have been made' );
+
+	server.requests[ 1 ].respond( 200, { 'Content-Type': 'text/javascript' }, 'basket.second = basket.first + 1;' );
+
+	setTimeout( function() {
+		server.requests[ 0 ].respond( 200, { 'Content-Type': 'text/javascript' }, 'basket.first = 1;' );
+	}, 50);
+});
+
+test( 'with thenRequire all requests fired immediately', 1, function() {
+	var server = sinon.fakeServer.create();
+
+	basket
+		.require({ url: '/first.js' })
+		.thenRequire({ url: '/second.js' })
+		.thenRequire({ url: '/third.js' });
+
+	ok( server.requests.length === 3, 'all requests were fired' );
+
+	server.restore();
+});
+
