@@ -29,7 +29,7 @@ module.exports = function( grunt ) {
 			],
 			'dist/basket.full.min.js': [
 				'<banner>',
-				'components/rsvp/rsvp.min.js',
+				'bower_components/rsvp/rsvp.min.js',
 				'dist/basket.js'
 			]
 		},
