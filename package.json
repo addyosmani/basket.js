@@ -44,10 +44,11 @@
 	},
 	"scripts": {
 		"dev": "grunt",
-		"test": "grunt test"
+		"test": "bower install && grunt test"
 	},
 	"devDependencies": {
-		"grunt": "~0.3.10"
+		"grunt": "~0.3.10",
+		"bower": ">=0.10.0"
 	},
 	"licenses": [{
 		"type": "MIT"

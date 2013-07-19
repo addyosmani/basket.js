@@ -4,6 +4,3 @@ node_js:
 branches:
   only:
     - gh-pages
-before_script:
-    - npm install bower -g
-    - bower install
