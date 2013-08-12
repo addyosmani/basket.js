@@ -137,21 +137,21 @@ asyncTest( 'store data using expiration (non-expired)', 2, function() {
 
 
 asyncTest( 'store data using expiration (expired)', 2, function() {
-		basket
-			.require({ url: 'fixtures/stamp-script.js', expire: -1 })
-			.then(function() {
-				var stamp = basket.get('fixtures/stamp-script.js').stamp;
-				ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
+	basket
+		.require({ url: 'fixtures/stamp-script.js', expire: -1 })
+		.then(function() {
+			var stamp = basket.get('fixtures/stamp-script.js').stamp;
+			ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
 
-				basket
-					.require({ url: 'fixtures/stamp-script.js' })
-					.then(function() {
-						var stampAfter = basket.get('fixtures/stamp-script.js').stamp;
-						ok( stamp !== stampAfter, 'Data retrieved from server' );
+			basket
+				.require({ url: 'fixtures/stamp-script.js' })
+				.then(function() {
+					var stampAfter = basket.get('fixtures/stamp-script.js').stamp;
+					ok( stamp !== stampAfter, 'Data retrieved from server' );
 
-						start();
-					});
-			});
+					start();
+				});
+		});
 });
 
 
@@ -168,60 +168,60 @@ asyncTest( 'get()', 2, function() {
 
 
 asyncTest( 'store data using file-versioning (not previous explicit version)', 3, function() {
-		basket
-			.require({ url: 'fixtures/stamp-script.js' })
-			.then(function() {
-				var stamp = basket.get('fixtures/stamp-script.js').stamp;
-				ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
+	basket
+		.require({ url: 'fixtures/stamp-script.js' })
+		.then(function() {
+			var stamp = basket.get('fixtures/stamp-script.js').stamp;
+			ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
 
-				basket
-					.require({ url: 'fixtures/stamp-script.js', unique: 123 })
-					.then(function() {
-						var req = basket.get('fixtures/stamp-script.js');
-						ok( stamp !== req.stamp, 'Data retrieved from server' );
-						ok( req.url.indexOf('basket-unique=123') > 0, 'Sending basket unique parameter' );
+			basket
+				.require({ url: 'fixtures/stamp-script.js', unique: 123 })
+				.then(function() {
+					var req = basket.get('fixtures/stamp-script.js');
+					ok( stamp !== req.stamp, 'Data retrieved from server' );
+					ok( req.url.indexOf('basket-unique=123') > 0, 'Sending basket unique parameter' );
 
-						start();
-					});
-			});
+					start();
+				});
+		});
 });
 
 
 asyncTest( 'store data using file-versioning (same release)', 2, function() {
-		basket
-			.require({ url: 'fixtures/stamp-script.js', unique: 123 })
-			.then(function() {
-				var stamp = basket.get('fixtures/stamp-script.js').stamp;
-				ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
+	basket
+		.require({ url: 'fixtures/stamp-script.js', unique: 123 })
+		.then(function() {
+			var stamp = basket.get('fixtures/stamp-script.js').stamp;
+			ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
 
-				basket
-					.require({ url: 'fixtures/stamp-script.js', unique: 123 })
-					.then(function() {
-						var stampAfter = basket.get('fixtures/stamp-script.js').stamp;
-						ok( stamp === stampAfter, 'Data retrieved from server' );
+			basket
+				.require({ url: 'fixtures/stamp-script.js', unique: 123 })
+				.then(function() {
+					var stampAfter = basket.get('fixtures/stamp-script.js').stamp;
+					ok( stamp === stampAfter, 'Data retrieved from server' );
 
-						start();
-					});
-			});
+					start();
+				});
+		});
 });
 
 
 asyncTest( 'store data using file-versioning (different release)', 3, function() {
-		basket
-			.require({ url: 'fixtures/stamp-script.js', unique: 123 })
-			.then(function() {
-				var stamp = basket.get('fixtures/stamp-script.js').stamp;
-				ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
+	basket
+		.require({ url: 'fixtures/stamp-script.js', unique: 123 })
+		.then(function() {
+			var stamp = basket.get('fixtures/stamp-script.js').stamp;
+			ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
 
-				basket
-					.require({ url: 'fixtures/stamp-script.js', unique: 456 })
-					.then(function() {
-						var req = basket.get('fixtures/stamp-script.js');
-						ok( stamp !== req.stamp, 'Data retrieved from server' );
-						ok( req.url.indexOf('basket-unique=456') > 0, 'Sending basket unique parameter' );
-						start();
-					});
-			});
+			basket
+				.require({ url: 'fixtures/stamp-script.js', unique: 456 })
+				.then(function() {
+					var req = basket.get('fixtures/stamp-script.js');
+					ok( stamp !== req.stamp, 'Data retrieved from server' );
+					ok( req.url.indexOf('basket-unique=456') > 0, 'Sending basket unique parameter' );
+					start();
+				});
+		});
 });
 
 
@@ -305,23 +305,23 @@ asyncTest( 'chaining with thenRequire', 3, function() {
 });
 
 asyncTest( 'file is fetched from server even if it exists when isValidItem answers no', 2, function() {
-		basket
-			.require({ url: 'fixtures/stamp-script.js'})
-			.then(function() {
-				var stamp = basket.get('fixtures/stamp-script.js').stamp;
-				ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
-				basket.isValidItem = function() {
-					return false;
-				};
-				basket
-					.require({ url: 'fixtures/stamp-script.js' })
-					.then(function() {
-						var stampAfter = basket.get('fixtures/stamp-script.js').stamp;
-						ok( stamp !== stampAfter, 'Data retrieved from server' );
+	basket
+		.require({ url: 'fixtures/stamp-script.js'})
+		.then(function() {
+			var stamp = basket.get('fixtures/stamp-script.js').stamp;
+			ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
+			basket.isValidItem = function() {
+				return false;
+			};
+			basket
+				.require({ url: 'fixtures/stamp-script.js' })
+				.then(function() {
+					var stampAfter = basket.get('fixtures/stamp-script.js').stamp;
+					ok( stamp !== stampAfter, 'Data retrieved from server' );
 
-						start();
-					});
-			});
+					start();
+				});
+		});
 });
 
 asyncTest( 'when first file fails, second file is fetched but not executed', 3, function() {
@@ -332,16 +332,15 @@ asyncTest( 'when first file fails, second file is fetched but not executed', 3, 
 
 	basket.require({ url: '/first.js' })
 		.thenRequire({ url: '/second.js' })
-		.then( function() {
+		.then( function() {},
+			function() {
+				ok( !basket.get( '/first.js' ), 'first script failed to load' );
+				ok( basket.get( '/second.js' ), 'second script was loaded and stored' );
+				ok( basket.second === 0, 'second script did not execute' );
 
-		}, function() {
-			ok( !basket.get( '/first.js' ), 'first script failed to load' );
-			ok( basket.get( '/second.js' ), 'second script was loaded and stored' );
-			ok( basket.second === 0, 'second script did not execute' );
-
-			start();
-			server.restore();
-		});
+				start();
+				server.restore();
+			});
 
 	server.respond();
 });
