@@ -389,3 +389,136 @@ test( 'with thenRequire all requests fired immediately', 1, function() {
 	server.restore();
 });
 
+asyncTest( 'the type of the stored object is the Content-Type of the resource', 4, function() {
+	basket.clear();
+
+	var server = sinon.fakeServer.create();
+
+	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'Some text' ] );
+	server.respondWith( 'GET', '/example.js', [ 200, { 'Content-Type': 'text/javascript' }, 'Some JavaScript' ] );
+	server.respondWith( 'GET', '/example.xml', [ 200, { 'Content-Type': 'application/xml' }, '<tag>Some XML</tag>' ] );
+	server.respondWith( 'GET', '/example.json', [ 200, { 'Content-Type': 'application/json' }, '["some JSON"]' ] );
+
+	// Without execute: false, the default handler will try to execute all of
+	// these files as JS, leading to Syntax Errors being reported.
+	basket.require({ url: '/example.txt', execute: false }, { url: '/example.js', execute: false }, { url: '/example.xml', execute: false }, { url: '/example.json', execute: false })
+		.then( function() {
+			ok( basket.get( '/example.txt' ).type === 'text/plain', 'text file had correct type' );
+			ok( basket.get( '/example.js' ).type === 'text/javascript', 'javascript file had correct type' );
+			ok( basket.get( '/example.xml' ).type === 'application/xml', 'xml file had correct type' );
+			ok( basket.get( '/example.json' ).type === 'application/json', 'json file had correct type' );
+
+			start();
+			server.restore();
+		});
+
+	server.respond();
+});
+
+asyncTest( 'the type of the stored object can be overriden at original require time', 1, function() {
+	basket.clear();
+
+	var server = sinon.fakeServer.create();
+
+	server.respondWith( 'GET', '/example.json', [ 200, { 'Content-Type': 'application/json' }, '["some JSON"]' ] );
+
+	basket.require({ url: '/example.json', execute: false, type: 'misc/other' })
+		.then( function() {
+			ok( basket.get( '/example.json' ).type === 'misc/other', 'json file had overriden type' );
+
+			start();
+			server.restore();
+		});
+
+	server.respond();
+});
+
+asyncTest( 'different types can be handled separately', 1, function() {
+	var text = 'some example text';
+	var server = sinon.fakeServer.create();
+
+	basket.clear();
+	basket.addHandler( 'text/plain', function( obj ) {
+		ok( obj.data === text, 'the text/plain handler was used' );
+		start();
+		server.restore();
+		basket.removeHandler( 'text/plain' );
+	});
+
+	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, text ] );
+
+	basket.require({ url: '/example.txt' });
+
+	server.respond();
+});
+
+asyncTest( 'handlers can be removed', 1, function() {
+	var js = '// has to be valid JS to avoid a Syntax Error';
+	var handled = 0;
+	var server = sinon.fakeServer.create();
+
+	basket.clear();
+	basket.addHandler( 'text/plain', function() {
+		handled++;
+		basket.removeHandler( 'text/plain' );
+	});
+
+	server.respondWith( 'GET', '/example.js', [ 200, { 'Content-Type': 'text/plain' }, js ] );
+	server.respondWith( 'GET', '/example2.js', [ 200, { 'Content-Type': 'text/plain' }, js ] );
+
+	basket.require({ url: '/example.js' })
+		.thenRequire({ url: '/example2.js' })
+		.then( function () {
+			ok( handled === 1, 'the text/plain handler was only used once' );
+			start();
+			server.restore();
+		});
+
+	server.respond();
+});
+
+asyncTest( 'the same resource can be handled differently', 2, function() {
+	var server = sinon.fakeServer.create();
+
+	basket.clear();
+
+	basket.addHandler( 'first', function() {
+		ok( true, 'first handler was called' );
+	});
+
+	basket.addHandler( 'second', function() {
+		ok( true, 'second handler was called' );
+		start();
+		server.restore();
+	});
+
+	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, '' ] );
+
+	basket.require({ url: '/example.txt', type: 'first' })
+		.thenRequire({ url: '/example.txt', type: 'second' });
+
+	server.respond();
+});
+
+asyncTest( 'type falls back to Content-Type, even if previously overriden', 2, function() {
+	var server = sinon.fakeServer.create();
+
+	basket.clear();
+
+	basket.addHandler( 'first', function() {
+		ok( true, 'first handler was called' );
+	});
+
+	basket.addHandler( 'text/plain', function() {
+		ok( true, 'text/plain handler was called' );
+		start();
+		server.restore();
+	});
+
+	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, '' ] );
+
+	basket.require({ url: '/example.txt', type: 'first' })
+		.thenRequire({ url: '/example.txt' });
+
+	server.respond();
+});
