@@ -522,3 +522,128 @@ asyncTest( 'type falls back to Content-Type, even if previously overriden', 2, f
 
 	server.respond();
 });
+
+// This test is here to cover the full set of possibilities for this section
+// It doesn't really test anything that hasn't been tested elsewhere
+asyncTest( 'with live: false, we fallback to the network', 1, function() {
+	basket.clear();
+	var server = sinon.fakeServer.create();
+	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'foo' ] );
+
+	basket.require({ url: '/example.txt', execute: false, live: false })
+		.then( function() {
+			ok( basket.get( '/example.txt' ).data === 'foo', 'nothing in the cache so we fetched from the network' );
+			server.restore();
+			start();
+		});
+
+	server.respond();
+});
+
+asyncTest( 'with live: false, we attempt to fetch from the cache first', 1, function() {
+	basket.clear();
+	var server = sinon.fakeServer.create();
+	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'bar' ] );
+
+	// Add the item directly to the cache
+	localStorage.setItem( 'basket-/example.txt', JSON.stringify( {
+		url: '/example.txt',
+		key: '/example.txt',
+		data: 'foo',
+		originalType: 'text/plain',
+		type: 'text/plain',
+		stamp: +new Date(),
+		expire: +new Date() + 5000 * 60 * 60 * 1000
+	}));
+
+	basket.require({ url: '/example.txt', execute: false, live: false })
+		.then( function() {
+			ok( basket.get( '/example.txt' ).data === 'foo', 'fetched from the cache rather than getting fresh data from the network' );
+			server.restore();
+			start();
+		});
+
+
+	server.respond();
+});
+
+asyncTest( 'with live: true, we attempt to fetch from the network first', 1, function() {
+	basket.clear();
+	var server = sinon.fakeServer.create();
+	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'bar' ] );
+
+	// Add the item directly to the cache
+	localStorage.setItem( 'basket-/example.txt', JSON.stringify( {
+		url: '/example.txt',
+		key: '/example.txt',
+		data: 'foo',
+		originalType: 'text/plain',
+		type: 'text/plain',
+		stamp: +new Date(),
+		expire: +new Date() + 5000 * 60 * 60 * 1000
+	}));
+
+	basket.require({ url: '/example.txt', execute: false, live: true })
+		.then( function() {
+			ok( basket.get( '/example.txt' ).data === 'bar', 'fetched from the network even though cache was available' );
+			server.restore();
+			start();
+		});
+
+	server.respond();
+});
+
+asyncTest( 'with live: true, we still store the result in the cache', 1, function() {
+	basket.clear();
+	var server = sinon.fakeServer.create();
+	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'foo' ] );
+
+	basket.require({ url: '/example.txt', execute: false, live: true })
+		.then( function() {
+			ok( basket.get( '/example.txt' ), 'result stored in the cache' );
+			server.restore();
+			start();
+		});
+
+	server.respond();
+});
+
+asyncTest( 'with live: true, we fallback to the cache', 2, function() {
+	// TODO: How to test the navigator.onLine case?
+	basket.clear();
+	var server = sinon.fakeServer.create();
+	var clock = sinon.useFakeTimers();
+	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'baz' ] );
+
+	// Add the item directly to the cache
+	localStorage.setItem( 'basket-/example.txt', JSON.stringify( {
+		url: '/example.txt',
+		key: '/example.txt',
+		data: '12345',
+		originalType: 'text/plain',
+		type: 'text/plain',
+		stamp: +new Date(),
+		expire: +new Date() + 5000 * 60 * 60 * 1000
+	}));
+
+	ok( basket.get( '/example.txt' ), 'already exists in cache' );
+
+	basket.timeout = 100;
+	basket.require({ url: '/example.txt', execute: false, live: true })
+		.then( function() {
+			ok( basket.get( '/example.txt' ).data === '12345', 'server timed out, so fetched from cache' );
+			server.restore();
+			clock.restore();
+			start();
+		}, function () {
+			ok( false, 'the require failed due to lack of network, but should have used the cache' );
+			server.restore();
+			clock.restore();
+			start();
+		});
+
+	clock.tick(2000);
+	server.respond();
+	basket.timeout = 5000;
+});
+
