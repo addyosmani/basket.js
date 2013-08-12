@@ -53,8 +53,10 @@ module.exports = function( grunt ) {
 			}
 		},
 		watch: {
-			files: '<%= jshint.all %>',
-			tasks: 'jshint test'
+			scripts: {
+				files: '<%= jshint.all %>',
+				tasks: ['test']
+			}
 		},
 		connect: {
 			server: {
@@ -77,6 +79,7 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
 	grunt.loadNpmTasks('grunt-contrib-connect');
+	grunt.loadNpmTasks('grunt-contrib-watch');
 
 	// Dev - default
 	grunt.registerTask('default', ['test']);
