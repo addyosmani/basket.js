@@ -389,3 +389,261 @@ test( 'with thenRequire all requests fired immediately', 1, function() {
 	server.restore();
 });
 
+asyncTest( 'the type of the stored object is the Content-Type of the resource', 4, function() {
+	basket.clear();
+
+	var server = sinon.fakeServer.create();
+
+	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'Some text' ] );
+	server.respondWith( 'GET', '/example.js', [ 200, { 'Content-Type': 'text/javascript' }, 'Some JavaScript' ] );
+	server.respondWith( 'GET', '/example.xml', [ 200, { 'Content-Type': 'application/xml' }, '<tag>Some XML</tag>' ] );
+	server.respondWith( 'GET', '/example.json', [ 200, { 'Content-Type': 'application/json' }, '["some JSON"]' ] );
+
+	// Without execute: false, the default handler will try to execute all of
+	// these files as JS, leading to Syntax Errors being reported.
+	basket.require({ url: '/example.txt', execute: false }, { url: '/example.js', execute: false }, { url: '/example.xml', execute: false }, { url: '/example.json', execute: false })
+		.then( function() {
+			ok( basket.get( '/example.txt' ).type === 'text/plain', 'text file had correct type' );
+			ok( basket.get( '/example.js' ).type === 'text/javascript', 'javascript file had correct type' );
+			ok( basket.get( '/example.xml' ).type === 'application/xml', 'xml file had correct type' );
+			ok( basket.get( '/example.json' ).type === 'application/json', 'json file had correct type' );
+
+			start();
+			server.restore();
+		});
+
+	server.respond();
+});
+
+asyncTest( 'the type of the stored object can be overriden at original require time', 1, function() {
+	basket.clear();
+
+	var server = sinon.fakeServer.create();
+
+	server.respondWith( 'GET', '/example.json', [ 200, { 'Content-Type': 'application/json' }, '["some JSON"]' ] );
+
+	basket.require({ url: '/example.json', execute: false, type: 'misc/other' })
+		.then( function() {
+			ok( basket.get( '/example.json' ).type === 'misc/other', 'json file had overriden type' );
+
+			start();
+			server.restore();
+		});
+
+	server.respond();
+});
+
+asyncTest( 'different types can be handled separately', 1, function() {
+	var text = 'some example text';
+	var server = sinon.fakeServer.create();
+
+	basket.clear();
+	basket.addHandler( 'text/plain', function( obj ) {
+		ok( obj.data === text, 'the text/plain handler was used' );
+		start();
+		server.restore();
+		basket.removeHandler( 'text/plain' );
+	});
+
+	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, text ] );
+
+	basket.require({ url: '/example.txt' });
+
+	server.respond();
+});
+
+asyncTest( 'handlers can be removed', 1, function() {
+	var js = '// has to be valid JS to avoid a Syntax Error';
+	var handled = 0;
+	var server = sinon.fakeServer.create();
+
+	basket.clear();
+	basket.addHandler( 'text/plain', function() {
+		handled++;
+		basket.removeHandler( 'text/plain' );
+	});
+
+	server.respondWith( 'GET', '/example.js', [ 200, { 'Content-Type': 'text/plain' }, js ] );
+	server.respondWith( 'GET', '/example2.js', [ 200, { 'Content-Type': 'text/plain' }, js ] );
+
+	basket.require({ url: '/example.js' })
+		.thenRequire({ url: '/example2.js' })
+		.then( function () {
+			ok( handled === 1, 'the text/plain handler was only used once' );
+			start();
+			server.restore();
+		});
+
+	server.respond();
+});
+
+asyncTest( 'the same resource can be handled differently', 2, function() {
+	var server = sinon.fakeServer.create();
+
+	basket.clear();
+
+	basket.addHandler( 'first', function() {
+		ok( true, 'first handler was called' );
+	});
+
+	basket.addHandler( 'second', function() {
+		ok( true, 'second handler was called' );
+		start();
+		server.restore();
+	});
+
+	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, '' ] );
+
+	basket.require({ url: '/example.txt', type: 'first' })
+		.thenRequire({ url: '/example.txt', type: 'second' });
+
+	server.respond();
+});
+
+asyncTest( 'type falls back to Content-Type, even if previously overriden', 2, function() {
+	var server = sinon.fakeServer.create();
+
+	basket.clear();
+
+	basket.addHandler( 'first', function() {
+		ok( true, 'first handler was called' );
+	});
+
+	basket.addHandler( 'text/plain', function() {
+		ok( true, 'text/plain handler was called' );
+		start();
+		server.restore();
+	});
+
+	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, '' ] );
+
+	basket.require({ url: '/example.txt', type: 'first' })
+		.thenRequire({ url: '/example.txt' });
+
+	server.respond();
+});
+
+// This test is here to cover the full set of possibilities for this section
+// It doesn't really test anything that hasn't been tested elsewhere
+asyncTest( 'with live: false, we fallback to the network', 1, function() {
+	basket.clear();
+	var server = sinon.fakeServer.create();
+	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'foo' ] );
+
+	basket.require({ url: '/example.txt', execute: false, live: false })
+		.then( function() {
+			ok( basket.get( '/example.txt' ).data === 'foo', 'nothing in the cache so we fetched from the network' );
+			server.restore();
+			start();
+		});
+
+	server.respond();
+});
+
+asyncTest( 'with live: false, we attempt to fetch from the cache first', 1, function() {
+	basket.clear();
+	var server = sinon.fakeServer.create();
+	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'bar' ] );
+
+	// Add the item directly to the cache
+	localStorage.setItem( 'basket-/example.txt', JSON.stringify( {
+		url: '/example.txt',
+		key: '/example.txt',
+		data: 'foo',
+		originalType: 'text/plain',
+		type: 'text/plain',
+		stamp: +new Date(),
+		expire: +new Date() + 5000 * 60 * 60 * 1000
+	}));
+
+	basket.require({ url: '/example.txt', execute: false, live: false })
+		.then( function() {
+			ok( basket.get( '/example.txt' ).data === 'foo', 'fetched from the cache rather than getting fresh data from the network' );
+			server.restore();
+			start();
+		});
+
+
+	server.respond();
+});
+
+asyncTest( 'with live: true, we attempt to fetch from the network first', 1, function() {
+	basket.clear();
+	var server = sinon.fakeServer.create();
+	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'bar' ] );
+
+	// Add the item directly to the cache
+	localStorage.setItem( 'basket-/example.txt', JSON.stringify( {
+		url: '/example.txt',
+		key: '/example.txt',
+		data: 'foo',
+		originalType: 'text/plain',
+		type: 'text/plain',
+		stamp: +new Date(),
+		expire: +new Date() + 5000 * 60 * 60 * 1000
+	}));
+
+	basket.require({ url: '/example.txt', execute: false, live: true })
+		.then( function() {
+			ok( basket.get( '/example.txt' ).data === 'bar', 'fetched from the network even though cache was available' );
+			server.restore();
+			start();
+		});
+
+	server.respond();
+});
+
+asyncTest( 'with live: true, we still store the result in the cache', 1, function() {
+	basket.clear();
+	var server = sinon.fakeServer.create();
+	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'foo' ] );
+
+	basket.require({ url: '/example.txt', execute: false, live: true })
+		.then( function() {
+			ok( basket.get( '/example.txt' ), 'result stored in the cache' );
+			server.restore();
+			start();
+		});
+
+	server.respond();
+});
+
+asyncTest( 'with live: true, we fallback to the cache', 2, function() {
+	// TODO: How to test the navigator.onLine case?
+	basket.clear();
+	var server = sinon.fakeServer.create();
+	var clock = sinon.useFakeTimers();
+	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'baz' ] );
+
+	// Add the item directly to the cache
+	localStorage.setItem( 'basket-/example.txt', JSON.stringify( {
+		url: '/example.txt',
+		key: '/example.txt',
+		data: '12345',
+		originalType: 'text/plain',
+		type: 'text/plain',
+		stamp: +new Date(),
+		expire: +new Date() + 5000 * 60 * 60 * 1000
+	}));
+
+	ok( basket.get( '/example.txt' ), 'already exists in cache' );
+
+	basket.timeout = 100;
+	basket.require({ url: '/example.txt', execute: false, live: true })
+		.then( function() {
+			ok( basket.get( '/example.txt' ).data === '12345', 'server timed out, so fetched from cache' );
+			server.restore();
+			clock.restore();
+			start();
+		}, function () {
+			ok( false, 'the require failed due to lack of network, but should have used the cache' );
+			server.restore();
+			clock.restore();
+			start();
+		});
+
+	clock.tick(2000);
+	server.respond();
+	basket.timeout = 5000;
+});
+
