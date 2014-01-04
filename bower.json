@@ -3,7 +3,7 @@
 	"version": "0.3.0",
 	"main": "dist/basket.js",
 	"dependencies": {
-		"rsvp": "~1.2.0"
+		"rsvp": "~3.0.1"
 	},
 	"ignore": [
 		"_*",
