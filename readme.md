@@ -18,6 +18,11 @@ We are also attempting to get as much unit test coverage as possible. For this r
 
 *Also, please don't edit files in the "dist" subdirectory as they are generated via grunt. You'll find source code in the "lib" subdirectory!*
 
+### Community extensions and examples
+
+* [Load RequireJS modules with Basket.js](https://github.com/andrewwakeling/requirejs-basketjs/blob/master/basket-loader.js)
+* [Loading CSS with Basket.js](https://github.com/andrewwakeling/basket-css-example)
+
 
 ## Team
 
