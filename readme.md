@@ -20,7 +20,7 @@ We are also attempting to get as much unit test coverage as possible. For this r
 
 ### Building
 
-To build the project, you will first need to install the necessary dependencies using [npm](http://npmjs.org) and [Bower](http://bower.io]. Run:
+To build the project, you will first need to install the necessary dependencies (such as [RSVP](https://github.com/tildeio/rsvp.js)) using [npm](http://npmjs.org) and [Bower](http://bower.io]. Run:
 
 ```
 npm install && bower install
