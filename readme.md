@@ -1,7 +1,6 @@
 ![basket.js logo](https://raw.github.com/addyosmani/basket.js/gh-pages/asset/logo.png)
 
-
-A [proof-of-concept](http://addyosmani.github.com/basket.js) script loader for caching and loading scripts using localStorage
+[Basket.js](http://addyosmani.github.com/basket.js) is a script and resource loader for caching and loading scripts using localStorage
 
 [![Build Status](https://secure.travis-ci.org/addyosmani/basket.js.png?branch=gh-pages)](http://travis-ci.org/addyosmani/basket.js)
 
@@ -20,7 +19,7 @@ We are also attempting to get as much unit test coverage as possible. For this r
 
 ### Building
 
-To build the project, you will first need to install the necessary dependencies (such as [RSVP](https://github.com/tildeio/rsvp.js)) using [npm](http://npmjs.org) and [Bower](http://bower.io]. Run:
+To build the project, you will first need to install the necessary dependencies (such as [RSVP](https://github.com/tildeio/rsvp.js)) using [npm](http://npmjs.org) and [Bower](http://bower.io). Run:
 
 ```
 npm install && bower install
