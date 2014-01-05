@@ -18,6 +18,22 @@ We are also attempting to get as much unit test coverage as possible. For this r
 
 *Also, please don't edit files in the "dist" subdirectory as they are generated via grunt. You'll find source code in the "lib" subdirectory!*
 
+### Building
+
+To build the project, you will first need to install the necessary dependencies using [npm](http://npmjs.org) and [Bower](http://bower.io]. Run:
+
+```
+npm install && bower install
+```
+
+in the project root to get everything you need. Next, to actually build the project you will need [Grunt](http://gruntjs.com).Run
+
+```
+grunt release
+```
+
+to generate a new release, otherwise just running `grunt test` will run the unit tests.
+
 ### Community extensions and examples
 
 * [Load RequireJS modules with Basket.js](https://github.com/andrewwakeling/requirejs-basketjs/blob/master/basket-loader.js)
