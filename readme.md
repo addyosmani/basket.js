@@ -33,11 +33,17 @@ grunt release
 
 to generate a new release, otherwise just running `grunt test` will run the unit tests.
 
-### Community extensions and examples
+### Community articles, extensions and examples
 
+#### Examples
 * [Load RequireJS modules with Basket.js](https://github.com/andrewwakeling/requirejs-basketjs/blob/master/basket-loader.js)
 * [Loading CSS with Basket.js](https://github.com/andrewwakeling/basket-css-example)
 
+#### Articles
+
+* [Basket.js: A JavaScript Loader With LocalStorage-based script caching](http://badassjs.com/post/40850339601/basket-js-a-javascript-loader-with-localstorage-based)
+* [basket.js caches scripts with HTML5 localStorage](http://ahmadassaf.com/blog/web-development/scripts-plugins/basket-js-caches-scripts-with-html5-localstorage/)
+* [Basket.js for improved script caching](http://t3n.de/news/basketjs-performance-localstorage-515119/)
 
 ## Team
 
