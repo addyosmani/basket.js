@@ -1,45 +1,13 @@
 /*!
 * basket.js
-* v0.3.0 - 2012-12-28
+* v0.3.0 - 2014-01-05
 * http://addyosmani.github.com/basket.js
-* (c) Addy Osmani; MIT License
-* Created by: Addy Osmani, Sindre Sorhus, Andrée Hansson
+* (c) Addy Osmani;  License
+* Created by: Addy Osmani, Sindre Sorhus, Andrée Hansson, Mat Scales
 * Contributors: Ironsjp, Mathias Bynens, Rick Waldron, Felipe Morais
 * Uses rsvp.js, https://github.com/tildeio/rsvp.js
-*/
-
-(function( window, document ) {
+*/(function( window, document ) {
 	'use strict';
-
-	// Monkey-patching an "all" method onto RSVP
-	// Returns a promise that will be fulfilled when the array of promises passed in are all
-	// fulfilled
-	RSVP.all = function( promises ) {
-		var i, results = [];
-		var allPromise = new RSVP.Promise();
-		var remaining = promises.length;
-
-		var resolver = function( index ) {
-			return function( value ) {
-				resolve( index, value );
-			};
-		};
-		var resolve = function( index, value ) {
-			results[ index ] = value;
-			if ( --remaining === 0 ) {
-				allPromise.resolve( results );
-			}
-		};
-		var reject = function( error ) {
-			allPromise.reject( error );
-		};
-
-		for ( i = 0; i < remaining; i++ ) {
-			promises[ i ].then( resolver( i ), reject );
-		}
-
-		return allPromise;
-	};
 
 	var head = document.head || document.getElementsByTagName('head')[0];
 	var storagePrefix = 'basket-';
@@ -83,55 +51,69 @@
 	};
 
 	var getUrl = function( url ) {
-		var xhr = new XMLHttpRequest();
-		var promise = new RSVP.Promise();
-		xhr.open( 'GET', url );
+		var promise = new RSVP.Promise( function( resolve, reject ){
+		  
+			var xhr = new XMLHttpRequest();
+			xhr.open( 'GET', url );
 
-		xhr.onreadystatechange = function() {
-			if ( xhr.readyState === 4 ) {
-				if( xhr.status === 200 ) {
-					promise.resolve( xhr.responseText );
-				} else {
-					promise.reject( new Error( xhr.statusText ) );
+			xhr.onreadystatechange = function() {
+				if ( xhr.readyState === 4 ) {
+					if( xhr.status === 200 ) {
+						resolve( {
+							content: xhr.responseText,
+							type: xhr.getResponseHeader('content-type')
+						} );
+					} else {
+						reject( new Error( xhr.statusText ) );
+					}
 				}
-			}
-		};
+			};
 
-		xhr.send();
+			// By default XHRs never timeout, and even Chrome doesn't implement the
+			// spec for xhr.timeout. So we do it ourselves.
+			/*
+			setTimeout( function () {
+				if( xhr.readyState < 4 ) {
+					xhr.abort();
+				}
+			}, basket.timeout );*/
+
+			xhr.send();
+		});
 
 		return promise;
 	};
 
 	var saveUrl = function( obj ) {
-		return getUrl( obj.url ).then( function( text ) {
-			var storeObj = wrapStoreData( obj, text );
+		return getUrl( obj.url ).then( function( result ) {
+			var storeObj = wrapStoreData( obj, result );
 
 			addLocalStorage( obj.key , storeObj );
 
-			return text;
+			return storeObj;
 		});
-	};
-
-	var injectScript = function( text ) {
-		var script = document.createElement('script');
-		script.defer = true;
-		// Have to use .text, since we support IE8,
-		// which won't allow appending to a script
-		script.text = text;
-		head.appendChild( script );
 	};
 
 	var wrapStoreData = function( obj, data ) {
 		var now = +new Date();
-		obj.data = data;
+		obj.data = data.content;
+		obj.originalType = data.type;
+		obj.type = obj.type || data.type;
 		obj.stamp = now;
 		obj.expire = now + ( ( obj.expire || defaultExpiration ) * 60 * 60 * 1000 );
 
 		return obj;
 	};
 
+	var isCacheValid = function(source, obj) {
+		return !source ||
+			source.expire - +new Date() < 0  ||
+			obj.unique !== source.unique ||
+			(basket.isValidItem && !basket.isValidItem(source, obj));
+	};
+
 	var handleStackObject = function( obj ) {
-		var source, promise;
+		var source, promise, shouldFetch;
 
 		if ( !obj.url ) {
 			return;
@@ -142,33 +124,91 @@
 
 		obj.execute = obj.execute !== false;
 
-		if ( !source || source.expire - +new Date() < 0  || obj.unique !== source.unique ) {
+		shouldFetch = isCacheValid(source, obj);
+
+		if( obj.live || shouldFetch ) {
 			if ( obj.unique ) {
 				// set parameter to prevent browser cache
 				obj.url += ( ( obj.url.indexOf('?') > 0 ) ? '&' : '?' ) + 'basket-unique=' + obj.unique;
 			}
 			promise = saveUrl( obj );
+
+			if( obj.live && !shouldFetch ) {
+				promise = promise
+					.then( function( result ) {
+						// If we succeed, just return the value
+						// RSVP doesn't have a .fail convenience method
+						return result;
+					}, function() {
+						return source;
+					});
+			}
 		} else {
-			promise = new RSVP.Promise();
-			promise.resolve( source.data );
+			source.type = obj.type || source.originalType;
+			promise = new RSVP.Promise( function( resolve ){
+				resolve( source );
+			});
 		}
 
-		if( obj.execute ) {
-			return promise.then( injectScript );
-		} else {
-			return promise;
+		return promise;
+	};
+
+	var injectScript = function( obj ) {
+		var script = document.createElement('script');
+		script.defer = true;
+		// Have to use .text, since we support IE8,
+		// which won't allow appending to a script
+		script.text = obj.data;
+		head.appendChild( script );
+	};
+
+	var handlers = {
+		'default': injectScript
+	};
+
+	var execute = function( obj ) {
+		if( obj.type && handlers[ obj.type ] ) {
+			return handlers[ obj.type ]( obj );
 		}
+
+		return handlers['default']( obj ); // 'default' is a reserved word
+	};
+
+	var performActions = function( resources ) {
+		resources.map( function( obj ) {
+			if( obj.execute ) {
+				execute( obj );
+			}
+
+			return obj;
+		} );
+	};
+
+	var fetch = function() {
+		var i, l, promises = [];
+
+		for ( i = 0, l = arguments.length; i < l; i++ ) {
+			promises.push( handleStackObject( arguments[ i ] ) );
+		}
+
+		return RSVP.all( promises );
+	};
+
+	var thenRequire = function() {
+		var resources = fetch.apply( null, arguments );
+		var promise = this.then( function() {
+			return resources;
+		}).then( performActions );
+		promise.thenRequire = thenRequire;
+		return promise;
 	};
 
 	window.basket = {
 		require: function() {
-			var i, l, promises = [];
+			var promise = fetch.apply( null, arguments ).then( performActions );
 
-			for ( i = 0, l = arguments.length; i < l; i++ ) {
-				promises.push( handleStackObject( arguments[ i ] ) );
-			}
-
-			return RSVP.all( promises );
+			promise.thenRequire = thenRequire;
+			return promise;
 		},
 
 		remove: function( key ) {
@@ -197,6 +237,23 @@
 			}
 
 			return this;
+		},
+
+		isValidItem: null,
+
+		timeout: 5000,
+
+		addHandler: function( types, handler ) {
+			if( !Array.isArray( types ) ) {
+				types = [ types ];
+			}
+			types.forEach( function( type ) {
+				handlers[ type ] = handler;
+			});
+		},
+
+		removeHandler: function( types ) {
+			basket.addHandler( types, undefined );
 		}
 	};
 
