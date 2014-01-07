@@ -1,6 +1,6 @@
 /*!
 * basket.js
-* v0.3.0 - 2014-01-05
+* v0.4.0 - 2014-01-07
 * http://addyosmani.github.com/basket.js
 * (c) Addy Osmani;  License
 * Created by: Addy Osmani, Sindre Sorhus, Andrée Hansson, Mat Scales
