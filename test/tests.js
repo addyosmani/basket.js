@@ -252,8 +252,7 @@ asyncTest( 'remove oldest script in localStorage when Quote Exceeded', 2, functi
 asyncTest( 'file is larger than quota limit ', 2, function() {
 	basket
 		.require({ url: 'fixtures/largeScript.js', key: 'largeScript0' }, { url: 'fixtures/largeScript.js', key: 'largeScript1' })
-		.then();
-	basket.require({ url: 'fixtures/veryLargeScript.js', key: 'largeScript2' })
+		.thenRequire({ url: 'fixtures/veryLargeScript.js', key: 'largeScript2' })
 		.then(function() {
 			// check if scripts added was removed from localStorage
 			ok( !basket.get( 'largeScript0' ) , 'First Script deleted' );
@@ -609,7 +608,7 @@ asyncTest( 'with live: true, we still store the result in the cache', 1, functio
 
 	server.respond();
 });
-/*
+
 asyncTest( 'with live: true, we fallback to the cache', 2, function() {
 	// TODO: How to test the navigator.onLine case?
 	basket.clear();
@@ -648,4 +647,3 @@ asyncTest( 'with live: true, we fallback to the cache', 2, function() {
 	server.respond();
 	basket.timeout = 5000;
 });
-*/
