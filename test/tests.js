@@ -538,6 +538,70 @@ asyncTest( 'with array of urls, we try the second if the first 404s', 1, functio
 		});
 });
 
+asyncTest( 'require() 1 script with fallback', 2, function() {
+	var cancel = setTimeout(function() {
+		ok( false, 'Callback never invoked' );
+		start();
+	}, 2500);
+
+	basket.require(
+		{url: ['cdn/jquery.min.js', 'fixtures/jquery.min.js']}
+	)
+	.then(function() {
+		clearTimeout( cancel );
+
+		ok( true, 'Callback invoked' );
+		ok( basket.get('cdn/jquery.min.js'), 'Data exists in localStorage' );
+
+		start();
+	});
+});
+
+
+asyncTest( 'require() 2 scripts with .then() with fallback', 3, function() {
+	var cancel = setTimeout(function() {
+		ok( false, 'Callback never invoked' );
+		start();
+	}, 2500);
+
+	basket.require(
+			{ url: ['cdn/jquery.min.js', 'fixtures/jquery.min.js'] },
+			{ url: ['cdn/modernizr.min.js', 'fixtures/modernizr.min.js'] }
+		)
+		.then(function() {
+			clearTimeout( cancel );
+
+			ok( true, 'Callback invoked' );
+			ok( basket.get('cdn/jquery.min.js'), 'Data exists in localStorage' );
+			ok( basket.get('cdn/modernizr.min.js'), 'Data exists in localStorage' );
+
+			start();
+		});
+});
+
+
+asyncTest( 'require() 2 scripts (one non-executed) with .then() with fallback', 4, function() {
+	var cancel = setTimeout(function() {
+		ok( false, 'Callback never invoked' );
+		start();
+	}, 2500);
+
+	basket.require(
+			{ url: ['cdn/fail-script.js', 'fixtures/fail-script.js'], execute: false },
+			{ url: ['cdn/modernizr.min.js', 'fixtures/modernizr.min.js'] }
+		)
+		.then(function() {
+			clearTimeout( cancel );
+
+			ok( true, 'Callback invoked' );
+			ok( basket.get('cdn/modernizr.min.js'), 'Data exists in localStorage' );
+			ok( basket.get('cdn/fail-script.js'), 'Data exists in localStorage' );
+			ok( basket.fail !== true, 'Script not executed' );
+
+			start();
+		});
+});
+
 // This test is here to cover the full set of possibilities for this section
 // It doesn't really test anything that hasn't been tested elsewhere
 asyncTest( 'with live: false, we fallback to the network', 1, function() {
