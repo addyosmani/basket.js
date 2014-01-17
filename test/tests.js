@@ -524,6 +524,20 @@ asyncTest( 'type falls back to Content-Type, even if previously overriden', 2, f
 	server.respond();
 });
 
+asyncTest( 'with array of urls, we try the second if the first 404s', 1, function() {
+	basket.clear();
+
+	basket.require({ url: ['fixtures/fail.js', 'fixtures/first.js'], key: 'fellback' })
+		.then(function () {
+			start();
+			ok(basket.get('fellback'), 'fell back to alternate URL');
+		},
+		function() {
+			start();
+			ok(false, 'it did not work', 'it did not work');
+		});
+});
+
 // This test is here to cover the full set of possibilities for this section
 // It doesn't really test anything that hasn't been tested elsewhere
 asyncTest( 'with live: false, we fallback to the network', 1, function() {
