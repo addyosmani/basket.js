@@ -70,7 +70,7 @@ module.exports = function( grunt ) {
 			options: {
 				jshintrc: '.jshintrc'
 			},
-			all: ['Gruntfile.js', 'lib/basket.js', 'test/tests.js']
+			all: ['Gruntfile.js', 'test/tests.js']
 		}
 	});
 
