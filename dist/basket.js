@@ -1,6 +1,6 @@
 /*!
 * basket.js
-* v0.4.0 - 2014-01-07
+* v0.4.0 - 2014-04-04
 * http://addyosmani.github.com/basket.js
 * (c) Addy Osmani;  License
 * Created by: Addy Osmani, Sindre Sorhus, Andrée Hansson, Mat Scales
@@ -12,19 +12,55 @@
 	var head = document.head || document.getElementsByTagName('head')[0];
 	var storagePrefix = 'basket-';
 	var defaultExpiration = 5000;
+	var hasLScache = null;
+
+	var hasLocalStorage = function(){
+		if ( hasLScache === null ){
+			hasLScache = false;
+			try{
+				var tmpMtime = new Date().getTime();
+				localStorage.setItem('t_'+tmpMtime,'d_'+tmpMtime);
+				if ( localStorage.getItem('t_'+tmpMtime)==='d_'+tmpMtime ){
+					localStorage.removeItem('t_'+tmpMtime);
+					hasLScache = true;
+				}
+			}catch(e){}
+		}
+		return hasLScache;
+	};
+
+	var getFalse = function(){return false;};
+
+	var LS = function(){
+		return hasLocalStorage() ? localStorage : {
+				setItem : getFalse,
+				getItem : getFalse,
+				removeItem : getFalse
+			};
+	};
+
+	var getAbsolute = function( relative ) {
+		var stack = [],
+			parts = relative.split('/');
+		for (var i in parts) {
+			if(parts[i] === '.') {continue;}
+			parts[i] === '..' ? stack.pop() : stack.push(parts[i]);
+		}
+		return stack.join('/');
+	};
 
 	var addLocalStorage = function( key, storeObj ) {
 		try {
-			localStorage.setItem( storagePrefix + key, JSON.stringify( storeObj ) );
+			LS().setItem( storagePrefix + key, JSON.stringify( storeObj ) );
 			return true;
 		} catch( e ) {
 			if ( e.name.toUpperCase().indexOf('QUOTA') >= 0 ) {
 				var item;
 				var tempScripts = [];
 
-				for ( item in localStorage ) {
+				for ( item in LS() ) {
 					if ( item.indexOf( storagePrefix ) === 0 ) {
-						tempScripts.push( JSON.parse( localStorage[ item ] ) );
+						tempScripts.push( JSON.parse( LS()[ item ] ) );
 					}
 				}
 
@@ -52,7 +88,7 @@
 
 	var getUrl = function( url ) {
 		var promise = new RSVP.Promise( function( resolve, reject ){
-		  
+
 			var xhr = new XMLHttpRequest();
 			xhr.open( 'GET', url );
 
@@ -71,12 +107,11 @@
 
 			// By default XHRs never timeout, and even Chrome doesn't implement the
 			// spec for xhr.timeout. So we do it ourselves.
-			/*
 			setTimeout( function () {
 				if( xhr.readyState < 4 ) {
 					xhr.abort();
 				}
-			}, basket.timeout );*/
+			}, basket.timeout );
 
 			xhr.send();
 		});
@@ -119,7 +154,13 @@
 			return;
 		}
 
+		obj.url = getAbsolute(obj.url);
 		obj.key =  ( obj.key || obj.url );
+
+		if(!obj.unique && basket.checksums[obj.url]){
+			obj.unique = basket.checksums[obj.url];
+		}
+		
 		source = basket.get( obj.key );
 
 		obj.execute = obj.execute !== false;
@@ -211,13 +252,24 @@
 			return promise;
 		},
 
+		synchRequire : function(){
+			var mainArguments = Array.prototype.slice.call(
+				Array.isArray(arguments[0]) ? arguments[0] : arguments
+			);
+			var obj = mainArguments.shift();
+			if(obj){
+				return this.require(obj)
+					.then(this.synchRequire.bind(this,mainArguments));
+			}
+		},
+
 		remove: function( key ) {
-			localStorage.removeItem( storagePrefix + key );
+			LS().removeItem( storagePrefix + key );
 			return this;
 		},
 
 		get: function( key ) {
-			var item = localStorage.getItem( storagePrefix + key );
+			var item = LS().getItem( storagePrefix + key );
 			try	{
 				return JSON.parse( item || 'false' );
 			} catch( e ) {
@@ -229,8 +281,8 @@
 			var item, key;
 			var now = +new Date();
 
-			for ( item in localStorage ) {
-				key = item.split( storagePrefix )[ 1 ];
+			for ( item in LS() ) {
+				key = item.substr(item.indexOf(storagePrefix)+storagePrefix.length);
 				if ( key && ( !expired || this.get( key ).expire <= now ) ) {
 					this.remove( key );
 				}
@@ -242,6 +294,8 @@
 		isValidItem: null,
 
 		timeout: 5000,
+
+		checksums: [],
 
 		addHandler: function( types, handler ) {
 			if( !Array.isArray( types ) ) {
