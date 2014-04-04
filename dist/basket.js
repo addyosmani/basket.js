@@ -157,7 +157,7 @@
 		obj.url = getAbsolute(obj.url);
 		obj.key =  ( obj.key || obj.url );
 
-		if(basket.checksums[obj.url]){
+		if(!obj.unique && basket.checksums[obj.url]){
 			obj.unique = basket.checksums[obj.url];
 		}
 		
