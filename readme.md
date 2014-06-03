@@ -1,4 +1,4 @@
-[![basket.js logo](logo.png)](http://addyosmani.github.com/basket.js)
+[![basket.js logo](media/logo_src.png)](http://addyosmani.github.com/basket.js)
 
 > [Basket.js](http://addyosmani.github.com/basket.js) is a script and resource loader for caching and loading scripts using localStorage
 
@@ -61,5 +61,5 @@ to generate a new release, otherwise just running `grunt test` will run the unit
 
 
 ## License
-(c) Addy Osmani, the basket.js project
-[MIT License](http://en.wikipedia.org/wiki/MIT_License)
+
+MIT © Basket.js team
