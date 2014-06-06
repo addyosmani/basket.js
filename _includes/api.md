@@ -31,6 +31,7 @@ See the updated documentation below for more details.
 * **expire** How long (in hours) before the cached item expires.
 * **execute** Whether to cause the script to be executed once it has been retrieved. Defaults to true.
 * **unique** A token stored with the cached item. If you request the same item again with a different token the script will be fetched and cached again.
+* **skipCache** Prevent storing the script in cache. Useful when you want load scripts in order, but only cache some. By default is *false*.
 
 `require()` returns a [promise](http://wiki.commonjs.org/wiki/Promises/A) that will be fulfilled when each of the requested items has been fetched, or rejected if any item fails.
 
@@ -55,6 +56,18 @@ basket.require(
 ```
 
 Multiple scripts will be requested. The scripts are requested asynchronously and so may load and execute in any order.
+
+**Multiple scripts without caching some of them**
+
+```javascript
+basket.require(
+	{ url: 'require.js' },
+	{ url: 'require.config.js', skipCache: true },
+	{ url: 'libs.js' }
+);
+```
+
+Multiple scripts will be requested. `require.config.js` will not be cached in localStorage. Useful if order of scripts execution is important but storing certain script is not needed, e.g. it changes with each request.
 
 **Ordering dependencies**
 
