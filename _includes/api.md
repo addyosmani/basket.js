@@ -54,7 +54,7 @@ basket.require(
 );
 ```
 
-Multiple scripts will be requested. The scripts are requested asynchronously and so may load and execute in any order.
+Multiple scripts will be requested. The scripts are requested asynchronously but executed in the same order as specified.
 
 **Ordering dependencies**
 
