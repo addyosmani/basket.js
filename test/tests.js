@@ -647,3 +647,13 @@ asyncTest( 'with live: true, we fallback to the cache', 2, function() {
 	server.respond();
 	basket.timeout = 5000;
 });
+
+asyncTest( 'with skipCache: true, we do not cache data', 1, function() {
+	basket
+		.require({ url: 'fixtures/jquery.min.js', skipCache: true })
+		.then(function() {
+			ok( !basket.get('fixtures/jquery.min.js'), 'Data does not exist in localStorage' );
+
+			start();
+		});
+});
