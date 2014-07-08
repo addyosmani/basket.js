@@ -1,19 +1,5 @@
 ## API
 
-### Summary of changes since version 0.2
-
-- **basket.require() now returns a Promise**. Calls to `require()` are no longer chainable but you get better flexibilty in handling dependencies and errors in return.
-
-- **The basket.wait() method has been removed**. The promise returned by `require()` fulfills the same purpose in a more standard way.
-
-- **The basket.add() method has been removed**. Manually adding items to the cache is no longer supported.
-
-- **basket.clear() has been added**.
-
----
-
-See the updated documentation below for more details.
-
 * [`basket.require()`](#basketrequire)
 * [`basket.get()`](#basketget)
 * [`basket.remove()`](#basketremove)
@@ -39,7 +25,7 @@ See the updated documentation below for more details.
 
 **Single script**
 
-```javascript
+```js
 basket.require({ url: 'jquery.js' });
 ```
 
@@ -47,7 +33,7 @@ This fetches a single script and executes it. If the script was already in the l
 
 **Multiple scripts**
 
-```javascript
+```js
 basket.require(
 	{ url: 'jquery.js' },
 	{ url: 'underscore.js' },
@@ -59,7 +45,7 @@ Multiple scripts will be requested. The scripts are requested asynchronously but
 
 **Multiple scripts without caching some of them**
 
-```javascript
+```js
 basket.require(
 	{ url: 'require.js' },
 	{ url: 'require.config.js', skipCache: true },
@@ -71,7 +57,7 @@ Multiple scripts will be requested. `require.config.js` will not be cached in lo
 
 **Ordering dependencies**
 
-```javascript
+```js
 basket
 	.require({ url: 'jquery.js' })
 	.then(function () {
@@ -83,7 +69,7 @@ Here we ask basket.js to load jQuery. Once it has been fetched and executed, the
 
 **Error handling**
 
-```javascript
+```js
 basket
 	.require({ url: 'missing.js' })
 	.then(function () {
@@ -98,7 +84,7 @@ The second parameter to `then()` is a function that will be called if the promis
 
 **Using an alias**
 
-```javascript
+```js
 basket.require({ url: 'jquery-2.0.0.min.js', key: 'jquery' });
 ```
 
@@ -110,7 +96,7 @@ If `key` is not set the url will be used instead.
 
 **Cache expiry**
 
-```javascript
+```js
 basket.require({ url: 'jquery.min.js', expire: 2 })
 ```
 
@@ -120,7 +106,7 @@ If `expire` is not set, the default time of 5000 hours will be used - almost 7 m
 
 **Cache a file without executing it**
 
-```javascript
+```js
 basket.require({ url: 'jquery.min.js', execute: false });
 ```
 
@@ -128,7 +114,7 @@ The script will be cached but will not be added to the document to be executed.
 
 **Cache busting**
 
-```javascript
+```js
 // fetch and cache the file
 basket.require({ url: 'jquery.min.js' });
 // fetch and cache again
@@ -152,8 +138,10 @@ basket.js will add the "basket-unique" parameter on to the url to also prevent t
 * **expire** The timestamp for when the item will expire.
 * **data** The file contents of the script.
 
-```javascript
-var req, ttl;
+```js
+var req
+var ttl;
+
 basket.require({ url: 'jquery.min.js', key: 'jquery' });
 req = basket.get('jquery');
 // know the lifetime
@@ -169,7 +157,7 @@ ttl = req.expire - req.stamp;
 
 `remove()` will simply remove a previously cached script from localStorage. An example of how to use it can be seen below:
 
-```javascript
+```js
 basket
 	.remove('jquery.js')
 	.remove('modernizr');
@@ -183,7 +171,7 @@ basket
 
 `clear()` removes items from the cache.
 
-```javascript
+```js
 basket.clear();
 basket.clear(true);
 ```
@@ -201,8 +189,7 @@ basket.clear(true);
 
 This is targetted at advanced usage and is strictly optional.  The use of `unique` and `expire` parameters are the most appropriate way to handle common scenarios.
 
-
-```javascript
+```js
 basket.isValidItem = function (source, obj) {
 	return myVerificationFunction(source, obj);
 };
