@@ -1,6 +1,6 @@
 /*!
 * basket.js
-* v0.4.0 - 2014-01-07
+* v0.5.0 - 2014-07-09
 * http://addyosmani.github.com/basket.js
 * (c) Addy Osmani;  License
 * Created by: Addy Osmani, Sindre Sorhus, Andrée Hansson, Mat Scales
@@ -52,7 +52,7 @@
 
 	var getUrl = function( url ) {
 		var promise = new RSVP.Promise( function( resolve, reject ){
-		  
+
 			var xhr = new XMLHttpRequest();
 			xhr.open( 'GET', url );
 
@@ -71,12 +71,11 @@
 
 			// By default XHRs never timeout, and even Chrome doesn't implement the
 			// spec for xhr.timeout. So we do it ourselves.
-			/*
 			setTimeout( function () {
 				if( xhr.readyState < 4 ) {
 					xhr.abort();
 				}
-			}, basket.timeout );*/
+			}, basket.timeout );
 
 			xhr.send();
 		});
@@ -88,7 +87,9 @@
 		return getUrl( obj.url ).then( function( result ) {
 			var storeObj = wrapStoreData( obj, result );
 
-			addLocalStorage( obj.key , storeObj );
+			if (!obj.skipCache) {
+				addLocalStorage( obj.key , storeObj );
+			}
 
 			return storeObj;
 		});
@@ -99,6 +100,7 @@
 		obj.data = data.content;
 		obj.originalType = data.type;
 		obj.type = obj.type || data.type;
+		obj.skipCache = obj.skipCache || false;
 		obj.stamp = now;
 		obj.expire = now + ( ( obj.expire || defaultExpiration ) * 60 * 60 * 1000 );
 

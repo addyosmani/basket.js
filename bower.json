@@ -1,9 +1,8 @@
 {
 	"name": "basket.js",
-	"version": "0.3.0",
 	"main": "dist/basket.js",
 	"dependencies": {
-		"rsvp": "~3.0.1"
+		"rsvp": "~3.0.8"
 	},
 	"ignore": [
 		"_*",
