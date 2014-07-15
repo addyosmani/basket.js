@@ -75,6 +75,54 @@ asyncTest( 'require() 2 scripts (one non-executed) with .then()', 4, function() 
 		});
 });
 
+asyncTest( 'require() once', 1, function() {
+	var cancel = setTimeout(function() {
+		ok( false, 'Callback never invoked' );
+		start();
+	}, 2500);
+
+	basket.require(
+			{ url: 'fixtures/once.js', once: true }
+		)
+		.then(function() {
+                        basket.require(
+                                        { url: 'fixtures/once.js', once: true }
+                                )
+                                .then(function() {
+                                        clearTimeout( cancel );
+
+                                        ok( basket.once === 1, 'Script loaded twice' );
+
+                                        start();
+                                });
+
+		});
+});
+
+asyncTest( 'require() once (force reload)', 1, function() {
+	var cancel = setTimeout(function() {
+		ok( false, 'Callback never invoked' );
+		start();
+	}, 2500);
+
+	basket.require(
+			{ url: 'fixtures/once.js', once: true }
+		)
+		.then(function() {
+                        basket.require(
+                                        { url: 'fixtures/once.js', once: false }
+                                )
+                                .then(function() {
+                                        clearTimeout( cancel );
+
+                                        ok( basket.once === 2, 'Script loaded once' );
+
+                                        start();
+                                });
+
+		});
+});
+
 
 asyncTest( 'require(), custom key', 1, function() {
 	var key = +new Date();
