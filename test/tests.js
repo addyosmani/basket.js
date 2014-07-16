@@ -89,6 +89,24 @@ asyncTest( 'require(), custom key', 1, function() {
 });
 
 
+asyncTest( 'require() no execute', 1, function() {
+	var cancel = setTimeout(function() {
+		ok( false, 'Callback never invoked' );
+		start();
+	}, 2500);
+
+	basket.require(
+		{url: 'fixtures/noexecute.js', execute: false}
+	)
+	.then(function() {
+		clearTimeout( cancel );
+
+		ok( typeof basket.executed === 'undefined', 'Scipt executed' );
+
+		start();
+	});
+});
+
 asyncTest( 'clear()', 1, function() {
 	basket
 		.require({ url: 'fixtures/jquery.min.js' })
