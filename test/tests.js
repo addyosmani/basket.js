@@ -89,14 +89,14 @@ asyncTest( 'require(), custom key', 1, function() {
 });
 
 
-asyncTest( 'require() no execute', 1, function() {
+asyncTest( 'require() doesn\'t execute', 1, function() {
 	var cancel = setTimeout(function() {
 		ok( false, 'Callback never invoked' );
 		start();
 	}, 2500);
 
 	basket.require(
-		{url: 'fixtures/noexecute.js', execute: false}
+		{ url: 'fixtures/noexecute.js', execute: false }
 	)
 	.then(function() {
             
