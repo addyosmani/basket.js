@@ -675,3 +675,29 @@ asyncTest( 'with skipCache: true, we do not cache data', 1, function() {
 			start();
 		});
 });
+
+asyncTest( 'execute a cached script when execute: true', 2, function() {
+	var cancel = setTimeout(function() {
+		ok( false, 'Callback never invoked' );
+		start();
+	}, 2500);
+
+	function requireScript(execute, cb) {
+		basket.require(
+			{ url: 'fixtures/noexecute.js', execute: execute }
+		)
+		.then(cb);
+	}
+
+	requireScript( false, function() {
+		clearTimeout( cancel );
+
+		ok( typeof basket.executed === 'undefined', 'None-cached script was not executed' );
+
+		requireScript( true, function() {
+			ok( basket.executed === true, 'Cached script executed' );
+
+			start();
+		});
+	});
+});
