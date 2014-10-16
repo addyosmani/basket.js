@@ -15,6 +15,7 @@ module.exports = function( grunt ) {
 					'* Created by: <%= _.pluck(pkg.maintainers, "name").join(", ") %>\n' +
 					'* Contributors: <%= _.pluck(pkg.contributors, "name").join(", ") %>\n' +
 					'* Uses rsvp.js, https://github.com/tildeio/rsvp.js\n' +
+					'* Uses lz-string-1.3.3.js, https://github.com/pieroxy/lz-string/\n' +
 					'*/',
 				stripBanners: true
 			},
@@ -41,7 +42,7 @@ module.exports = function( grunt ) {
 					sourceMap: 'dist/basket.full.map'
 				},
 				files: {
-					'dist/basket.full.min.js': ['bower_components/rsvp/rsvp.min.js', 'dist/basket.js']
+					'dist/basket.full.min.js': ['bower_components/lz-string/libs/lz-string-1.3.3.js', 'bower_components/rsvp/rsvp.min.js', 'dist/basket.js']
 				}
 			}
 		},

@@ -1,11 +1,12 @@
 /*!
 * basket.js
-* v0.5.1 - 2014-08-16
+* v0.5.1 - 2014-10-16
 * http://addyosmani.github.com/basket.js
 * (c) Addy Osmani;  License
 * Created by: Addy Osmani, Sindre Sorhus, Andrée Hansson, Mat Scales
-* Contributors: Ironsjp, Mathias Bynens, Rick Waldron, Felipe Morais
+* Contributors: Ironsjp, Mathias Bynens, Rick Waldron, Felipe Morais, Thiago Lagden
 * Uses rsvp.js, https://github.com/tildeio/rsvp.js
+* Uses lz-string-1.3.3.js, https://github.com/pieroxy/lz-string/
 */(function( window, document ) {
 	'use strict';
 
@@ -50,7 +51,8 @@
 
 	};
 
-	var getUrl = function( url ) {
+	var getUrl = function( url, compress ) {
+		compress = compress || false;
 		var promise = new RSVP.Promise( function( resolve, reject ){
 
 			var xhr = new XMLHttpRequest();
@@ -60,7 +62,7 @@
 				if ( xhr.readyState === 4 ) {
 					if( xhr.status === 200 ) {
 						resolve( {
-							content: xhr.responseText,
+							content: compress ? LZString.compressToUTF16( xhr.responseText ) : xhr.responseText,
 							type: xhr.getResponseHeader('content-type')
 						} );
 					} else {
@@ -84,7 +86,7 @@
 	};
 
 	var saveUrl = function( obj ) {
-		return getUrl( obj.url ).then( function( result ) {
+		return getUrl( obj.url, obj.compress ).then( function( result ) {
 			var storeObj = wrapStoreData( obj, result );
 
 			if (!obj.skipCache) {
@@ -126,6 +128,8 @@
 
 		obj.execute = obj.execute !== false;
 
+		obj.compress = Boolean( obj.compress || false );
+
 		shouldFetch = isCacheValid(source, obj);
 
 		if( obj.live || shouldFetch ) {
@@ -147,6 +151,8 @@
 			}
 		} else {
 			source.type = obj.type || source.originalType;
+			source.execute = obj.execute;
+			source.compress = obj.compress;
 			promise = new RSVP.Promise( function( resolve ){
 				resolve( source );
 			});
@@ -160,7 +166,7 @@
 		script.defer = true;
 		// Have to use .text, since we support IE8,
 		// which won't allow appending to a script
-		script.text = obj.data;
+		script.text = obj.compress ? LZString.decompressFromUTF16( obj.data ) : obj.data;
 		head.appendChild( script );
 	};
 
