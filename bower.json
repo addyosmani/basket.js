@@ -3,7 +3,7 @@
   "main": "dist/basket.js",
   "dependencies": {
     "rsvp": "~3.0.8",
-    "lz-string": "git@github.com:pieroxy/lz-string.git#release"
+    "lz-string": "https://github.com/pieroxy/lz-string.git#release"
   },
   "ignore": [
     "_*",
