@@ -706,10 +706,10 @@ asyncTest( 'execute a cached script when execute: true', 2, function() {
 asyncTest( 'compressed script', 1, function() {
 	basket.clear();
 	basket
-		.require({ url: 'fixtures/veryLargeScript.js', key: 'veryLargeScript', compress: true })
+		.require({ url: 'fixtures/largeScript.js', key: 'largeScript', compress: true })
 		.then(function() {
 				// check if the script was added
-				ok( basket.get( 'veryLargeScript' ) , 'Script added' );
+				ok( basket.get( 'largeScript' ) , 'Script added' );
 				start();
 		});
 });
