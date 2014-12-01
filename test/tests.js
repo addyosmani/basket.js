@@ -753,28 +753,39 @@ asyncTest( 'with skipCache: true, we do not cache data', 1, function() {
 		});
 });
 
-asyncTest( 'execute a cached script when execute: true', 2, function() {
-	var cancel = setTimeout(function() {
-		ok( false, 'Callback never invoked' );
-		start();
-	}, 2500);
+// asyncTest( 'execute a cached script when execute: true', 2, function() {
+// 	var cancel = setTimeout(function() {
+// 		ok( false, 'Callback never invoked' );
+// 		start();
+// 	}, 2500);
 
-	function requireScript(execute, cb) {
-		basket.require(
-			{ url: 'fixtures/noexecute.js', execute: execute }
-		)
-		.then(cb);
-	}
+// 	function requireScript(execute, cb) {
+// 		basket.require(
+// 			{ url: 'fixtures/noexecute.js', execute: execute }
+// 		)
+// 		.then(cb);
+// 	}
 
-	requireScript( false, function() {
-		clearTimeout( cancel );
+// 	requireScript( false, function() {
+// 		clearTimeout( cancel );
 
-		ok( typeof basket.executed === 'undefined', 'None-cached script was not executed' );
+// 		ok( typeof basket.executed === 'undefined', 'None-cached script was not executed' );
 
-		requireScript( true, function() {
-			ok( basket.executed === true, 'Cached script executed' );
+// 		requireScript( true, function() {
+// 			ok( basket.executed === true, 'Cached script executed' );
 
-			start();
+// 			start();
+// 		});
+// 	});
+// });
+
+asyncTest( 'compressed script', 1, function() {
+	basket.clear();
+	basket
+		.require({ url: 'fixtures/largeScript.js', key: 'largeScript', compress: true })
+		.then(function() {
+				// check if the script was added
+				ok( basket.get( 'largeScript' ) , 'Script added' );
+				start();
 		});
-	});
 });

@@ -1,20 +1,21 @@
 {
-	"name": "basket.js",
-	"main": "dist/basket.js",
-	"dependencies": {
-		"rsvp": "~3.0.8"
-	},
-	"ignore": [
-		"_*",
-		".*",
-		"asset",
-		"dist/basket.full.min.js",
-		"dist/basket.min.js",
-		"lib",
-		"media",
-		"test",
-		"Gruntfile.js",
-		"index.md",
-		"package.json"
-	]
+  "name": "basket.js",
+  "main": "dist/basket.js",
+  "dependencies": {
+    "rsvp": "~3.0.8",
+    "lz-string": "https://github.com/pieroxy/lz-string.git#1.3.5"
+  },
+  "ignore": [
+    "_*",
+    ".*",
+    "asset",
+    "dist/basket.full.min.js",
+    "dist/basket.min.js",
+    "lib",
+    "media",
+    "test",
+    "Gruntfile.js",
+    "index.md",
+    "package.json"
+  ]
 }
