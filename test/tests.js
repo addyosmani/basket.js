@@ -691,7 +691,7 @@ asyncTest( 'execute a cached script when execute: true', 2, function() {
 	var cancel = setTimeout(function() {
 		ok( false, 'Callback never invoked' );
 		start();
-	}, 2500);
+	}, 4000);
 
 	function requireScript(execute, cb) {
 		basket.require(
