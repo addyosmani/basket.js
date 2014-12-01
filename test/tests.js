@@ -676,6 +676,17 @@ asyncTest( 'with skipCache: true, we do not cache data', 1, function() {
 		});
 });
 
+asyncTest( 'compressed script', 1, function() {
+	basket.clear();
+	basket
+		.require({ url: 'fixtures/largeScript.js', key: 'largeScript', compress: true })
+		.then(function() {
+				// check if the script was added
+				ok( basket.get( 'largeScript' ) , 'Script added' );
+				start();
+		});
+});
+
 asyncTest( 'execute a cached script when execute: true', 2, function() {
 	var cancel = setTimeout(function() {
 		ok( false, 'Callback never invoked' );
@@ -700,16 +711,4 @@ asyncTest( 'execute a cached script when execute: true', 2, function() {
 			start();
 		});
 	});
-});
-
-
-asyncTest( 'compressed script', 1, function() {
-	basket.clear();
-	basket
-		.require({ url: 'fixtures/largeScript.js', key: 'largeScript', compress: true })
-		.then(function() {
-				// check if the script was added
-				ok( basket.get( 'largeScript' ) , 'Script added' );
-				start();
-		});
 });
