@@ -761,7 +761,7 @@ asyncTest( 'execute a cached script when execute: true', 2, function() {
 
 	function requireScript(execute, cb) {
 		basket.require(
-			{ url: 'fixtures/noexecute.js', execute: execute }
+			{ url: 'fixtures/executefalse.js', execute: execute }
 		)
 		.then(cb);
 	}
