@@ -1,20 +1,20 @@
 {
-	"name": "basket.js",
-	"main": "dist/basket.js",
-	"dependencies": {
-		"rsvp": "~3.0.8"
-	},
-	"ignore": [
-		"_*",
-		".*",
-		"asset",
-		"dist/basket.full.min.js",
-		"dist/basket.min.js",
-		"lib",
-		"media",
-		"test",
-		"Gruntfile.js",
-		"index.md",
-		"package.json"
-	]
+  "name": "basket.js",
+  "main": "dist/basket.js",
+  "ignore": [
+    "_*",
+    ".*",
+    "asset",
+    "dist/basket.full.min.js",
+    "dist/basket.min.js",
+    "lib",
+    "media",
+    "test",
+    "Gruntfile.js",
+    "index.md",
+    "package.json"
+  ],
+  "dependencies": {
+    "rsvp": "~3.0.16"
+  }
 }
