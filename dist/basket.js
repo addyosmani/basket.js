@@ -1,6 +1,6 @@
 /*!
 * basket.js
-* v0.5.1 - 2014-08-16
+* v0.5.2 - 2015-02-07
 * http://addyosmani.github.com/basket.js
 * (c) Addy Osmani;  License
 * Created by: Addy Osmani, Sindre Sorhus, Andrée Hansson, Mat Scales
@@ -12,6 +12,7 @@
 	var head = document.head || document.getElementsByTagName('head')[0];
 	var storagePrefix = 'basket-';
 	var defaultExpiration = 5000;
+	var inBasket = [];
 
 	var addLocalStorage = function( key, storeObj ) {
 		try {
@@ -58,7 +59,8 @@
 
 			xhr.onreadystatechange = function() {
 				if ( xhr.readyState === 4 ) {
-					if( xhr.status === 200 ) {
+					if ( ( xhr.status === 200 ) ||
+							( ( xhr.status === 0 ) && xhr.responseText ) ) {
 						resolve( {
 							content: xhr.responseText,
 							type: xhr.getResponseHeader('content-type')
@@ -123,7 +125,7 @@
 
 		obj.key =  ( obj.key || obj.url );
 		source = basket.get( obj.key );
-
+                
 		obj.execute = obj.execute !== false;
 
 		shouldFetch = isCacheValid(source, obj);
@@ -147,6 +149,7 @@
 			}
 		} else {
 			source.type = obj.type || source.originalType;
+			source.execute = obj.execute;
 			promise = new RSVP.Promise( function( resolve ){
 				resolve( source );
 			});
@@ -177,7 +180,7 @@
 	};
 
 	var performActions = function( resources ) {
-		resources.map( function( obj ) {
+		return resources.map( function( obj ) {
 			if( obj.execute ) {
 				execute( obj );
 			}
@@ -207,6 +210,16 @@
 
 	window.basket = {
 		require: function() {
+			for ( var a = 0, l = arguments.length; a < l; a++ ) {
+				arguments[a].execute = arguments[a].execute !== false;
+				
+				if ( arguments[a].once && inBasket.indexOf(arguments[a].url) >= 0 ) {
+					arguments[a].execute = false;
+				} else if ( arguments[a].execute !== false && inBasket.indexOf(arguments[a].url) < 0 ) {  
+					inBasket.push(arguments[a].url);
+				}
+			}
+                        
 			var promise = fetch.apply( null, arguments ).then( performActions );
 
 			promise.thenRequire = thenRequire;
