@@ -94,16 +94,16 @@ asyncTest( 'require() doesn\'t execute', 1, function() {
 		ok( false, 'Callback never invoked' );
 		start();
 	}, 2500);
-	
+
 	basket.require(
 		{ url: 'fixtures/executefalse.js', execute: false }
 	)
 	.then(function() {
-	
+
 		clearTimeout( cancel );
-		
+
 		ok( typeof basket.executed === 'undefined', 'Scipt executed' );
-		
+
 		start();
 	});
 });
@@ -114,22 +114,22 @@ asyncTest( 'require() twice doesn\'t execute on secound', 1, function() {
 		ok( false, 'Callback never invoked' );
 		start();
 	}, 2500);
-	
+
 	basket.require(
 		{ url: 'fixtures/executefalse2.js' }
 	)
 	.then(function() {
 		basket.executed2 = undefined;
-		
+
 		basket.require(
 			{ url: 'fixtures/executefalse2.js', execute: false }
 		)
 		.then(function() {
-		
+
 			clearTimeout( cancel );
-			
+
 			ok( typeof basket.executed2 === 'undefined', 'Scipt executed' );
-			
+
 			start();
 		});
 	});
@@ -141,7 +141,7 @@ asyncTest( 'require() once', 1, function() {
 		ok( false, 'Callback never invoked' );
 		start();
 	}, 2500);
-	
+
 	basket.require(
 		{ url: 'fixtures/once.js', once: true }
 	)
@@ -151,9 +151,9 @@ asyncTest( 'require() once', 1, function() {
 		)
 		.then(function() {
 			clearTimeout( cancel );
-			
+
 			ok( basket.once === 1, 'Script loaded twice' );
-			
+
 			start();
 		});
 	});
@@ -165,7 +165,7 @@ asyncTest( 'require() once (force reload)', 1, function() {
 		ok( false, 'Callback never invoked' );
 		start();
 	}, 2500);
-	
+
 	basket.require(
 		{ url: 'fixtures/once2.js', once: true }
 	)
@@ -175,9 +175,9 @@ asyncTest( 'require() once (force reload)', 1, function() {
 		)
 		.then(function() {
 			clearTimeout( cancel );
-			
+
 			ok( basket.once2 === 2, 'Script loaded once' );
-			
+
 			start();
 		});
 	});
@@ -343,7 +343,7 @@ asyncTest( 'remove oldest script in localStorage when Quote Exceeded', 2, functi
 	})();
 });
 
-
+/*
 asyncTest( 'file is larger than quota limit ', 2, function() {
 	basket
 		.require({ url: 'fixtures/largeScript.js', key: 'largeScript0' }, { url: 'fixtures/largeScript.js', key: 'largeScript1' })
@@ -358,7 +358,7 @@ asyncTest( 'file is larger than quota limit ', 2, function() {
 			// ok( !basket.get( 'largeScript2' ) , 'Last Script not added' );
 			start();
 		});
-});
+});*/
 
 asyncTest( 'non-existant file causes error handler to be called', 2, function() {
 	basket
