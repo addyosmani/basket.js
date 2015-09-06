@@ -5,8 +5,6 @@
     "_*",
     ".*",
     "asset",
-    "dist/basket.full.min.js",
-    "dist/basket.min.js",
     "lib",
     "media",
     "test",
