@@ -88,6 +88,17 @@ asyncTest( 'require(), custom key', 1, function() {
 		});
 });
 
+asyncTest( 'require(), testing ready() with custom key', 1, function() {
+	var key = +new Date();
+
+	basket.require(
+		{ url: 'fixtures/jquery.min.js', key: key }
+	);
+	basket.ready(key).then(function() {
+			ok( basket.get(key), 'Data exists in localStorage under custom key' );
+			start();
+		});
+});
 
 asyncTest( 'require() doesn\'t execute', 1, function() {
 	var cancel = setTimeout(function() {
