@@ -82,6 +82,20 @@ basket
 
 The second parameter to `then()` is a function that will be called if the promise is rejected. That is, if there was an error fetching the script. The only parameter to the error callback will be an Error object with details of the failure.
 
+**Error handling with trackFailures**
+
+```js
+basket
+	.require([{ url: 'missing.js' }], { trackFailures: true })
+	.then(function (responses) {
+		if ( responses[0].state === "rejected" ) {
+        	console.log(responses[0].reason.message); // Not Found
+        }
+	}, function(error) {
+		// This is not called
+	});
+```
+
 **Using an alias**
 
 ```js
