@@ -800,11 +800,11 @@ asyncTest( 'without trackFailures: true and non-existant file, we call error han
 		});
 });
 
-asyncTest( 'with trackFailures: true and non-existant file, error message is Not Found', 1, function() {
+asyncTest( 'with trackFailures: true and non-existant file, error message is available', 1, function() {
 	basket
 		.require([{ url: 'non-existant.js'}], { trackFailures: true })
 		.then(function(responses) {
-			ok( responses[0].reason.message === 'Not Found', 'Reason message should be Not Found' );
+			ok( typeof responses[0].reason.message !== 'undefined', 'Reason message should be defined' );
 			start();
 		});
 });
