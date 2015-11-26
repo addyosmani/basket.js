@@ -1,6 +1,6 @@
-[![basket.js logo](media/logo_src.png)](http://addyosmani.github.com/basket.js)
+[![basket.js logo](media/logo_src.png)](http://addyosmani.github.io/basket.js/)
 
-> [Basket.js](http://addyosmani.github.com/basket.js) is a script and resource loader for caching and loading scripts using localStorage
+> [Basket.js](http://addyosmani.github.io/basket.js/) is a script and resource loader for caching and loading scripts using localStorage
 
 [![Build Status](https://travis-ci.org/addyosmani/basket.js.svg?branch=gh-pages)](https://travis-ci.org/addyosmani/basket.js)
 
@@ -17,14 +17,14 @@
 * [Basket.js: A JavaScript Loader With LocalStorage-based script caching](http://badassjs.com/post/40850339601/basket-js-a-javascript-loader-with-localstorage-based)
 * [basket.js caches scripts with HTML5 localStorage](http://ahmadassaf.com/blog/web-development/scripts-plugins/basket-js-caches-scripts-with-html5-localstorage/)
 * [Basket.js for improved script caching](http://t3n.de/news/basketjs-performance-localstorage-515119/)
-* [How to Improve Loading Time with basket.js](http://www.sitepoint.com/how-to-improve-loading-time-with-basket-js)
+* [How to Improve Loading Time with basket.js](http://www.sitepoint.com/how-to-improve-loading-time-with-basket-js/)
 
 
 ## Contribute
 
 ### Style Guide
 
-This project follows the [Idiomatic](https://github.com/rwldrn/idiomatic.js) guide to writing JavaScript - a concise extension to the jQuery Core Style [guidelines](http://docs.jquery.com/JQuery_Core_Style_Guidelines), with the exception of multiple var statements. Please ensure any pull requests follow these closely.
+This project follows the [Idiomatic](https://github.com/rwaldron/idiomatic.js) guide to writing JavaScript - a concise extension to the jQuery Core Style [guidelines](http://contribute.jquery.org/style-guide/js/), with the exception of multiple var statements. Please ensure any pull requests follow these closely.
 
 
 ### Unit Tests
@@ -35,7 +35,7 @@ We are also attempting to get as much unit test coverage as possible. For this r
 
 ### Building
 
-To build the project, you will first need to install the necessary dependencies (such as [RSVP](https://github.com/tildeio/rsvp.js)) using [npm](http://npmjs.org) and [Bower](http://bower.io).
+To build the project, you will first need to install the necessary dependencies (such as [RSVP](https://github.com/tildeio/rsvp.js)) using [npm](https://www.npmjs.com/) and [Bower](http://bower.io).
 
 Run:
 
