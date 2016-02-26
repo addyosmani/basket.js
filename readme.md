@@ -16,6 +16,10 @@ Basket.js loads your site's scripts into a page and saves them in localStorage s
 
 [![Build Status](https://travis-ci.org/addyosmani/basket.js.svg?branch=gh-pages)](https://travis-ci.org/addyosmani/basket.js)
 
+## What to Use Basket.js for and When To Use It
+[Basket.js](http://addyosmani.github.io/basket.js/) provides an easy to use, Promise-based API, for caching both static and dynamically loaded scripts. Basket.js can be used to load JavaScript, CSS, and even RequireJS modules.
+
+Basket.js should be used when you are in need of a caching solution for improved application performance. By making use of localStorage, Basket.js offers superior performance when compared to the standard browser cache, especially on mobile devices. The performance benefits of caching assets in localStorage have been [outlined by both Google and Microsoft](http://www.stevesouders.com/blog/2011/03/28/storager-case-study-bing-google/). Additionally, localStorage is supported in most browsers going back to IE8. This makes basket.js an excellent caching solution when legacy browser support is a requirement. 
 
 ## Resources
 
