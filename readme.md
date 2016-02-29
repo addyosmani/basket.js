@@ -65,6 +65,9 @@ $ grunt release
 
 to generate a new release, otherwise just running `grunt test` will run the unit tests.
 
+## Build with
+
+* WordPress plugin : [WP BasketJs](https://github.com/nguyenvanduocit/wp-basketjs)
 
 ## Team
 
