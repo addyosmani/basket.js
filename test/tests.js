@@ -20,14 +20,14 @@ asyncTest( 'require() 1 script', 2, function() {
 	basket.require(
 		{url: 'fixtures/jquery.min.js'}
 	)
-	.then(function() {
-		clearTimeout( cancel );
+		.then(function() {
+			clearTimeout( cancel );
 
-		ok( true, 'Callback invoked' );
-		ok( basket.get('fixtures/jquery.min.js'), 'Data exists in localStorage' );
+			ok( true, 'Callback invoked' );
+			ok( basket.get('fixtures/jquery.min.js'), 'Data exists in localStorage' );
 
-		start();
-	});
+			start();
+		});
 });
 
 
@@ -38,9 +38,9 @@ asyncTest( 'require() 2 scripts with .then()', 3, function() {
 	}, 2500);
 
 	basket.require(
-			{ url: 'fixtures/jquery.min.js' },
-			{ url: 'fixtures/modernizr.min.js' }
-		)
+		{ url: 'fixtures/jquery.min.js' },
+		{ url: 'fixtures/modernizr.min.js' }
+	)
 		.then(function() {
 			clearTimeout( cancel );
 
@@ -60,9 +60,9 @@ asyncTest( 'require() 2 scripts (one non-executed) with .then()', 4, function() 
 	}, 2500);
 
 	basket.require(
-			{ url: 'fixtures/fail-script.js', execute: false },
-			{ url: 'fixtures/modernizr.min.js' }
-		)
+		{ url: 'fixtures/fail-script.js', execute: false },
+		{ url: 'fixtures/modernizr.min.js' }
+	)
 		.then(function() {
 			clearTimeout( cancel );
 
@@ -98,14 +98,14 @@ asyncTest( 'require() doesn\'t execute', 1, function() {
 	basket.require(
 		{ url: 'fixtures/executefalse.js', execute: false }
 	)
-	.then(function() {
+		.then(function() {
 
-		clearTimeout( cancel );
+			clearTimeout( cancel );
 
-		ok( typeof basket.executed === 'undefined', 'Scipt executed' );
+			ok( typeof basket.executed === 'undefined', 'Scipt executed' );
 
-		start();
-	});
+			start();
+		});
 });
 
 
@@ -118,21 +118,21 @@ asyncTest( 'require() twice doesn\'t execute on secound', 1, function() {
 	basket.require(
 		{ url: 'fixtures/executefalse2.js' }
 	)
-	.then(function() {
-		basket.executed2 = undefined;
-
-		basket.require(
-			{ url: 'fixtures/executefalse2.js', execute: false }
-		)
 		.then(function() {
+			basket.executed2 = undefined;
 
-			clearTimeout( cancel );
+			basket.require(
+				{ url: 'fixtures/executefalse2.js', execute: false }
+			)
+				.then(function() {
 
-			ok( typeof basket.executed2 === 'undefined', 'Scipt executed' );
+					clearTimeout( cancel );
 
-			start();
+					ok( typeof basket.executed2 === 'undefined', 'Scipt executed' );
+
+					start();
+				});
 		});
-	});
 });
 
 
@@ -145,18 +145,18 @@ asyncTest( 'require() once', 1, function() {
 	basket.require(
 		{ url: 'fixtures/once.js', once: true }
 	)
-	.then(function() {
-		basket.require(
-			{ url: 'fixtures/once.js', once: true }
-		)
 		.then(function() {
-			clearTimeout( cancel );
+			basket.require(
+				{ url: 'fixtures/once.js', once: true }
+			)
+				.then(function() {
+					clearTimeout( cancel );
 
-			ok( basket.once === 1, 'Script loaded twice' );
+					ok( basket.once === 1, 'Script loaded twice' );
 
-			start();
+					start();
+				});
 		});
-	});
 });
 
 
@@ -169,18 +169,18 @@ asyncTest( 'require() once (force reload)', 1, function() {
 	basket.require(
 		{ url: 'fixtures/once2.js', once: true }
 	)
-	.then(function() {
-		basket.require(
-			{ url: 'fixtures/once2.js' }
-		)
 		.then(function() {
-			clearTimeout( cancel );
+			basket.require(
+				{ url: 'fixtures/once2.js' }
+			)
+				.then(function() {
+					clearTimeout( cancel );
 
-			ok( basket.once2 === 2, 'Script loaded once' );
+					ok( basket.once2 === 2, 'Script loaded once' );
 
-			start();
+					start();
+				});
 		});
-	});
 });
 
 
@@ -199,9 +199,9 @@ asyncTest( 'clear()', 1, function() {
 asyncTest( 'clear( expired ) - remove only expired keys ', 2, function() {
 	basket
 		.require(
-			{ url: 'fixtures/largeScript.js', key: 'largeScript0', expire: -1 },
-			{ url: 'fixtures/largeScript.js', key: 'largeScript1' }
-		).then(function() {
+		{ url: 'fixtures/largeScript.js', key: 'largeScript0', expire: -1 },
+		{ url: 'fixtures/largeScript.js', key: 'largeScript1' }
+	).then(function() {
 			basket.clear( true );
 			// check if scripts added was removed from localStorage
 			ok( !basket.get( 'largeScript0' ) , 'Expired script removed' );
@@ -344,21 +344,21 @@ asyncTest( 'remove oldest script in localStorage when Quote Exceeded', 2, functi
 });
 
 /*
-asyncTest( 'file is larger than quota limit ', 2, function() {
-	basket
-		.require({ url: 'fixtures/largeScript.js', key: 'largeScript0' }, { url: 'fixtures/largeScript.js', key: 'largeScript1' })
-		.thenRequire({ url: 'fixtures/veryLargeScript.js', key: 'largeScript2' })
-		.then(function() {
-			// check if scripts added was removed from localStorage
-			ok( !basket.get( 'largeScript0' ) , 'First Script deleted' );
-			ok( !basket.get( 'largeScript1' ) , 'Second Script deleted' );
-			// check if the last script added still on localStorage
-			// TODO: Test is now failing in Chrome due to an anomoly,
-			// but passes in Safari. Investigate later.
-			// ok( !basket.get( 'largeScript2' ) , 'Last Script not added' );
-			start();
-		});
-});*/
+ asyncTest( 'file is larger than quota limit ', 2, function() {
+ basket
+ .require({ url: 'fixtures/largeScript.js', key: 'largeScript0' }, { url: 'fixtures/largeScript.js', key: 'largeScript1' })
+ .thenRequire({ url: 'fixtures/veryLargeScript.js', key: 'largeScript2' })
+ .then(function() {
+ // check if scripts added was removed from localStorage
+ ok( !basket.get( 'largeScript0' ) , 'First Script deleted' );
+ ok( !basket.get( 'largeScript1' ) , 'Second Script deleted' );
+ // check if the last script added still on localStorage
+ // TODO: Test is now failing in Chrome due to an anomoly,
+ // but passes in Safari. Investigate later.
+ // ok( !basket.get( 'largeScript2' ) , 'Last Script not added' );
+ start();
+ });
+ });*/
 
 asyncTest( 'non-existant file causes error handler to be called', 2, function() {
 	basket
@@ -429,14 +429,14 @@ asyncTest( 'when first file fails, second file is fetched but not executed', 3, 
 	basket.require({ url: '/first.js' })
 		.thenRequire({ url: '/second.js' })
 		.then( function() {},
-			function() {
-				ok( !basket.get( '/first.js' ), 'first script failed to load' );
-				ok( basket.get( '/second.js' ), 'second script was loaded and stored' );
-				ok( basket.second === 0, 'second script did not execute' );
+		function() {
+			ok( !basket.get( '/first.js' ), 'first script failed to load' );
+			ok( basket.get( '/second.js' ), 'second script was loaded and stored' );
+			ok( basket.second === 0, 'second script did not execute' );
 
-				start();
-				server.restore();
-			});
+			start();
+			server.restore();
+		});
 
 	server.respond();
 });
@@ -763,7 +763,7 @@ asyncTest( 'execute a cached script when execute: true', 2, function() {
 		basket.require(
 			{ url: 'fixtures/executefalse.js', execute: execute }
 		)
-		.then(cb);
+			.then(cb);
 	}
 
 	requireScript( false, function() {
@@ -777,4 +777,34 @@ asyncTest( 'execute a cached script when execute: true', 2, function() {
 			start();
 		});
 	});
+});
+
+asyncTest( 'with trackFailures: true and non-existant file, we call success handler', 1, function() {
+	basket
+		.require([{ url: 'non-existant.js'}], { trackFailures: true })
+		.then(function() {
+			ok( true, 'The success callback should be called' );
+			start();
+		});
+});
+
+asyncTest( 'without trackFailures: true and non-existant file, we call error handler', 1, function() {
+	basket
+		.require([{ url: 'non-existant.js'}])
+		.then(function() {
+			ok( false, 'The success callback should not be called' );
+			start();
+		}, function(error) {
+			ok( error, 'The error handler should be called' );
+			start();
+		});
+});
+
+asyncTest( 'with trackFailures: true and non-existant file, error message is available', 1, function() {
+	basket
+		.require([{ url: 'non-existant.js'}], { trackFailures: true })
+		.then(function(responses) {
+			ok( typeof responses[0].reason.message !== 'undefined', 'Reason message should be defined' );
+			start();
+		});
 });
