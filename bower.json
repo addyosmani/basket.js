@@ -14,5 +14,9 @@
   ],
   "dependencies": {
     "rsvp": "~3.0.16"
+  },
+  "devDependencies": {
+    "compact-promise": "~1.1.4",
+    "requirejs": "~2.2.0"
   }
 }

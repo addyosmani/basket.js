@@ -1,8 +1,58 @@
 module.exports = function( grunt ) {
 	'use strict';
 
+	function getHandleModuleBundleComplete(start, end) {
+		return function handleModuleBundleComplete (data) {
+			var fs = require('fs'),
+				amdclean = require('amdclean'),
+				outputFile = data.path;
+
+			fs.writeFileSync(outputFile, amdclean.clean({
+				filePath: outputFile,
+				prefixMode: 'camelCase',
+				'wrap': {
+					'start': start,
+					'end': end
+				}
+			}));
+		};
+	}
+
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
+		requirejs : {
+			dist : {
+				options : {
+					baseUrl: '.',
+					include: 'lib/basket.js',
+					out: 'dist/basket.js',
+					optimize : 'none',
+					onModuleBundleComplete: getHandleModuleBundleComplete(';(function(){','return libBasketjs})();')
+				}
+			},
+			full: {
+				options : {
+					paths: {
+						'lib/RSVP.wrapper': 'bower_components/compact-promise/src/Defer'
+					},
+					baseUrl: '.',
+					include: 'lib/basket.js',
+					out: 'dist/basket.full.js',
+					optimize : 'none',
+					onModuleBundleComplete: getHandleModuleBundleComplete('', '')
+				}
+			}
+		},
+		umd: {
+			full: {
+				options: {
+					src: 'dist/basket.full.js',
+					dest: 'dist/basket.full.js',
+					globalAlias: 'basket',
+					objectToExport: 'libBasketjs'
+				}
+			}
+		},
 		concat: {
 			options: {
 				banner: '/*!\n' +
@@ -19,8 +69,12 @@ module.exports = function( grunt ) {
 				stripBanners: true
 			},
 			dist: {
-				src: ['lib/basket.js'],
+				src: ['dist/basket.js'],
 				dest: 'dist/basket.js'
+			},
+			full: {
+				src: ['dist/basket.full.js'],
+				dest: 'dist/basket.full.js'
 			}
 		},
 		uglify: {
@@ -41,14 +95,19 @@ module.exports = function( grunt ) {
 					sourceMap: 'dist/basket.full.map'
 				},
 				files: {
-					'dist/basket.full.min.js': ['bower_components/rsvp/rsvp.min.js', 'dist/basket.js']
+					'dist/basket.full.min.js': ['dist/basket.full.js']
 				}
 			}
 		},
 		qunit: {
-			all: {
+			modular: {
 				options: {
-					urls: ['http://localhost:8080/test/index.html']
+					urls: ['http://localhost:8080/test/modular.html']
+				}
+			},
+			bundled: {
+				options: {
+					urls: ['http://localhost:8081/test/bundled.html']
 				}
 			}
 		},
@@ -59,10 +118,16 @@ module.exports = function( grunt ) {
 			}
 		},
 		connect: {
-			server: {
+			modular: {
 				options: {
 					base: '.',
 					port: 8080
+				}
+			},
+			bundled: {
+				options: {
+					base: '.',
+					port: 8081
 				}
 			}
 		},
@@ -80,13 +145,25 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks('grunt-contrib-qunit');
 	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-contrib-requirejs');
+	grunt.loadNpmTasks('grunt-umd');
 
 	// Dev - default
 	grunt.registerTask('default', ['test']);
 
 	// Release
-	grunt.registerTask('release', ['test', 'concat', 'uglify']);
+	grunt.registerTask('release', ['test', 'requirejs', 'umd', 'concat', 'uglify', 'test:bundled']);
 
 	//Tests
-	grunt.registerTask('test', ['jshint', 'connect', 'qunit']);
+	grunt.registerTask('test', function(type){
+		if (typeof type === 'undefined') {
+			type = 'modular';
+		}
+		grunt.task.run('jshint');
+		// can only use universal port once this ticket is solved:
+		// https://github.com/gruntjs/grunt-contrib-connect/pull/217
+		grunt.task.run('connect:' + type);
+		grunt.task.run('qunit:' + type);
+		// grunt.task.run('disconnect');
+	});
 };
