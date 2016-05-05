@@ -436,12 +436,18 @@ require([modulePath], function (basket) {
 			.thenRequire({ url: '/second.js' })
 			.then( function() {},
 				function() {
-					ok( !basket.get( '/first.js' ), 'first script failed to load' );
-					ok( basket.get( '/second.js' ), 'second script was loaded and stored' );
-					ok( basket.second === 0, 'second script did not execute' );
+					// time out to make sure below function gets executed at next tick
+					// so that second request is fully finished.
+					// compact-promise resolve and reject immediately so it may happen
+					// quicker then rsvp.
+					setTimeout(function(){
+						ok( !basket.get( '/first.js' ), 'first script failed to load' );
+						ok( basket.get( '/second.js' ), 'second script was loaded and stored' );
+						ok( basket.second === 0, 'second script did not execute' );
 
-					start();
-					server.restore();
+						start();
+						server.restore();
+					});
 				});
 
 		server.respond();

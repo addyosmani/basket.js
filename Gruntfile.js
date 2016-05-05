@@ -64,7 +64,7 @@ module.exports = function( grunt ) {
 					' <%= _.pluck(pkg.licenses, "type").join(", ") %> License\n' +
 					'* Created by: <%= _.pluck(pkg.maintainers, "name").join(", ") %>\n' +
 					'* Contributors: <%= _.pluck(pkg.contributors, "name").join(", ") %>\n' +
-					'* Uses rsvp.js, https://github.com/tildeio/rsvp.js\n' +
+					'* Uses rsvp.js, https://github.com/tildeio/rsvp.js or compact-promise\n' +
 					'*/',
 				stripBanners: true
 			},

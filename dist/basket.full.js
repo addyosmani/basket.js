@@ -1,11 +1,11 @@
 /*!
 * basket.js
-* v0.5.2 - 2016-05-05
+* v0.5.2 - 2016-05-06
 * http://addyosmani.github.com/basket.js
 * (c) Addy Osmani;  License
 * Created by: Addy Osmani, Sindre Sorhus, Andrée Hansson, Mat Scales
 * Contributors: Ironsjp, Mathias Bynens, Rick Waldron, Felipe Morais
-* Uses rsvp.js, https://github.com/tildeio/rsvp.js
+* Uses rsvp.js, https://github.com/tildeio/rsvp.js or compact-promise
 */(function (root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module unless amdModuleId is set
