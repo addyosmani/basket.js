@@ -107,7 +107,7 @@ module.exports = function( grunt ) {
 			},
 			bundled: {
 				options: {
-					urls: ['http://localhost:8081/test/bundled.html']
+					urls: ['http://localhost:8080/test/bundled.html']
 				}
 			}
 		},
@@ -118,16 +118,10 @@ module.exports = function( grunt ) {
 			}
 		},
 		connect: {
-			modular: {
+			all: {
 				options: {
 					base: '.',
 					port: 8080
-				}
-			},
-			bundled: {
-				options: {
-					base: '.',
-					port: 8081
 				}
 			}
 		},
@@ -152,18 +146,8 @@ module.exports = function( grunt ) {
 	grunt.registerTask('default', ['test']);
 
 	// Release
-	grunt.registerTask('release', ['test', 'requirejs', 'umd', 'concat', 'uglify', 'test:bundled']);
+	grunt.registerTask('release', ['test', 'requirejs', 'umd', 'concat', 'uglify', 'qunit:bundled']);
 
 	//Tests
-	grunt.registerTask('test', function(type){
-		if (typeof type === 'undefined') {
-			type = 'modular';
-		}
-		grunt.task.run('jshint');
-		// can only use universal port once this ticket is solved:
-		// https://github.com/gruntjs/grunt-contrib-connect/pull/217
-		grunt.task.run('connect:' + type);
-		grunt.task.run('qunit:' + type);
-		// grunt.task.run('disconnect');
-	});
+	grunt.registerTask('test', ['jshint', 'connect', 'qunit:modular']);
 };
