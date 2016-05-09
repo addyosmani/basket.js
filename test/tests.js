@@ -1,780 +1,849 @@
-/*global module, asyncTest, test, ok, start, basket, sinon*/
-'use strict';
-module( 'Test script API', {
-	teardown: function() {
-		localStorage.clear();
-		basket.fail = false;
-		basket.isValidItem = null;
-		basket.first = 0;
-		basket.second = 0;
-	}
-});
+/*global sinon, define, window*/
+define([
+	'require'
+], function(
+	require
+){
+	'use strict';
+	var modulePath = (window.isBundled?'../dist/basket.full':'../lib/basket');
+	var basket;
+	var qunit = window.QUnit;
+	var module = qunit.module;
+	var test = qunit.test;
 
-
-asyncTest( 'require() 1 script', 2, function() {
-	var cancel = setTimeout(function() {
-		ok( false, 'Callback never invoked' );
-		start();
-	}, 2500);
-
-	basket.require(
-		{url: 'fixtures/jquery.min.js'}
-	)
-	.then(function() {
-		clearTimeout( cancel );
-
-		ok( true, 'Callback invoked' );
-		ok( basket.get('fixtures/jquery.min.js'), 'Data exists in localStorage' );
-
-		start();
+	module( 'Test script API', {
+		beforeEach: function(assert) {
+			var done = assert.async();
+			require([modulePath], function (bsk) {
+				basket = bsk;
+				window.basket = bsk;
+				done();
+			});
+		},
+		afterEach: function() {
+			localStorage.clear();
+			basket.fail = false;
+			basket.isValidItem = null;
+			basket.first = 0;
+			basket.second = 0;
+			delete window.basket;
+		}
 	});
-});
 
 
-asyncTest( 'require() 2 scripts with .then()', 3, function() {
-	var cancel = setTimeout(function() {
-		ok( false, 'Callback never invoked' );
-		start();
-	}, 2500);
-
-	basket.require(
-			{ url: 'fixtures/jquery.min.js' },
-			{ url: 'fixtures/modernizr.min.js' }
-		)
-		.then(function() {
-			clearTimeout( cancel );
-
-			ok( true, 'Callback invoked' );
-			ok( basket.get('fixtures/jquery.min.js'), 'Data exists in localStorage' );
-			ok( basket.get('fixtures/modernizr.min.js'), 'Data exists in localStorage' );
-
-			start();
-		});
-});
-
-
-asyncTest( 'require() 2 scripts (one non-executed) with .then()', 4, function() {
-	var cancel = setTimeout(function() {
-		ok( false, 'Callback never invoked' );
-		start();
-	}, 2500);
-
-	basket.require(
-			{ url: 'fixtures/fail-script.js', execute: false },
-			{ url: 'fixtures/modernizr.min.js' }
-		)
-		.then(function() {
-			clearTimeout( cancel );
-
-			ok( true, 'Callback invoked' );
-			ok( basket.get('fixtures/modernizr.min.js'), 'Data exists in localStorage' );
-			ok( basket.get('fixtures/fail-script.js'), 'Data exists in localStorage' );
-			ok( basket.fail !== true, 'Script not executed' );
-
-			start();
-		});
-});
-
-
-asyncTest( 'require(), custom key', 1, function() {
-	var key = +new Date();
-
-	basket
-		.require({ url: 'fixtures/jquery.min.js', key: key })
-		.then(function() {
-			ok( basket.get(key), 'Data exists in localStorage under custom key' );
-
-			start();
-		});
-});
-
-
-asyncTest( 'require() doesn\'t execute', 1, function() {
-	var cancel = setTimeout(function() {
-		ok( false, 'Callback never invoked' );
-		start();
-	}, 2500);
-
-	basket.require(
-		{ url: 'fixtures/executefalse.js', execute: false }
-	)
-	.then(function() {
-
-		clearTimeout( cancel );
-
-		ok( typeof basket.executed === 'undefined', 'Scipt executed' );
-
-		start();
-	});
-});
-
-
-asyncTest( 'require() twice doesn\'t execute on secound', 1, function() {
-	var cancel = setTimeout(function() {
-		ok( false, 'Callback never invoked' );
-		start();
-	}, 2500);
-
-	basket.require(
-		{ url: 'fixtures/executefalse2.js' }
-	)
-	.then(function() {
-		basket.executed2 = undefined;
+	test( 'require() 1 script', 2, function(assert) {
+		var done = assert.async();
+		var cancel = setTimeout(function() {
+			assert.ok( false, 'Callback never invoked' );
+			done();
+		}, 2500);
 
 		basket.require(
-			{ url: 'fixtures/executefalse2.js', execute: false }
+			{url: 'fixtures/jquery.min.js'}
+		)
+		.then(function() {
+			clearTimeout( cancel );
+
+			assert.ok( true, 'Callback invoked' );
+			assert.ok( basket.get('fixtures/jquery.min.js'), 'Data exists in localStorage' );
+			done();
+		});
+	});
+
+
+	test( 'require() 2 scripts with .then()', 3, function(assert) {
+		var done = assert.async();
+		var cancel = setTimeout(function() {
+			assert.ok( false, 'Callback never invoked' );
+			done();
+		}, 2500);
+
+		basket.require(
+				{ url: 'fixtures/jquery.min.js' },
+				{ url: 'fixtures/modernizr.min.js' }
+			)
+			.then(function() {
+				clearTimeout( cancel );
+
+				assert.ok( true, 'Callback invoked' );
+				assert.ok( basket.get('fixtures/jquery.min.js'), 'Data exists in localStorage' );
+				assert.ok( basket.get('fixtures/modernizr.min.js'), 'Data exists in localStorage' );
+
+				done();
+			});
+	});
+
+
+	test( 'require() 2 scripts (one non-executed) with .then()', 4, function(assert) {
+		var done = assert.async();
+		var cancel = setTimeout(function() {
+			assert.ok( false, 'Callback never invoked' );
+			done();
+		}, 2500);
+
+		basket.require(
+				{ url: 'fixtures/fail-script.js', execute: false },
+				{ url: 'fixtures/modernizr.min.js' }
+			)
+			.then(function() {
+				clearTimeout( cancel );
+
+				assert.ok( true, 'Callback invoked' );
+				assert.ok( basket.get('fixtures/modernizr.min.js'), 'Data exists in localStorage' );
+				assert.ok( basket.get('fixtures/fail-script.js'), 'Data exists in localStorage' );
+				assert.ok( basket.fail !== true, 'Script not executed' );
+
+				done();
+			});
+	});
+
+
+	test( 'require(), custom key', 1, function(assert) {
+		var done = assert.async();
+		var key = +new Date();
+
+		basket
+			.require({ url: 'fixtures/jquery.min.js', key: key })
+			.then(function() {
+				assert.ok( basket.get(key), 'Data exists in localStorage under custom key' );
+
+				done();
+			});
+	});
+
+
+	test( 'require() doesn\'t execute', 1, function(assert) {
+		var done = assert.async();
+		var cancel = setTimeout(function() {
+			assert.ok( false, 'Callback never invoked' );
+			done();
+		}, 2500);
+
+		basket.require(
+			{ url: 'fixtures/executefalse.js', execute: false }
 		)
 		.then(function() {
 
 			clearTimeout( cancel );
 
-			ok( typeof basket.executed2 === 'undefined', 'Scipt executed' );
+			assert.ok( typeof basket.executed === 'undefined', 'Scipt executed' );
 
-			start();
+			done();
 		});
 	});
-});
 
 
-asyncTest( 'require() once', 1, function() {
-	var cancel = setTimeout(function() {
-		ok( false, 'Callback never invoked' );
-		start();
-	}, 2500);
+	test( 'require() twice doesn\'t execute on secound', 1, function(assert) {
+		var done = assert.async();
+		var cancel = setTimeout(function() {
+			assert.ok( false, 'Callback never invoked' );
+			done();
+		}, 2500);
 
-	basket.require(
-		{ url: 'fixtures/once.js', once: true }
-	)
-	.then(function() {
+		basket.require(
+			{ url: 'fixtures/executefalse2.js' }
+		)
+		.then(function() {
+			basket.executed2 = undefined;
+
+			basket.require(
+				{ url: 'fixtures/executefalse2.js', execute: false }
+			)
+			.then(function() {
+
+				clearTimeout( cancel );
+
+				assert.ok( typeof basket.executed2 === 'undefined', 'Scipt executed' );
+
+				done();
+			});
+		});
+	});
+
+
+	test( 'require() once', 1, function(assert) {
+		var done = assert.async();
+		var cancel = setTimeout(function() {
+			assert.ok( false, 'Callback never invoked' );
+			done();
+		}, 2500);
+
 		basket.require(
 			{ url: 'fixtures/once.js', once: true }
 		)
 		.then(function() {
-			clearTimeout( cancel );
+			basket.require(
+				{ url: 'fixtures/once.js', once: true }
+			)
+			.then(function() {
+				clearTimeout( cancel );
 
-			ok( basket.once === 1, 'Script loaded twice' );
+				assert.ok( basket.once === 1, 'Script loaded twice' );
 
-			start();
+				done();
+			});
 		});
 	});
-});
 
 
-asyncTest( 'require() once (force reload)', 1, function() {
-	var cancel = setTimeout(function() {
-		ok( false, 'Callback never invoked' );
-		start();
-	}, 2500);
+	test( 'require() once (force reload)', 1, function(assert) {
+		var done = assert.async();
+		var cancel = setTimeout(function() {
+			assert.ok( false, 'Callback never invoked' );
+			done();
+		}, 2500);
 
-	basket.require(
-		{ url: 'fixtures/once2.js', once: true }
-	)
-	.then(function() {
 		basket.require(
-			{ url: 'fixtures/once2.js' }
+			{ url: 'fixtures/once2.js', once: true }
 		)
 		.then(function() {
-			clearTimeout( cancel );
+			basket.require(
+				{ url: 'fixtures/once2.js' }
+			)
+			.then(function() {
+				clearTimeout( cancel );
 
-			ok( basket.once2 === 2, 'Script loaded once' );
+				assert.ok( basket.once2 === 2, 'Script loaded once' );
 
-			start();
+				done();
+			});
 		});
 	});
-});
 
 
-asyncTest( 'clear()', 1, function() {
-	basket
-		.require({ url: 'fixtures/jquery.min.js' })
-		.then(function() {
-			basket.clear();
-			ok( !basket.get('fixtures/jquery.min.js'), 'basket.js data in localStorage cleared' );
-
-			start();
-		});
-});
-
-
-asyncTest( 'clear( expired ) - remove only expired keys ', 2, function() {
-	basket
-		.require(
-			{ url: 'fixtures/largeScript.js', key: 'largeScript0', expire: -1 },
-			{ url: 'fixtures/largeScript.js', key: 'largeScript1' }
-		).then(function() {
-			basket.clear( true );
-			// check if scripts added was removed from localStorage
-			ok( !basket.get( 'largeScript0' ) , 'Expired script removed' );
-			ok( basket.get( 'largeScript1' ) , 'Non-expired script exists in localstorage' );
-
-			start();
-		});
-});
-
-
-asyncTest( 'store data using expiration (non-expired)', 2, function() {
-	basket
-		.require({ url: 'fixtures/stamp-script.js', expire: 1 })
-		.then(function() {
-			var stamp = basket.get('fixtures/stamp-script.js').stamp;
-			ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
-
-			basket
-				.require({ url: 'fixtures/stamp-script.js' })
-				.then(function() {
-					var stampAfter = basket.get('fixtures/stamp-script.js').stamp;
-					ok( stamp === stampAfter, 'Data retrieved from localStorage' );
-
-					start();
-				});
-		});
-});
-
-
-asyncTest( 'store data using expiration (expired)', 2, function() {
-	basket
-		.require({ url: 'fixtures/stamp-script.js', expire: -1 })
-		.then(function() {
-			var stamp = basket.get('fixtures/stamp-script.js').stamp;
-			ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
-
-			basket
-				.require({ url: 'fixtures/stamp-script.js' })
-				.then(function() {
-					var stampAfter = basket.get('fixtures/stamp-script.js').stamp;
-					ok( stamp !== stampAfter, 'Data retrieved from server' );
-
-					start();
-				});
-		});
-});
-
-
-asyncTest( 'get()', 2, function() {
-	basket
-		.require({ url: 'fixtures/jquery.min.js', key: 'jquery' })
-		.then(function() {
-			ok( basket.get('jquery'), 'Data retrieved under custom key' );
-			ok( !basket.get('anotherkey').stamp, 'No Data retrieved under custom key' );
-
-			start();
-		});
-});
-
-
-asyncTest( 'store data using file-versioning (not previous explicit version)', 3, function() {
-	basket
-		.require({ url: 'fixtures/stamp-script.js' })
-		.then(function() {
-			var stamp = basket.get('fixtures/stamp-script.js').stamp;
-			ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
-
-			basket
-				.require({ url: 'fixtures/stamp-script.js', unique: 123 })
-				.then(function() {
-					var req = basket.get('fixtures/stamp-script.js');
-					ok( stamp !== req.stamp, 'Data retrieved from server' );
-					ok( req.url.indexOf('basket-unique=123') > 0, 'Sending basket unique parameter' );
-
-					start();
-				});
-		});
-});
-
-
-asyncTest( 'store data using file-versioning (same release)', 2, function() {
-	basket
-		.require({ url: 'fixtures/stamp-script.js', unique: 123 })
-		.then(function() {
-			var stamp = basket.get('fixtures/stamp-script.js').stamp;
-			ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
-
-			basket
-				.require({ url: 'fixtures/stamp-script.js', unique: 123 })
-				.then(function() {
-					var stampAfter = basket.get('fixtures/stamp-script.js').stamp;
-					ok( stamp === stampAfter, 'Data retrieved from server' );
-
-					start();
-				});
-		});
-});
-
-
-asyncTest( 'store data using file-versioning (different release)', 3, function() {
-	basket
-		.require({ url: 'fixtures/stamp-script.js', unique: 123 })
-		.then(function() {
-			var stamp = basket.get('fixtures/stamp-script.js').stamp;
-			ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
-
-			basket
-				.require({ url: 'fixtures/stamp-script.js', unique: 456 })
-				.then(function() {
-					var req = basket.get('fixtures/stamp-script.js');
-					ok( stamp !== req.stamp, 'Data retrieved from server' );
-					ok( req.url.indexOf('basket-unique=456') > 0, 'Sending basket unique parameter' );
-					start();
-				});
-		});
-});
-
-
-asyncTest( 'remove oldest script in localStorage when Quote Exceeded', 2, function() {
-	var i = 0;
-	var l = 10;
-
-	(function add() {
-		// Try add script in localStorage
+	test( 'clear()', 1, function(assert) {
+		var done = assert.async();
 		basket
-			.require({ url: 'fixtures/largeScript.js', key: 'largeScript' + i })
+			.require({ url: 'fixtures/jquery.min.js' })
 			.then(function() {
-				if ( i < l ) {
-					// add one more file
-					add( ++i );
-				} else {
-					// check if first script added was removed from localStorage
-					ok( !basket.get( 'largeScript0' ) , 'First Script deleted' );
-					// check if the last script added still on localStorage
-					ok( basket.get( 'largeScript10' ) , 'Last Script still alive' );
-					start();
-				}
+				basket.clear();
+				assert.ok( !basket.get('fixtures/jquery.min.js'), 'basket.js data in localStorage cleared' );
+
+				done();
 			});
-	})();
-});
+	});
 
-/*
-asyncTest( 'file is larger than quota limit ', 2, function() {
-	basket
-		.require({ url: 'fixtures/largeScript.js', key: 'largeScript0' }, { url: 'fixtures/largeScript.js', key: 'largeScript1' })
-		.thenRequire({ url: 'fixtures/veryLargeScript.js', key: 'largeScript2' })
-		.then(function() {
-			// check if scripts added was removed from localStorage
-			ok( !basket.get( 'largeScript0' ) , 'First Script deleted' );
-			ok( !basket.get( 'largeScript1' ) , 'Second Script deleted' );
-			// check if the last script added still on localStorage
-			// TODO: Test is now failing in Chrome due to an anomoly,
-			// but passes in Safari. Investigate later.
-			// ok( !basket.get( 'largeScript2' ) , 'Last Script not added' );
-			start();
-		});
-});*/
 
-asyncTest( 'non-existant file causes error handler to be called', 2, function() {
-	basket
-		.require({ url: 'non-existant.js' })
-		.then(function() {
-			ok( false, 'The success callback should not be called' );
-			start();
-		}, function(error) {
-			ok( error, 'Error callback called' );
-			ok( !basket.get( 'non-existant.js' ), 'No cache entry for missing file' );
-			start();
-		});
-});
+	test( 'clear( expired ) - remove only expired keys ', 2, function(assert) {
+		var done = assert.async();
+		basket
+			.require(
+				{ url: 'fixtures/largeScript.js', key: 'largeScript0', expire: -1 },
+				{ url: 'fixtures/largeScript.js', key: 'largeScript1' }
+			).then(function() {
+				basket.clear( true );
+				// check if scripts added was removed from localStorage
+				assert.ok( !basket.get( 'largeScript0' ) , 'Expired script removed' );
+				assert.ok( basket.get( 'largeScript1' ) , 'Non-expired script exists in localstorage' );
 
-asyncTest( 'handle the case where localStorage contains something we did not expect', 2, function() {
-	localStorage.setItem( 'basket-test', 'An invalid JSON string' );
-	basket
-		.require({ url: 'fixtures/jquery.min.js', key: 'test' })
-		.then(function() {
-			start();
-			ok( basket.get( 'test' ), 'successfully retrieved the script' );
-			ok( basket.get( 'test' ).key === 'test', 'got a valid cache object' );
-		});
-});
+				done();
+			});
+	});
 
-asyncTest( 'chaining with thenRequire', 3, function() {
-	basket.clear();
-	basket
-		.require({ url: 'fixtures/first.js', key: 'first' })
-		.thenRequire({ url: 'fixtures/second.js', key: 'second' })
-		.then(function() {
-			start();
-			ok( basket.get( 'first' ), 'first script loaded' );
-			ok( basket.get( 'second' ), 'second script loaded' );
-			ok( basket.order === 'firstsecond', 'scripts loaded in correct order' );
-		}, function() {
-			start();
-			ok( false, 'error handler called unexpectedly' );
-		});
-});
 
-asyncTest( 'file is fetched from server even if it exists when isValidItem answers no', 2, function() {
-	basket
-		.require({ url: 'fixtures/stamp-script.js'})
-		.then(function() {
-			var stamp = basket.get('fixtures/stamp-script.js').stamp;
-			ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
-			basket.isValidItem = function() {
-				return false;
-			};
+	test( 'store data using expiration (non-expired)', 2, function(assert) {
+		var done = assert.async();
+		basket
+			.require({ url: 'fixtures/stamp-script.js', expire: 1 })
+			.then(function() {
+				var stamp = basket.get('fixtures/stamp-script.js').stamp;
+				assert.ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
+
+				basket
+					.require({ url: 'fixtures/stamp-script.js' })
+					.then(function() {
+						var stampAfter = basket.get('fixtures/stamp-script.js').stamp;
+						assert.ok( stamp === stampAfter, 'Data retrieved from localStorage' );
+
+						done();
+					});
+			});
+	});
+
+
+	test( 'store data using expiration (expired)', 2, function(assert) {
+		var done = assert.async();
+		basket
+			.require({ url: 'fixtures/stamp-script.js', expire: -1 })
+			.then(function() {
+				var stamp = basket.get('fixtures/stamp-script.js').stamp;
+				assert.ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
+
+				basket
+					.require({ url: 'fixtures/stamp-script.js' })
+					.then(function() {
+						var stampAfter = basket.get('fixtures/stamp-script.js').stamp;
+						assert.ok( stamp !== stampAfter, 'Data retrieved from server' );
+
+						done();
+					});
+			});
+	});
+
+
+	test( 'get()', 2, function(assert) {
+		var done = assert.async();
+		basket
+			.require({ url: 'fixtures/jquery.min.js', key: 'jquery' })
+			.then(function() {
+				assert.ok( basket.get('jquery'), 'Data retrieved under custom key' );
+				assert.ok( !basket.get('anotherkey').stamp, 'No Data retrieved under custom key' );
+
+				done();
+			});
+	});
+
+
+	test( 'store data using file-versioning (not previous explicit version)', 3, function(assert) {
+		var done = assert.async();
+		basket
+			.require({ url: 'fixtures/stamp-script.js' })
+			.then(function() {
+				var stamp = basket.get('fixtures/stamp-script.js').stamp;
+				assert.ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
+
+				basket
+					.require({ url: 'fixtures/stamp-script.js', unique: 123 })
+					.then(function() {
+						var req = basket.get('fixtures/stamp-script.js');
+						assert.ok( stamp !== req.stamp, 'Data retrieved from server' );
+						assert.ok( req.url.indexOf('basket-unique=123') > 0, 'Sending basket unique parameter' );
+
+						done();
+					});
+			});
+	});
+
+
+	test( 'store data using file-versioning (same release)', 2, function(assert) {
+		var done = assert.async();
+		basket
+			.require({ url: 'fixtures/stamp-script.js', unique: 123 })
+			.then(function() {
+				var stamp = basket.get('fixtures/stamp-script.js').stamp;
+				assert.ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
+
+				basket
+					.require({ url: 'fixtures/stamp-script.js', unique: 123 })
+					.then(function() {
+						var stampAfter = basket.get('fixtures/stamp-script.js').stamp;
+						assert.ok( stamp === stampAfter, 'Data retrieved from server' );
+
+						done();
+					});
+			});
+	});
+
+
+	test( 'store data using file-versioning (different release)', 3, function(assert) {
+		var done = assert.async();
+		basket
+			.require({ url: 'fixtures/stamp-script.js', unique: 123 })
+			.then(function() {
+				var stamp = basket.get('fixtures/stamp-script.js').stamp;
+				assert.ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
+
+				basket
+					.require({ url: 'fixtures/stamp-script.js', unique: 456 })
+					.then(function() {
+						var req = basket.get('fixtures/stamp-script.js');
+						assert.ok( stamp !== req.stamp, 'Data retrieved from server' );
+						assert.ok( req.url.indexOf('basket-unique=456') > 0, 'Sending basket unique parameter' );
+						done();
+					});
+			});
+	});
+
+
+	test( 'remove oldest script in localStorage when Quote Exceeded', 2, function(assert) {
+		var done = assert.async();
+		var i = 0;
+		var l = 10;
+
+		(function add() {
+			// Try add script in localStorage
 			basket
-				.require({ url: 'fixtures/stamp-script.js' })
+				.require({ url: 'fixtures/largeScript.js', key: 'largeScript' + i })
 				.then(function() {
-					var stampAfter = basket.get('fixtures/stamp-script.js').stamp;
-					ok( stamp !== stampAfter, 'Data retrieved from server' );
-
-					start();
+					if ( i < l ) {
+						// add one more file
+						add( ++i );
+					} else {
+						// check if first script added was removed from localStorage
+						assert.ok( !basket.get( 'largeScript0' ) , 'First Script deleted' );
+						// check if the last script added still on localStorage
+						assert.ok( basket.get( 'largeScript10' ) , 'Last Script still alive' );
+						done();
+					}
 				});
+		})();
+	});
+
+	/*
+	test( 'file is larger than quota limit ', 2, function(assert) {
+		var done = assert.async();
+		basket
+			.require({ url: 'fixtures/largeScript.js', key: 'largeScript0' }, { url: 'fixtures/largeScript.js', key: 'largeScript1' })
+			.thenRequire({ url: 'fixtures/veryLargeScript.js', key: 'largeScript2' })
+			.then(function() {
+				// check if scripts added was removed from localStorage
+				assert.ok( !basket.get( 'largeScript0' ) , 'First Script deleted' );
+				assert.ok( !basket.get( 'largeScript1' ) , 'Second Script deleted' );
+				// check if the last script added still on localStorage
+				// TODO: Test is now failing in Chrome due to an anomoly,
+				// but passes in Safari. Investigate later.
+				// assert.ok( !basket.get( 'largeScript2' ) , 'Last Script not added' );
+				done();
+			});
+	});*/
+
+	test( 'non-existant file causes error handler to be called', 2, function(assert) {
+		var done = assert.async();
+		basket
+			.require({ url: 'non-existant.js' })
+			.then(function() {
+				assert.ok( false, 'The success callback should not be called' );
+				done();
+			}, function(error) {
+				assert.ok( error, 'Error callback called' );
+				assert.ok( !basket.get( 'non-existant.js' ), 'No cache entry for missing file' );
+				done();
+			});
+	});
+
+	test( 'handle the case where localStorage contains something we did not expect', 2, function(assert) {
+		var done = assert.async();
+		localStorage.setItem( 'basket-test', 'An invalid JSON string' );
+		basket
+			.require({ url: 'fixtures/jquery.min.js', key: 'test' })
+			.then(function() {
+				assert.ok( basket.get( 'test' ), 'successfully retrieved the script' );
+				assert.ok( basket.get( 'test' ).key === 'test', 'got a valid cache object' );
+				done();
+			});
+	});
+
+	test( 'chaining with thenRequire', 3, function(assert) {
+		var done = assert.async();
+		basket.clear();
+		basket
+			.require({ url: 'fixtures/first.js', key: 'first' })
+			.thenRequire({ url: 'fixtures/second.js', key: 'second' })
+			.then(function() {
+				assert.ok( basket.get( 'first' ), 'first script loaded' );
+				assert.ok( basket.get( 'second' ), 'second script loaded' );
+				assert.ok( basket.order === 'firstsecond', 'scripts loaded in correct order' );
+				done();
+			}, function() {
+				assert.ok( false, 'error handler called unexpectedly' );
+				done();
+			});
+	});
+
+	test( 'file is fetched from server even if it exists when isValidItem answers no', 2, function(assert) {
+		var done = assert.async();
+		basket
+			.require({ url: 'fixtures/stamp-script.js'})
+			.then(function() {
+				var stamp = basket.get('fixtures/stamp-script.js').stamp;
+				assert.ok( basket.get('fixtures/stamp-script.js'), 'Data exists in localStorage' );
+				basket.isValidItem = function() {
+					return false;
+				};
+				basket
+					.require({ url: 'fixtures/stamp-script.js' })
+					.then(function() {
+						var stampAfter = basket.get('fixtures/stamp-script.js').stamp;
+						assert.ok( stamp !== stampAfter, 'Data retrieved from server' );
+
+						done();
+					});
+			});
+	});
+
+	test( 'when first file fails, second file is fetched but not executed', 3, function(assert) {
+		var done = assert.async();
+		var server = sinon.fakeServer.create();
+		basket.first = basket.second = 0;
+
+		server.respondWith( 'GET', '/second.js', [ 200, { 'Content-Type': 'text/javascript' }, 'basket.second = 1;' ] );
+
+		basket.require({ url: '/first.js' })
+			.thenRequire({ url: '/second.js' })
+			.then( function() {},
+				function() {
+					// time out to make sure below function gets executed at next tick
+					// so that second request is fully finished.
+					// compact-promise resolve and reject immediately so it may happen
+					// quicker then rsvp.
+					setTimeout(function(){
+						assert.ok( !basket.get( '/first.js' ), 'first script failed to load' );
+						assert.ok( basket.get( '/second.js' ), 'second script was loaded and stored' );
+						assert.ok( basket.second === 0, 'second script did not execute' );
+
+						done();
+						server.restore();
+					});
+				});
+
+		server.respond();
+	});
+
+	test( 'second file is fetched early but executes later', 6, function(assert) {
+		var done = assert.async();
+		var server = sinon.fakeServer.create();
+		basket.first = basket.second = 0;
+
+
+		var firstPromise = basket.require({ url: '/first.js' });
+		firstPromise.then( function() {
+			assert.ok( basket.get( '/second.js' ), 'second script was already loaded and stored' );
+			assert.ok( basket.first === 1, 'first script should have been executed' );
+			assert.ok( basket.second === 0, 'second script should not have been executed yet' );
 		});
-});
 
-asyncTest( 'when first file fails, second file is fetched but not executed', 3, function() {
-	var server = sinon.fakeServer.create();
-	basket.first = basket.second = 0;
+		firstPromise
+			.thenRequire({ url: '/second.js' })
+			.then( function() {
+				assert.ok( basket.first === 1, 'first script is eventually executed' );
+				assert.ok( basket.second === 2, 'second script is eventually executed second' );
 
-	server.respondWith( 'GET', '/second.js', [ 200, { 'Content-Type': 'text/javascript' }, 'basket.second = 1;' ] );
-
-	basket.require({ url: '/first.js' })
-		.thenRequire({ url: '/second.js' })
-		.then( function() {},
-			function() {
-				ok( !basket.get( '/first.js' ), 'first script failed to load' );
-				ok( basket.get( '/second.js' ), 'second script was loaded and stored' );
-				ok( basket.second === 0, 'second script did not execute' );
-
-				start();
+				done();
 				server.restore();
 			});
 
-	server.respond();
-});
+		assert.ok( server.requests.length === 2, 'Both requests have been made' );
 
-asyncTest( 'second file is fetched early but executes later', 6, function() {
-	var server = sinon.fakeServer.create();
-	basket.first = basket.second = 0;
+		server.requests[ 1 ].respond( 200, { 'Content-Type': 'text/javascript' }, 'basket.second = basket.first + 1;' );
 
-
-	var firstPromise = basket.require({ url: '/first.js' });
-	firstPromise.then( function() {
-		ok( basket.get( '/second.js' ), 'second script was already loaded and stored' );
-		ok( basket.first === 1, 'first script should have been executed' );
-		ok( basket.second === 0, 'second script should not have been executed yet' );
+		setTimeout( function() {
+			server.requests[ 0 ].respond( 200, { 'Content-Type': 'text/javascript' }, 'basket.first = 1;' );
+		}, 50);
 	});
 
-	firstPromise
-		.thenRequire({ url: '/second.js' })
-		.then( function() {
-			ok( basket.first === 1, 'first script is eventually executed' );
-			ok( basket.second === 2, 'second script is eventually executed second' );
+	test( 'with thenRequire all requests fired immediately', 1, function(assert) {
+		var server = sinon.fakeServer.create();
 
-			start();
-			server.restore();
-		});
+		basket
+			.require({ url: '/first.js' })
+			.thenRequire({ url: '/second.js' })
+			.thenRequire({ url: '/third.js' });
 
-	ok( server.requests.length === 2, 'Both requests have been made' );
+		assert.ok( server.requests.length === 3, 'all requests were fired' );
 
-	server.requests[ 1 ].respond( 200, { 'Content-Type': 'text/javascript' }, 'basket.second = basket.first + 1;' );
-
-	setTimeout( function() {
-		server.requests[ 0 ].respond( 200, { 'Content-Type': 'text/javascript' }, 'basket.first = 1;' );
-	}, 50);
-});
-
-test( 'with thenRequire all requests fired immediately', 1, function() {
-	var server = sinon.fakeServer.create();
-
-	basket
-		.require({ url: '/first.js' })
-		.thenRequire({ url: '/second.js' })
-		.thenRequire({ url: '/third.js' });
-
-	ok( server.requests.length === 3, 'all requests were fired' );
-
-	server.restore();
-});
-
-asyncTest( 'the type of the stored object is the Content-Type of the resource', 4, function() {
-	basket.clear();
-
-	var server = sinon.fakeServer.create();
-
-	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'Some text' ] );
-	server.respondWith( 'GET', '/example.js', [ 200, { 'Content-Type': 'text/javascript' }, 'Some JavaScript' ] );
-	server.respondWith( 'GET', '/example.xml', [ 200, { 'Content-Type': 'application/xml' }, '<tag>Some XML</tag>' ] );
-	server.respondWith( 'GET', '/example.json', [ 200, { 'Content-Type': 'application/json' }, '["some JSON"]' ] );
-
-	// Without execute: false, the default handler will try to execute all of
-	// these files as JS, leading to Syntax Errors being reported.
-	basket.require({ url: '/example.txt', execute: false }, { url: '/example.js', execute: false }, { url: '/example.xml', execute: false }, { url: '/example.json', execute: false })
-		.then( function() {
-			ok( basket.get( '/example.txt' ).type === 'text/plain', 'text file had correct type' );
-			ok( basket.get( '/example.js' ).type === 'text/javascript', 'javascript file had correct type' );
-			ok( basket.get( '/example.xml' ).type === 'application/xml', 'xml file had correct type' );
-			ok( basket.get( '/example.json' ).type === 'application/json', 'json file had correct type' );
-
-			start();
-			server.restore();
-		});
-
-	server.respond();
-});
-
-asyncTest( 'the type of the stored object can be overriden at original require time', 1, function() {
-	basket.clear();
-
-	var server = sinon.fakeServer.create();
-
-	server.respondWith( 'GET', '/example.json', [ 200, { 'Content-Type': 'application/json' }, '["some JSON"]' ] );
-
-	basket.require({ url: '/example.json', execute: false, type: 'misc/other' })
-		.then( function() {
-			ok( basket.get( '/example.json' ).type === 'misc/other', 'json file had overriden type' );
-
-			start();
-			server.restore();
-		});
-
-	server.respond();
-});
-
-asyncTest( 'different types can be handled separately', 1, function() {
-	var text = 'some example text';
-	var server = sinon.fakeServer.create();
-
-	basket.clear();
-	basket.addHandler( 'text/plain', function( obj ) {
-		ok( obj.data === text, 'the text/plain handler was used' );
-		start();
-		server.restore();
-		basket.removeHandler( 'text/plain' );
-	});
-
-	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, text ] );
-
-	basket.require({ url: '/example.txt' });
-
-	server.respond();
-});
-
-asyncTest( 'handlers can be removed', 1, function() {
-	var js = '// has to be valid JS to avoid a Syntax Error';
-	var handled = 0;
-	var server = sinon.fakeServer.create();
-
-	basket.clear();
-	basket.addHandler( 'text/plain', function() {
-		handled++;
-		basket.removeHandler( 'text/plain' );
-	});
-
-	server.respondWith( 'GET', '/example.js', [ 200, { 'Content-Type': 'text/plain' }, js ] );
-	server.respondWith( 'GET', '/example2.js', [ 200, { 'Content-Type': 'text/plain' }, js ] );
-
-	basket.require({ url: '/example.js' })
-		.thenRequire({ url: '/example2.js' })
-		.then( function () {
-			ok( handled === 1, 'the text/plain handler was only used once' );
-			start();
-			server.restore();
-		});
-
-	server.respond();
-});
-
-asyncTest( 'the same resource can be handled differently', 2, function() {
-	var server = sinon.fakeServer.create();
-
-	basket.clear();
-
-	basket.addHandler( 'first', function() {
-		ok( true, 'first handler was called' );
-	});
-
-	basket.addHandler( 'second', function() {
-		ok( true, 'second handler was called' );
-		start();
 		server.restore();
 	});
 
-	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, '' ] );
+	test( 'the type of the stored object is the Content-Type of the resource', 4, function(assert) {
+		var done = assert.async();
+		basket.clear();
 
-	basket.require({ url: '/example.txt', type: 'first' })
-		.thenRequire({ url: '/example.txt', type: 'second' });
+		var server = sinon.fakeServer.create();
 
-	server.respond();
-});
+		server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'Some text' ] );
+		server.respondWith( 'GET', '/example.js', [ 200, { 'Content-Type': 'text/javascript' }, 'Some JavaScript' ] );
+		server.respondWith( 'GET', '/example.xml', [ 200, { 'Content-Type': 'application/xml' }, '<tag>Some XML</tag>' ] );
+		server.respondWith( 'GET', '/example.json', [ 200, { 'Content-Type': 'application/json' }, '["some JSON"]' ] );
 
-asyncTest( 'type falls back to Content-Type, even if previously overriden', 2, function() {
-	var server = sinon.fakeServer.create();
+		// Without execute: false, the default handler will try to execute all of
+		// these files as JS, leading to Syntax Errors being reported.
+		basket.require({ url: '/example.txt', execute: false }, { url: '/example.js', execute: false }, { url: '/example.xml', execute: false }, { url: '/example.json', execute: false })
+			.then( function() {
+				assert.ok( basket.get( '/example.txt' ).type === 'text/plain', 'text file had correct type' );
+				assert.ok( basket.get( '/example.js' ).type === 'text/javascript', 'javascript file had correct type' );
+				assert.ok( basket.get( '/example.xml' ).type === 'application/xml', 'xml file had correct type' );
+				assert.ok( basket.get( '/example.json' ).type === 'application/json', 'json file had correct type' );
 
-	basket.clear();
+				done();
+				server.restore();
+			});
 
-	basket.addHandler( 'first', function() {
-		ok( true, 'first handler was called' );
+		server.respond();
 	});
 
-	basket.addHandler( 'text/plain', function() {
-		ok( true, 'text/plain handler was called' );
-		start();
-		server.restore();
+	test( 'the type of the stored object can be overriden at original require time', 1, function(assert) {
+		var done = assert.async();
+		basket.clear();
+
+		var server = sinon.fakeServer.create();
+
+		server.respondWith( 'GET', '/example.json', [ 200, { 'Content-Type': 'application/json' }, '["some JSON"]' ] );
+
+		basket.require({ url: '/example.json', execute: false, type: 'misc/other' })
+			.then( function() {
+				assert.ok( basket.get( '/example.json' ).type === 'misc/other', 'json file had overriden type' );
+
+				done();
+				server.restore();
+			});
+
+		server.respond();
 	});
 
-	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, '' ] );
+	test( 'different types can be handled separately', 1, function(assert) {
+		var done = assert.async();
+		var text = 'some example text';
+		var server = sinon.fakeServer.create();
 
-	basket.require({ url: '/example.txt', type: 'first' })
-		.thenRequire({ url: '/example.txt' });
-
-	server.respond();
-});
-
-// This test is here to cover the full set of possibilities for this section
-// It doesn't really test anything that hasn't been tested elsewhere
-asyncTest( 'with live: false, we fallback to the network', 1, function() {
-	basket.clear();
-	var server = sinon.fakeServer.create();
-	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'foo' ] );
-
-	basket.require({ url: '/example.txt', execute: false, live: false })
-		.then( function() {
-			ok( basket.get( '/example.txt' ).data === 'foo', 'nothing in the cache so we fetched from the network' );
+		basket.clear();
+		basket.addHandler( 'text/plain', function( obj ) {
+			assert.ok( obj.data === text, 'the text/plain handler was used' );
+			done();
 			server.restore();
-			start();
+			basket.removeHandler( 'text/plain' );
 		});
 
-	server.respond();
-});
+		server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, text ] );
 
-asyncTest( 'with live: false, we attempt to fetch from the cache first', 1, function() {
-	basket.clear();
-	var server = sinon.fakeServer.create();
-	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'bar' ] );
+		basket.require({ url: '/example.txt' });
 
-	// Add the item directly to the cache
-	localStorage.setItem( 'basket-/example.txt', JSON.stringify( {
-		url: '/example.txt',
-		key: '/example.txt',
-		data: 'foo',
-		originalType: 'text/plain',
-		type: 'text/plain',
-		stamp: +new Date(),
-		expire: +new Date() + 5000 * 60 * 60 * 1000
-	}));
+		server.respond();
+	});
 
-	basket.require({ url: '/example.txt', execute: false, live: false })
-		.then( function() {
-			ok( basket.get( '/example.txt' ).data === 'foo', 'fetched from the cache rather than getting fresh data from the network' );
-			server.restore();
-			start();
+	test( 'handlers can be removed', 1, function(assert) {
+		var done = assert.async();
+		var js = '// has to be valid JS to avoid a Syntax Error';
+		var handled = 0;
+		var server = sinon.fakeServer.create();
+
+		basket.clear();
+		basket.addHandler( 'text/plain', function() {
+			handled++;
+			basket.removeHandler( 'text/plain' );
 		});
 
+		server.respondWith( 'GET', '/example.js', [ 200, { 'Content-Type': 'text/plain' }, js ] );
+		server.respondWith( 'GET', '/example2.js', [ 200, { 'Content-Type': 'text/plain' }, js ] );
 
-	server.respond();
-});
+		basket.require({ url: '/example.js' })
+			.thenRequire({ url: '/example2.js' })
+			.then( function () {
+				assert.ok( handled === 1, 'the text/plain handler was only used once' );
+				done();
+				server.restore();
+			});
 
-asyncTest( 'with live: true, we attempt to fetch from the network first', 1, function() {
-	basket.clear();
-	var server = sinon.fakeServer.create();
-	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'bar' ] );
+		server.respond();
+	});
 
-	// Add the item directly to the cache
-	localStorage.setItem( 'basket-/example.txt', JSON.stringify( {
-		url: '/example.txt',
-		key: '/example.txt',
-		data: 'foo',
-		originalType: 'text/plain',
-		type: 'text/plain',
-		stamp: +new Date(),
-		expire: +new Date() + 5000 * 60 * 60 * 1000
-	}));
+	test( 'the same resource can be handled differently', 2, function(assert) {
+		var done = assert.async();
+		var server = sinon.fakeServer.create();
 
-	basket.require({ url: '/example.txt', execute: false, live: true })
-		.then( function() {
-			ok( basket.get( '/example.txt' ).data === 'bar', 'fetched from the network even though cache was available' );
-			server.restore();
-			start();
+		basket.clear();
+
+		basket.addHandler( 'first', function() {
+			assert.ok( true, 'first handler was called' );
 		});
 
-	server.respond();
-});
-
-asyncTest( 'with live: true, we still store the result in the cache', 1, function() {
-	basket.clear();
-	var server = sinon.fakeServer.create();
-	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'foo' ] );
-
-	basket.require({ url: '/example.txt', execute: false, live: true })
-		.then( function() {
-			ok( basket.get( '/example.txt' ), 'result stored in the cache' );
+		basket.addHandler( 'second', function() {
+			assert.ok( true, 'second handler was called' );
+			done();
 			server.restore();
-			start();
 		});
 
-	server.respond();
-});
+		server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, '' ] );
 
-asyncTest( 'with live: true, we fallback to the cache', 2, function() {
-	// TODO: How to test the navigator.onLine case?
-	basket.clear();
-	var server = sinon.fakeServer.create();
-	var clock = sinon.useFakeTimers();
-	server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'baz' ] );
+		basket.require({ url: '/example.txt', type: 'first' })
+			.thenRequire({ url: '/example.txt', type: 'second' });
 
-	// Add the item directly to the cache
-	localStorage.setItem( 'basket-/example.txt', JSON.stringify( {
-		url: '/example.txt',
-		key: '/example.txt',
-		data: '12345',
-		originalType: 'text/plain',
-		type: 'text/plain',
-		stamp: +new Date(),
-		expire: +new Date() + 5000 * 60 * 60 * 1000
-	}));
+		server.respond();
+	});
 
-	ok( basket.get( '/example.txt' ), 'already exists in cache' );
+	test( 'type falls back to Content-Type, even if previously overriden', 2, function(assert) {
+		var done = assert.async();
+		var server = sinon.fakeServer.create();
 
-	basket.timeout = 100;
-	basket.require({ url: '/example.txt', execute: false, live: true })
-		.then( function() {
-			ok( basket.get( '/example.txt' ).data === '12345', 'server timed out, so fetched from cache' );
-			server.restore();
-			clock.restore();
-			start();
-		}, function () {
-			ok( false, 'the require failed due to lack of network, but should have used the cache' );
-			server.restore();
-			clock.restore();
-			start();
+		basket.clear();
+
+		basket.addHandler( 'first', function() {
+			assert.ok( true, 'first handler was called' );
 		});
 
-	clock.tick(6000);
-	server.respond();
-	basket.timeout = 5000;
-});
-
-asyncTest( 'with skipCache: true, we do not cache data', 1, function() {
-	basket
-		.require({ url: 'fixtures/jquery.min.js', skipCache: true })
-		.then(function() {
-			ok( !basket.get('fixtures/jquery.min.js'), 'Data does not exist in localStorage' );
-
-			start();
+		basket.addHandler( 'text/plain', function() {
+			assert.ok( true, 'text/plain handler was called' );
+			done();
+			server.restore();
 		});
-});
 
-asyncTest( 'execute a cached script when execute: true', 2, function() {
-	var cancel = setTimeout(function() {
-		ok( false, 'Callback never invoked' );
-		start();
-	}, 2500);
+		server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, '' ] );
 
-	function requireScript(execute, cb) {
-		basket.require(
-			{ url: 'fixtures/executefalse.js', execute: execute }
-		)
-		.then(cb);
-	}
+		basket.require({ url: '/example.txt', type: 'first' })
+			.thenRequire({ url: '/example.txt' });
 
-	requireScript( false, function() {
-		clearTimeout( cancel );
+		server.respond();
+	});
 
-		ok( typeof basket.executed === 'undefined', 'None-cached script was not executed' );
+	// This test is here to cover the full set of possibilities for this section
+	// It doesn't really test anything that hasn't been tested elsewhere
+	test( 'with live: false, we fallback to the network', 1, function(assert) {
+		var done = assert.async();
+		basket.clear();
+		var server = sinon.fakeServer.create();
+		server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'foo' ] );
 
-		requireScript( true, function() {
-			ok( basket.executed === true, 'Cached script executed' );
+		basket.require({ url: '/example.txt', execute: false, live: false })
+			.then( function() {
+				assert.ok( basket.get( '/example.txt' ).data === 'foo', 'nothing in the cache so we fetched from the network' );
+				server.restore();
+				done();
+			});
 
-			start();
+		server.respond();
+	});
+
+	test( 'with live: false, we attempt to fetch from the cache first', 1, function(assert) {
+		var done = assert.async();
+		basket.clear();
+		var server = sinon.fakeServer.create();
+		server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'bar' ] );
+
+		// Add the item directly to the cache
+		localStorage.setItem( 'basket-/example.txt', JSON.stringify( {
+			url: '/example.txt',
+			key: '/example.txt',
+			data: 'foo',
+			originalType: 'text/plain',
+			type: 'text/plain',
+			stamp: +new Date(),
+			expire: +new Date() + 5000 * 60 * 60 * 1000
+		}));
+
+		basket.require({ url: '/example.txt', execute: false, live: false })
+			.then( function() {
+				assert.ok( basket.get( '/example.txt' ).data === 'foo', 'fetched from the cache rather than getting fresh data from the network' );
+				server.restore();
+				done();
+			});
+
+
+		server.respond();
+	});
+
+	test( 'with live: true, we attempt to fetch from the network first', 1, function(assert) {
+		var done = assert.async();
+		basket.clear();
+		var server = sinon.fakeServer.create();
+		server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'bar' ] );
+
+		// Add the item directly to the cache
+		localStorage.setItem( 'basket-/example.txt', JSON.stringify( {
+			url: '/example.txt',
+			key: '/example.txt',
+			data: 'foo',
+			originalType: 'text/plain',
+			type: 'text/plain',
+			stamp: +new Date(),
+			expire: +new Date() + 5000 * 60 * 60 * 1000
+		}));
+
+		basket.require({ url: '/example.txt', execute: false, live: true })
+			.then( function() {
+				assert.ok( basket.get( '/example.txt' ).data === 'bar', 'fetched from the network even though cache was available' );
+				server.restore();
+				done();
+			});
+
+		server.respond();
+	});
+
+	test( 'with live: true, we still store the result in the cache', 1, function(assert) {
+		var done = assert.async();
+		basket.clear();
+		var server = sinon.fakeServer.create();
+		server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'foo' ] );
+
+		basket.require({ url: '/example.txt', execute: false, live: true })
+			.then( function() {
+				assert.ok( basket.get( '/example.txt' ), 'result stored in the cache' );
+				server.restore();
+				done();
+			});
+
+		server.respond();
+	});
+
+	test( 'with live: true, we fallback to the cache', 2, function(assert) {
+		var done = assert.async();
+		// TODO: How to test the navigator.onLine case?
+		basket.clear();
+		var server = sinon.fakeServer.create();
+		var clock = sinon.useFakeTimers();
+		server.respondWith( 'GET', '/example.txt', [ 200, { 'Content-Type': 'text/plain' }, 'baz' ] );
+
+		// Add the item directly to the cache
+		localStorage.setItem( 'basket-/example.txt', JSON.stringify( {
+			url: '/example.txt',
+			key: '/example.txt',
+			data: '12345',
+			originalType: 'text/plain',
+			type: 'text/plain',
+			stamp: +new Date(),
+			expire: +new Date() + 5000 * 60 * 60 * 1000
+		}));
+
+		assert.ok( basket.get( '/example.txt' ), 'already exists in cache' );
+
+		basket.timeout = 100;
+		basket.require({ url: '/example.txt', execute: false, live: true })
+			.then( function() {
+				assert.ok( basket.get( '/example.txt' ).data === '12345', 'server timed out, so fetched from cache' );
+				server.restore();
+				clock.restore();
+				done();
+			}, function () {
+				assert.ok( false, 'the require failed due to lack of network, but should have used the cache' );
+				server.restore();
+				clock.restore();
+				done();
+			});
+
+		clock.tick(6000);
+		server.respond();
+		basket.timeout = 5000;
+	});
+
+	test( 'with skipCache: true, we do not cache data', 1, function(assert) {
+		var done = assert.async();
+		basket
+			.require({ url: 'fixtures/jquery.min.js', skipCache: true })
+			.then(function() {
+				assert.ok( !basket.get('fixtures/jquery.min.js'), 'Data does not exist in localStorage' );
+
+				done();
+			});
+	});
+
+	test( 'execute a cached script when execute: true', 2, function(assert) {
+		var done = assert.async();
+		var cancel = setTimeout(function() {
+			assert.ok( false, 'Callback never invoked' );
+			done();
+		}, 2500);
+
+		function requireScript(execute, cb) {
+			basket.require(
+				{ url: 'fixtures/executefalse.js', execute: execute }
+			)
+			.then(cb);
+		}
+
+		requireScript( false, function() {
+			clearTimeout( cancel );
+
+			assert.ok( typeof basket.executed === 'undefined', 'None-cached script was not executed' );
+
+			requireScript( true, function() {
+				assert.ok( basket.executed === true, 'Cached script executed' );
+
+				delete basket.executed;
+
+				done();
+			});
 		});
 	});
+
+	return function(){
+		qunit.start();
+	};
 });

@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>QUnit Tests</title>
+		<link rel="stylesheet" href="../bower_components/qunit/qunit/qunit.css" media="screen">
+		<script src="../bower_components/qunit/qunit/qunit.js"></script>
+		<script>window.QUnit.config.autostart=false</script>
+		<script src="./bridge.js"></script>
+		<script src="../bower_components/rsvp/rsvp.min.js"></script>
+		<script data-main="./config" src="../bower_components/requirejs/require.js"></script>
+		<script src="vendor/sinon-1.5.2.js"></script>
+		<script src="fixtures/jquery.min.js"></script>
+	</head>
+	<body>
+		<h1 id="qunit-header">Basket.js tests</h1>
+		<h2 id="qunit-banner"></h2>
+		<ol id="qunit-tests"></ol>
+		<div id="qunit-fixture">
+			<ul></ul>
+		</div>
+	</body>
+</html>
