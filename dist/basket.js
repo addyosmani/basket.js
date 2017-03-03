@@ -19,6 +19,10 @@
 			localStorage.setItem( storagePrefix + key, JSON.stringify( storeObj ) );
 			return true;
 		} catch( e ) {
+			// Fix for IE9 (use e.message instead of e.name)
+			if(e.name === undefined){
+				e.name = e.message;
+			}
 			if ( e.name.toUpperCase().indexOf('QUOTA') >= 0 ) {
 				var item;
 				var tempScripts = [];
