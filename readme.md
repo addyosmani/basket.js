@@ -7,7 +7,7 @@
 
 ##Introduction for the Non-Developer
 
-Modern web applications will typically make use of more than one JavaScript or CSS framework. As the number of scripts add up, so does the number of HTTP requests. This leads to increased page load times and reduced performance. [Basket.js](http://addyosmani.github.io/basket.js/) is a project dedicated to aleviating this problem. 
+Modern web applications will typically make use of more than one JavaScript or CSS framework. As the number of scripts add up, so does the number of HTTP requests. This leads to increased page load times and reduced performance. [Basket.js](http://addyosmani.github.io/basket.js/) is a project dedicated to alleviating this problem. 
 
 Basket.js loads your site's scripts into a page and saves them in localStorage so they can be reused after the session until they are expired. It also checks to see if the scripts are already in localStorage, and if not, loads them. This prevents unneccessary reloading of scripts and can improve load time and website performance.
 
