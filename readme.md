@@ -5,7 +5,7 @@
 
 
 
-##Introduction for the Non-Developer
+## Introduction for the Non-Developer
 
 Modern web applications will typically make use of more than one JavaScript or CSS framework. As the number of scripts add up, so does the number of HTTP requests. This leads to increased page load times and reduced performance. [Basket.js](http://addyosmani.github.io/basket.js/) is a project dedicated to aleviating this problem. 
 
