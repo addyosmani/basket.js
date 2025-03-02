@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>basket.js Demo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .demo-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        code {
+            background: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1>basket.js Demo</h1>
+    <p>This demo shows how basket.js caches and loads JavaScript files using localStorage.</p>
+
+    <div class="demo-section">
+        <h2>1. Load Script</h2>
+        <p>Click to load utils.js. The first load will fetch from server, subsequent loads will use cached version.</p>
+        <button onclick="loadScript()">Load utils.js</button>
+        <button onclick="clearCache()">Clear Cache</button>
+    </div>
+
+    <div class="demo-section">
+        <h2>2. Execute Cached Functions</h2>
+        <p>After loading utils.js, you can use its functions:</p>
+        <button onclick="showFormattedDate()">Format Current Date</button>
+        <button onclick="showGeneratedId()">Generate ID</button>
+    </div>
+
+    <div class="demo-section">
+        <h2>Output</h2>
+        <div id="output"></div>
+    </div>
+
+    <script type="module">
+        import basket from '/basket.js';
+        window.basket = basket;
+
+        window.loadScript = async () => {
+            const output = document.getElementById('output');
+            const startTime = performance.now();
+
+            try {
+                await basket.require({ url: 'scripts/utils.js' });
+                const endTime = performance.now();
+                const loadTime = (endTime - startTime).toFixed(2);
+                
+                const cached = basket.get('scripts/utils.js') ? 'Yes' : 'No';
+                output.innerHTML = `
+                    <p>Script loaded successfully!</p>
+                    <p>Load time: ${loadTime}ms</p>
+                    <p>Cached: ${cached}</p>
+                `;
+            } catch (error) {
+                output.innerHTML = `Error: ${error.message}`;
+            }
+        };
+
+        window.clearCache = () => {
+            basket.clear();
+            document.getElementById('output').innerHTML = 'Cache cleared!';
+        };
+
+        window.showFormattedDate = async () => {
+            const { formatDate } = await import('./scripts/utils.js');
+            document.getElementById('output').innerHTML = 
+                `Formatted date: ${formatDate(new Date())}`;
+        };
+
+        window.showGeneratedId = async () => {
+            const { generateId } = await import('./scripts/utils.js');
+            document.getElementById('output').innerHTML = 
+                `Generated ID: ${generateId()}`;
+        };
+    </script>
+</body>
+</html>
