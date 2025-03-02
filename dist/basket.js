@@ -1,278 +1,107 @@
-/*!
-* basket.js
-* v0.5.2 - 2015-02-07
-* http://addyosmani.github.com/basket.js
-* (c) Addy Osmani;  License
-* Created by: Addy Osmani, Sindre Sorhus, Andrée Hansson, Mat Scales
-* Contributors: Ironsjp, Mathias Bynens, Rick Waldron, Felipe Morais
-* Uses rsvp.js, https://github.com/tildeio/rsvp.js
-*/(function( window, document ) {
-	'use strict';
-
-	var head = document.head || document.getElementsByTagName('head')[0];
-	var storagePrefix = 'basket-';
-	var defaultExpiration = 5000;
-	var inBasket = [];
-
-	var addLocalStorage = function( key, storeObj ) {
-		try {
-			localStorage.setItem( storagePrefix + key, JSON.stringify( storeObj ) );
-			return true;
-		} catch( e ) {
-			if ( e.name.toUpperCase().indexOf('QUOTA') >= 0 ) {
-				var item;
-				var tempScripts = [];
-
-				for ( item in localStorage ) {
-					if ( item.indexOf( storagePrefix ) === 0 ) {
-						tempScripts.push( JSON.parse( localStorage[ item ] ) );
-					}
-				}
-
-				if ( tempScripts.length ) {
-					tempScripts.sort(function( a, b ) {
-						return a.stamp - b.stamp;
-					});
-
-					basket.remove( tempScripts[ 0 ].key );
-
-					return addLocalStorage( key, storeObj );
-
-				} else {
-					// no files to remove. Larger than available quota
-					return;
-				}
-
-			} else {
-				// some other error
-				return;
-			}
-		}
-
-	};
-
-	var getUrl = function( url ) {
-		var promise = new RSVP.Promise( function( resolve, reject ){
-
-			var xhr = new XMLHttpRequest();
-			xhr.open( 'GET', url );
-
-			xhr.onreadystatechange = function() {
-				if ( xhr.readyState === 4 ) {
-					if ( ( xhr.status === 200 ) ||
-							( ( xhr.status === 0 ) && xhr.responseText ) ) {
-						resolve( {
-							content: xhr.responseText,
-							type: xhr.getResponseHeader('content-type')
-						} );
-					} else {
-						reject( new Error( xhr.statusText ) );
-					}
-				}
-			};
-
-			// By default XHRs never timeout, and even Chrome doesn't implement the
-			// spec for xhr.timeout. So we do it ourselves.
-			setTimeout( function () {
-				if( xhr.readyState < 4 ) {
-					xhr.abort();
-				}
-			}, basket.timeout );
-
-			xhr.send();
-		});
-
-		return promise;
-	};
-
-	var saveUrl = function( obj ) {
-		return getUrl( obj.url ).then( function( result ) {
-			var storeObj = wrapStoreData( obj, result );
-
-			if (!obj.skipCache) {
-				addLocalStorage( obj.key , storeObj );
-			}
-
-			return storeObj;
-		});
-	};
-
-	var wrapStoreData = function( obj, data ) {
-		var now = +new Date();
-		obj.data = data.content;
-		obj.originalType = data.type;
-		obj.type = obj.type || data.type;
-		obj.skipCache = obj.skipCache || false;
-		obj.stamp = now;
-		obj.expire = now + ( ( obj.expire || defaultExpiration ) * 60 * 60 * 1000 );
-
-		return obj;
-	};
-
-	var isCacheValid = function(source, obj) {
-		return !source ||
-			source.expire - +new Date() < 0  ||
-			obj.unique !== source.unique ||
-			(basket.isValidItem && !basket.isValidItem(source, obj));
-	};
-
-	var handleStackObject = function( obj ) {
-		var source, promise, shouldFetch;
-
-		if ( !obj.url ) {
-			return;
-		}
-
-		obj.key =  ( obj.key || obj.url );
-		source = basket.get( obj.key );
-                
-		obj.execute = obj.execute !== false;
-
-		shouldFetch = isCacheValid(source, obj);
-
-		if( obj.live || shouldFetch ) {
-			if ( obj.unique ) {
-				// set parameter to prevent browser cache
-				obj.url += ( ( obj.url.indexOf('?') > 0 ) ? '&' : '?' ) + 'basket-unique=' + obj.unique;
-			}
-			promise = saveUrl( obj );
-
-			if( obj.live && !shouldFetch ) {
-				promise = promise
-					.then( function( result ) {
-						// If we succeed, just return the value
-						// RSVP doesn't have a .fail convenience method
-						return result;
-					}, function() {
-						return source;
-					});
-			}
-		} else {
-			source.type = obj.type || source.originalType;
-			source.execute = obj.execute;
-			promise = new RSVP.Promise( function( resolve ){
-				resolve( source );
-			});
-		}
-
-		return promise;
-	};
-
-	var injectScript = function( obj ) {
-		var script = document.createElement('script');
-		script.defer = true;
-		// Have to use .text, since we support IE8,
-		// which won't allow appending to a script
-		script.text = obj.data;
-		head.appendChild( script );
-	};
-
-	var handlers = {
-		'default': injectScript
-	};
-
-	var execute = function( obj ) {
-		if( obj.type && handlers[ obj.type ] ) {
-			return handlers[ obj.type ]( obj );
-		}
-
-		return handlers['default']( obj ); // 'default' is a reserved word
-	};
-
-	var performActions = function( resources ) {
-		return resources.map( function( obj ) {
-			if( obj.execute ) {
-				execute( obj );
-			}
-
-			return obj;
-		} );
-	};
-
-	var fetch = function() {
-		var i, l, promises = [];
-
-		for ( i = 0, l = arguments.length; i < l; i++ ) {
-			promises.push( handleStackObject( arguments[ i ] ) );
-		}
-
-		return RSVP.all( promises );
-	};
-
-	var thenRequire = function() {
-		var resources = fetch.apply( null, arguments );
-		var promise = this.then( function() {
-			return resources;
-		}).then( performActions );
-		promise.thenRequire = thenRequire;
-		return promise;
-	};
-
-	window.basket = {
-		require: function() {
-			for ( var a = 0, l = arguments.length; a < l; a++ ) {
-				arguments[a].execute = arguments[a].execute !== false;
-				
-				if ( arguments[a].once && inBasket.indexOf(arguments[a].url) >= 0 ) {
-					arguments[a].execute = false;
-				} else if ( arguments[a].execute !== false && inBasket.indexOf(arguments[a].url) < 0 ) {  
-					inBasket.push(arguments[a].url);
-				}
-			}
-                        
-			var promise = fetch.apply( null, arguments ).then( performActions );
-
-			promise.thenRequire = thenRequire;
-			return promise;
-		},
-
-		remove: function( key ) {
-			localStorage.removeItem( storagePrefix + key );
-			return this;
-		},
-
-		get: function( key ) {
-			var item = localStorage.getItem( storagePrefix + key );
-			try	{
-				return JSON.parse( item || 'false' );
-			} catch( e ) {
-				return false;
-			}
-		},
-
-		clear: function( expired ) {
-			var item, key;
-			var now = +new Date();
-
-			for ( item in localStorage ) {
-				key = item.split( storagePrefix )[ 1 ];
-				if ( key && ( !expired || this.get( key ).expire <= now ) ) {
-					this.remove( key );
-				}
-			}
-
-			return this;
-		},
-
-		isValidItem: null,
-
-		timeout: 5000,
-
-		addHandler: function( types, handler ) {
-			if( !Array.isArray( types ) ) {
-				types = [ types ];
-			}
-			types.forEach( function( type ) {
-				handlers[ type ] = handler;
-			});
-		},
-
-		removeHandler: function( types ) {
-			basket.addHandler( types, undefined );
-		}
-	};
-
-	// delete expired keys
-	basket.clear( true );
-
-})( this, document );
+import { Promise as o } from "rsvp";
+const a = "basket-", h = 5e3, l = [], u = {
+  default: v
+}, y = document.head || document.getElementsByTagName("head")[0], p = (e, t) => {
+  try {
+    return localStorage.setItem(a + e, JSON.stringify(t)), !0;
+  } catch (r) {
+    if (r.name.toUpperCase().indexOf("QUOTA") >= 0) {
+      const n = Object.entries(localStorage).filter(([s]) => s.startsWith(a)).map(([, s]) => JSON.parse(s)).sort((s, c) => s.stamp - c.stamp);
+      return n.length ? (i.remove(n[0].key), p(e, t)) : void 0;
+    }
+    return;
+  }
+}, x = (e) => new o((t, r) => {
+  const n = new XMLHttpRequest();
+  n.open("GET", e), n.onreadystatechange = () => {
+    n.readyState === 4 && (n.status === 200 || n.status === 0 && n.responseText ? t({
+      content: n.responseText,
+      type: n.getResponseHeader("content-type")
+    }) : r(new Error(n.statusText)));
+  }, setTimeout(() => {
+    n.readyState < 4 && n.abort();
+  }, i.timeout), n.send();
+}), g = (e, t) => {
+  const r = Date.now();
+  return {
+    ...e,
+    data: t.content,
+    originalType: t.type,
+    type: e.type || t.type,
+    skipCache: e.skipCache || !1,
+    stamp: r,
+    expire: r + (e.expire || h) * 60 * 60 * 1e3
+  };
+}, S = (e) => x(e.url).then((t) => {
+  const r = g(e, t);
+  return e.skipCache || p(e.key, r), r;
+}), k = (e, t) => !e || e.expire - Date.now() < 0 || t.unique !== e.unique || i.isValidItem && !i.isValidItem(e, t), q = (e) => {
+  if (!e.url)
+    return;
+  e.key = e.key || e.url;
+  const t = i.get(e.key);
+  e.execute = e.execute !== !1;
+  const r = k(t, e);
+  if (e.live || r) {
+    e.unique && (e.url += (e.url.includes("?") ? "&" : "?") + "basket-unique=" + e.unique);
+    let n = S(e);
+    return e.live && !r && (n = n.then(
+      (s) => s,
+      () => t
+    )), n;
+  }
+  return t.type = e.type || t.originalType, t.execute = e.execute, o.resolve(t);
+};
+function v(e) {
+  const t = document.createElement("script");
+  t.defer = !0, t.text = e.data, y.appendChild(t);
+}
+const f = (e) => e.map((t) => (t.execute && w(t), t)), w = (e) => e.type && u[e.type] ? u[e.type](e) : u.default(e), d = (...e) => {
+  const t = e.map(q);
+  return o.all(t);
+};
+function m(...e) {
+  const t = d.apply(null, e), r = this.then(() => t).then(f);
+  return r.thenRequire = m, r;
+}
+const i = {
+  require(...e) {
+    for (const r of e)
+      r.execute = r.execute !== !1, r.once && l.includes(r.url) ? r.execute = !1 : r.execute !== !1 && !l.includes(r.url) && l.push(r.url);
+    const t = d.apply(null, e).then(f);
+    return t.thenRequire = m, t;
+  },
+  remove(e) {
+    return localStorage.removeItem(a + e), this;
+  },
+  get(e) {
+    const t = localStorage.getItem(a + e);
+    try {
+      return JSON.parse(t || "false");
+    } catch {
+      return !1;
+    }
+  },
+  clear(e) {
+    const t = Date.now(), r = Object.keys(localStorage).filter((n) => n.startsWith(a));
+    for (const n of r) {
+      const s = n.slice(a.length), c = this.get(s);
+      c && (!e || c.expire <= t) && this.remove(s);
+    }
+    return this;
+  },
+  isValidItem: null,
+  timeout: 5e3,
+  addHandler(e, t) {
+    Array.isArray(e) || (e = [e]), e.forEach((r) => {
+      u[r] = t;
+    });
+  },
+  removeHandler(e) {
+    this.addHandler(e, void 0);
+  }
+};
+i.clear(!0);
+export {
+  i as default
+};
